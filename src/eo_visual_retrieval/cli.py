@@ -90,6 +90,41 @@ def _stac_materialize(args: argparse.Namespace) -> None:
     )
 
 
+def _stac_chip(args: argparse.Namespace) -> None:
+    from eo_visual_retrieval.chips import materialize_sentinel2_chip
+
+    records = read_stac_jsonl(args.manifest)
+    matches = [record for record in records if record.item_id == args.item_id]
+    if not matches:
+        raise ValueError(f"item ID not found in STAC manifest: {args.item_id}")
+    artifacts = materialize_sentinel2_chip(
+        matches[0],
+        output_dir=args.output_dir,
+        image_manifest=args.image_manifest,
+        bounds=tuple(args.bbox),
+        signer=args.signer,
+        reflectance_min=args.reflectance_min,
+        reflectance_max=args.reflectance_max,
+        mask_scl=args.mask_scl,
+        max_pixels=args.max_pixels,
+    )
+    print(
+        json.dumps(
+            {
+                "reflectance": str(artifacts.reflectance_path),
+                "rgb": str(artifacts.rgb_path),
+                "image_manifest": str(args.image_manifest),
+                "item_id": artifacts.image_record.item_id,
+                "shape": [
+                    artifacts.image_record.metadata["height"],
+                    artifacts.image_record.metadata["width"],
+                ],
+            },
+            indent=2,
+        )
+    )
+
+
 def _embed_dinov2(args: argparse.Namespace) -> None:
     from eo_visual_retrieval.embeddings.dinov2 import dinov2_embeddings
 
@@ -188,6 +223,31 @@ def build_parser() -> argparse.ArgumentParser:
     materialize.add_argument("--limit", type=int)
     materialize.add_argument("--max-bytes", type=int, default=20 * 1024 * 1024)
     materialize.set_defaults(handler=_stac_materialize)
+
+    chip = commands.add_parser(
+        "stac-chip",
+        help="materialize one aligned Sentinel-2 RGB chip",
+    )
+    chip.add_argument("--manifest", type=Path, required=True)
+    chip.add_argument("--item-id", required=True)
+    chip.add_argument("--bbox", type=float, nargs=4, required=True, metavar=("W", "S", "E", "N"))
+    chip.add_argument("--output-dir", type=Path, required=True)
+    chip.add_argument("--image-manifest", type=Path, required=True)
+    chip.add_argument(
+        "--signer",
+        choices=("none", "planetary-computer"),
+        default="none",
+    )
+    chip.add_argument("--reflectance-min", type=float, default=0.0)
+    chip.add_argument("--reflectance-max", type=float, default=0.3)
+    chip.add_argument(
+        "--mask-scl",
+        action=argparse.BooleanOptionalAction,
+        default=True,
+        help="mask nodata, defective, cloud, cirrus, shadow, and snow SCL classes",
+    )
+    chip.add_argument("--max-pixels", type=int, default=1024 * 1024)
+    chip.set_defaults(handler=_stac_chip)
 
     dinov2 = commands.add_parser("embed-dinov2", help="embed manifest images with DINOv2")
     dinov2.add_argument("--manifest", type=Path, required=True)

@@ -30,6 +30,9 @@ stac = [
   "pystac-client>=0.8,<1",
   "requests>=2.31,<3",
 ]
+geo = [
+  "rasterio>=1.4,<2",
+]
 ml = [
   "scikit-learn>=1.4,<2",
   "torch>=2.2,<3",
@@ -50,6 +53,9 @@ packages = ["src/eo_visual_retrieval"]
 [tool.pytest.ini_options]
 addopts = "-q"
 testpaths = ["tests"]
+filterwarnings = [
+  "ignore:Use `@` matmul instead of `\\*` mul operator:PendingDeprecationWarning:rasterio\\..*",
+]
 
 [tool.ruff]
 line-length = 100

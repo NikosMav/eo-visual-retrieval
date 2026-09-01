@@ -13,6 +13,7 @@ representative, leakage-safe EO benchmark has **not** yet been established.
 - Searches public Earth-observation catalogs through STAC.
 - Stores stable item identities and safe metadata without signed asset URLs.
 - Materializes bounded preview imagery for learning and qualitative inspection.
+- Builds aligned, georeferenced Sentinel-2 reflectance and model-ready RGB chips.
 - Builds deterministic index/query manifests from labeled local images.
 - Generates PCA or DINOv2 image embeddings.
 - Ranks images with exact cosine similarity.
@@ -22,22 +23,23 @@ representative, leakage-safe EO benchmark has **not** yet been established.
 ## System at a glance
 
 ```text
-STAC API                                     Labeled local RGB images
-   |                                                   |
-   v                                                   v
-sanitized item manifest                    deterministic image manifest
-   |                                                   |
-   v                                        +----------+----------+
-bounded preview materialization             |                     |
-                                          PCA                 DINOv2
-                                             |                     |
-                                             +----------+----------+
-                                                        |
-                                                normalized vectors
-                                                        |
-                                                exact cosine search
-                                                        |
-                                                ranked evaluation
+STAC API                                      Labeled local RGB images
+   |                                                    |
+   v                                                    v
+sanitized item manifest                     deterministic image manifest
+   |                                                    |
+   +--> bounded previews                               |
+   |                                         +----------+----------+
+   +--> reflectance + RGB chip ------------->|                     |
+                                             PCA                 DINOv2
+                                              |                     |
+                                              +----------+----------+
+                                                         |
+                                                 normalized vectors
+                                                         |
+                                                 exact cosine search
+                                                         |
+                                                 ranked evaluation
 ```
 
 STAC discovery and benchmark evaluation are separate on purpose. Preview assets help teach the
@@ -54,7 +56,7 @@ because PyTorch packages contain deeply nested files.
 ```powershell
 py -3.11 -m venv C:\Users\<you>\.venvs\eovr
 C:\Users\<you>\.venvs\eovr\Scripts\python -m pip install --upgrade pip
-C:\Users\<you>\.venvs\eovr\Scripts\python -m pip install -e ".[dev,stac,ml]"
+C:\Users\<you>\.venvs\eovr\Scripts\python -m pip install -e ".[dev,stac,geo,ml]"
 ```
 
 Confirm the local code is healthy:
@@ -63,6 +65,37 @@ Confirm the local code is healthy:
 C:\Users\<you>\.venvs\eovr\Scripts\python -m ruff check .
 C:\Users\<you>\.venvs\eovr\Scripts\python -m pytest
 ```
+
+## EO chip workflow
+
+Search for one or more public Sentinel-2 items:
+
+```powershell
+eovr stac-search `
+  --api-url https://planetarycomputer.microsoft.com/api/stac/v1 `
+  --collection sentinel-2-l2a `
+  --bbox -122.2751 47.5469 -121.9613 47.7458 `
+  --datetime 2024-06-01/2024-06-30 `
+  --max-cloud-cover 20 `
+  --limit 20 `
+  --output data/manifests/stac-items.jsonl
+```
+
+Select one item ID from that sanitized manifest and materialize a bounded spatial window:
+
+```powershell
+eovr stac-chip `
+  --manifest data/manifests/stac-items.jsonl `
+  --item-id <stable-stac-item-id> `
+  --bbox -122.15 47.60 -122.13 47.62 `
+  --output-dir data/stac-chips `
+  --image-manifest data/manifests/stac-chip.jsonl `
+  --signer planetary-computer
+```
+
+The command produces a float32 BOA-reflectance GeoTIFF and a fixed-stretch uint8 RGB GeoTIFF. The
+image manifest points to the RGB artifact used by the embedding pipeline and records the
+reflectance artifact, grid, mask policy, processing baseline, and hashes.
 
 ## Retrieval workflow
 
@@ -111,8 +144,8 @@ The full data-discovery and retrieval procedure is explained in
 ## Current evidence
 
 The verified code-health gates pass on Python 3.11, and CI tests Python 3.11 and 3.12. Bounded
-STAC, PCA, and DINOv2 smoke runs have executed successfully. These runs prove that the workflow
-operates; they do not measure representative EO retrieval quality.
+STAC, analysis-ready chip, PCA, and DINOv2 smoke runs have executed successfully. These runs prove
+that the workflow operates; they do not measure representative EO retrieval quality.
 
 The missing benchmark must compare PCA and DINOv2 on the same labeled images using spatially and
 temporally safe splits. Until then, metric values from artificial smoke data must not be used as
@@ -126,11 +159,12 @@ Read the guides in this order:
 
 1. [Project context and roadmap](docs/project-context.md) — goal, current state, and next work.
 2. [Architecture](docs/architecture.md) — components, data boundaries, and design choices.
-3. [Pipeline and CLI](docs/pipeline-and-cli.md) — each action, input, and output.
-4. [Models and metrics](docs/models-and-metrics.md) — PCA, DINOv2, cosine search, and evaluation.
-5. [Learning STAC](docs/learning-stac.md) — EO catalog concepts and retrieval pitfalls.
-6. [Development](docs/development.md) — environment, tools, tests, and contribution workflow.
-7. [Validation](docs/validation.md) — what has and has not been verified.
+3. [Sentinel-2 chip decision](docs/decisions/0001-windowed-sentinel2-chip-materialization.md) — selected design and trade-offs.
+4. [Pipeline and CLI](docs/pipeline-and-cli.md) — each action, input, and output.
+5. [Models and metrics](docs/models-and-metrics.md) — PCA, DINOv2, cosine search, and evaluation.
+6. [Learning STAC](docs/learning-stac.md) — EO catalog concepts and retrieval pitfalls.
+7. [Development](docs/development.md) — environment, tools, tests, and contribution workflow.
+8. [Validation](docs/validation.md) — what has and has not been verified.
 
 ## Data and privacy policy
 
@@ -142,10 +176,9 @@ Read the guides in this order:
 
 ## Roadmap
 
-The next milestone is one reproducible, analysis-ready Sentinel-2 RGB chip with tested spatial
-windows, band alignment, reflectance scaling, nodata/cloud handling, and sanitized geospatial
-metadata. A labeled leakage-aware benchmark follows, then retrieval analysis, approximate search,
-and a small interactive product surface.
+The next milestone is a labeled, leakage-aware EO benchmark comparing PCA and DINOv2 on identical
+inputs and splits. Retrieval analysis, approximate search, and a small interactive product surface
+follow that benchmark.
 
 ## License
 

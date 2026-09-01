@@ -28,7 +28,7 @@ older Windows path limits when the environment lives inside an already long chec
 ```powershell
 py -3.11 -m venv C:\Users\<you>\.venvs\eovr
 C:\Users\<you>\.venvs\eovr\Scripts\python -m pip install --upgrade pip
-C:\Users\<you>\.venvs\eovr\Scripts\python -m pip install -e ".[dev,stac,ml]"
+C:\Users\<you>\.venvs\eovr\Scripts\python -m pip install -e ".[dev,stac,geo,ml]"
 ```
 
 An editable install points Python at the current checkout. If the repository is moved or another
@@ -49,6 +49,7 @@ Core dependencies are intentionally light:
 Optional groups add:
 
 - `stac`: PySTAC Client, Planetary Computer signing, and HTTP downloads;
+- `geo`: Rasterio for windowed, aligned geospatial raster processing;
 - `ml`: scikit-learn PCA and PyTorch/torchvision DINOv2 execution;
 - `dev`: Ruff, Pytest, and pytest-cov.
 
@@ -80,6 +81,7 @@ reported but is not currently enforced by a percentage threshold.
 The current tests cover:
 
 - deterministic manifests and JSONL round trips;
+- Sentinel-2 reflectance scaling, grid alignment, SCL masking, and pixel bounds;
 - rejection of duplicate content with conflicting labels;
 - embedding-store persistence;
 - exact-cosine ranking, self-exclusion, and zero-vector handling;

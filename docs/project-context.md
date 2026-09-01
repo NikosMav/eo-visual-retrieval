@@ -22,6 +22,7 @@ The repository currently contains:
 - a typed Python package and `eovr` command-line interface;
 - provider-neutral STAC discovery with sanitized JSONL manifests;
 - bounded public preview materialization with optional in-memory signing;
+- aligned Sentinel-2 BOA-reflectance and model-ready RGB chip materialization;
 - deterministic image manifests with index/query partitions;
 - PCA and frozen DINOv2 embedding backends;
 - portable compressed embedding stores;
@@ -44,10 +45,9 @@ a representative EO task. No portfolio claim should exceed the evidence in `docs
 
 ## Prioritized roadmap
 
-### Milestone 1: analysis-ready Sentinel-2 RGB chip
+### Milestone 1: analysis-ready Sentinel-2 RGB chip — completed
 
-Implement one narrow, reproducible materialization path for Sentinel-2 `B04`, `B03`, and `B02`
-bands that:
+The first narrow materialization path for Sentinel-2 `B04`, `B03`, and `B02` now:
 
 - reads only a requested spatial window;
 - aligns the bands on a documented pixel grid;
@@ -57,7 +57,10 @@ bands that:
 - writes a sanitized image manifest without source URLs;
 - includes local raster fixtures and tests for pixel, metadata, and failure behavior.
 
-Bulk downloading is out of scope until this vertical slice is reproducible.
+It produces separate reflectance and model-ready RGB GeoTIFFs, aligns the 20 m SCL layer to the
+10 m reference grid, and records processing-baseline-aware scaling. Local raster tests and one
+bounded public smoke run validate the vertical slice. Bulk downloading remains out of scope until
+benchmark dataset design determines the required sampling strategy.
 
 ### Milestone 2: labeled EO retrieval benchmark
 
@@ -119,6 +122,6 @@ The project is portfolio-ready when:
 
 ## Next task
 
-Implement Milestone 1 as a single tested vertical slice: materialize one small public Sentinel-2
-RGB window into an analysis-ready chip and sanitized manifest. Do not expand to batch processing
-until the spatial metadata and pixel-processing behavior are validated.
+Design and implement Milestone 2 as a reproducible labeled benchmark. Start by choosing the public
+dataset, defining relevance and leakage groups, and producing one versioned manifest that both PCA
+and DINOv2 will use unchanged.

@@ -21,8 +21,8 @@ Those choices keep the quality baseline understandable before scale-oriented com
                           DATA ACQUISITION
 
 STAC API --search--> StacItemRecord JSONL --resolve/sign--> local preview
-                           |                                  |
-                    stable metadata only               qualitative use
+                           |                    |
+                    stable metadata only       +--> aligned reflectance + RGB chip
 
 
                          RETRIEVAL PIPELINE
@@ -50,6 +50,7 @@ main security and reproducibility boundary.
 |---|---|---|
 | STAC search | Validate a bounded query and collect safe item metadata | `stac.py` |
 | Preview materializer | Resolve an item, optionally sign in memory, and download a bounded image | `stac.py` |
+| Sentinel-2 chip builder | Align band windows, scale reflectance, apply SCL masks, and write georeferenced artifacts | `chips.py` |
 | Image manifest builder | Hash images, infer labels, and assign deterministic splits | `manifests.py` |
 | PCA backend | Learn a classical index-fitted projection and produce normalized vectors | `embeddings/pca.py` |
 | DINOv2 backend | Produce normalized frozen vision-transformer features | `embeddings/dinov2.py` |
@@ -123,13 +124,37 @@ A STAC item and a retrieval image are not the same concept:
 - A retrieval image is one concrete local tensor-ready input with a label and split.
 
 Combining them too early would make provider access details part of model and evaluation code. The
-two-manifest design allows a later analysis-ready chip generator to turn stable STAC identities
-into controlled image inputs without changing the retrieval layer.
+two-manifest design lets the Sentinel-2 chip builder turn stable STAC identities into controlled
+image inputs without changing the retrieval layer.
+
+## Sentinel-2 chip contract
+
+The chip builder uses `B04`, `B03`, and `B02` as red, green, and blue. The 10 m red band defines the
+output grid. Rasterio aligns spectral bands with bilinear resampling and the categorical 20 m SCL
+layer with nearest-neighbour resampling.
+
+For processing baselines 04.00 and newer, BOA reflectance is calculated as:
+
+```text
+reflectance = DN * 0.0001 - 0.1
+```
+
+Earlier baselines use the same scale without the offset. DN zero is always treated as nodata.
+
+The builder produces:
+
+- float32 BOA reflectance, preserving physical values and negative dark-surface values;
+- uint8 RGB using a fixed recorded reflectance range, currently 0.0–0.3 by default;
+- a shared dataset mask for nodata, defective pixels, cloud shadow, low/medium/high cloud,
+  cirrus, and snow/ice SCL classes;
+- sanitized manifest metadata containing source identity, grid, processing parameters, and hashes.
+
+The byte RGB file is the model input. It does not replace the reflectance artifact.
 
 ## Current limitations
 
-- The STAC materializer downloads previews, not analysis-ready band windows.
 - Preview records are unlabeled and assigned to the index, so they cannot form a benchmark alone.
+- Chip materialization currently processes one item and one WGS84 bounding box per command.
 - Deterministic content-hash splitting prevents exact duplicate leakage but not geographic or
   temporal leakage.
 - The PCA transformer is not persisted for embedding unseen images later.

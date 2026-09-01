@@ -28,7 +28,33 @@ The command opens a conforming API with `pystac-client`, submits a bounded searc
 
 It intentionally excludes asset HREFs. Some providers attach temporary access tokens to HREF query strings. Persisting those URLs creates noisy, expiring manifests and can disclose credentials. The `stac-materialize` command retrieves an item by stable identity and keeps the resolved, optionally signed asset URL in memory only.
 
-For the learning workflow, materialization is restricted to bounded preview images over HTTPS, with optional provider signing performed in memory. Analysis-ready RGB chip generation will be a separate step because it must handle projections, pixel windows, spectral scaling, cloud masks, and spatial leakage deliberately.
+Preview materialization remains available for quick inspection. The `stac-chip` command is the
+controlled analysis path: it resolves raw `B04`, `B03`, `B02`, and `SCL` assets in memory, reads a
+bounded window, aligns grids, applies documented reflectance conversion and cloud policy, and
+writes georeferenced local artifacts.
+
+## What an analysis-ready chip adds
+
+A rendered preview answers “what does this scene roughly look like?” A controlled chip also makes
+the following choices explicit:
+
+- **CRS:** the coordinate system used by the output grid;
+- **affine transform:** the mapping between pixel positions and projected coordinates;
+- **ground sampling distance:** the physical size represented by one pixel;
+- **resampling:** bilinear for continuous spectral values and nearest-neighbour for SCL classes;
+- **radiometry:** conversion from stored digital numbers to BOA reflectance;
+- **normalization:** the fixed reflectance range mapped to model-ready byte RGB;
+- **validity mask:** which nodata, cloud, shadow, cirrus, and snow/ice pixels are excluded.
+
+Sentinel-2 processing baseline 04.00 introduced a -1000 digital-count BOA offset. With the 10,000
+quantification value, current products use `reflectance = DN * 0.0001 - 0.1`. DN zero remains
+nodata. The physical reflectance file preserves negative values; only the derived RGB view clips
+to its recorded display range.
+
+The Scene Classification Layer is categorical. The default policy masks classes 0, 1, 3, 7, 8,
+9, 10, and 11: nodata, defective pixels, cloud shadows, low-probability cloud/unclassified,
+medium/high cloud, cirrus, and snow/ice. This is a reproducible project policy, not a universal
+definition of valid imagery.
 
 ## Safe experiments
 

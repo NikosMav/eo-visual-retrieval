@@ -19,6 +19,8 @@ SAFE_PROPERTY_KEYS = (
     "instruments",
     "platform",
     "proj:epsg",
+    "s2:mgrs_tile",
+    "s2:processing_baseline",
 )
 
 

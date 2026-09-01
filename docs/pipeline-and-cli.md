@@ -24,6 +24,7 @@ Optional dependency groups are separated by responsibility:
 
 - `dev`: Ruff, Pytest, and coverage;
 - `stac`: PySTAC Client, Requests, and Planetary Computer support;
+- `geo`: Rasterio for geospatial windows, alignment, masks, and GeoTIFF output;
 - `ml`: scikit-learn, PyTorch, and torchvision.
 
 ## Path A: discover public EO imagery
@@ -71,6 +72,42 @@ the destination atomically.
 
 Output records are unlabeled `stac-preview` images assigned to the index. They support embedding
 smoke tests and visual exploration, not quantitative evaluation.
+
+### 3. Materialize an aligned Sentinel-2 chip
+
+Choose one item ID from the sanitized STAC manifest and request a small WGS84 bounding box:
+
+```powershell
+eovr stac-chip `
+  --manifest data/manifests/stac-items.jsonl `
+  --item-id <stable-stac-item-id> `
+  --bbox -122.15 47.60 -122.13 47.62 `
+  --output-dir data/stac-chips `
+  --image-manifest data/manifests/stac-chip.jsonl `
+  --signer planetary-computer `
+  --reflectance-min 0.0 `
+  --reflectance-max 0.3 `
+  --max-pixels 1048576
+```
+
+The command:
+
+1. resolves the stable item and signs assets only in memory;
+2. opens `B04`, `B03`, `B02`, and `SCL` Cloud-Optimized GeoTIFFs;
+3. converts the WGS84 bounds to the red band's projected CRS;
+4. snaps the request to the 10 m red-band pixel grid;
+5. aligns the other RGB bands bilinearly and SCL with nearest-neighbour resampling;
+6. applies processing-baseline-aware BOA reflectance scale and offset;
+7. masks nodata, defective, cloud, shadow, cirrus, and snow/ice pixels;
+8. writes float32 reflectance and fixed-stretch uint8 RGB GeoTIFFs atomically;
+9. writes one sanitized image-manifest record pointing to the RGB artifact.
+
+The default SCL policy masks classes `0, 1, 3, 7, 8, 9, 10, 11`. Use `--no-mask-scl` only for a
+deliberate comparison and record that choice. The pixel limit bounds output dimensions, while COG
+range reads avoid downloading complete Sentinel-2 tiles.
+
+The reflectance artifact is the auditable physical representation. The RGB artifact is the
+deterministically normalized model input used by PCA and DINOv2.
 
 ## Path B: build a labeled retrieval dataset
 
@@ -194,4 +231,6 @@ and enough provenance for another person to reproduce the run.
 | `no labeled queries have relevant index items` | The split cannot support label-proxy evaluation |
 | `query dimension does not match the index` | Vectors from incompatible stores/models were mixed |
 | `asset exceeds ... byte limit` | The materializer stopped an unexpectedly large download |
+| `chip contains ... pixels` | The requested spatial window exceeds the configured safety bound |
+| `s2:processing_baseline` missing | The reflectance offset cannot be determined safely |
 | CUDA requested but unavailable | The installed PyTorch build or machine does not expose CUDA |
