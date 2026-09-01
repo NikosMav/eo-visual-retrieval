@@ -40,8 +40,5 @@ Before making a substantial change, read:
 - Add or update tests with behavior changes.
 - Run `python -m ruff check .` and `python -m pytest` before committing.
 - Update `docs/validation.md` only with evidence produced by an executed validation.
-- Do not rename the repository until the labeled EO benchmark gate described in
-  `docs/project-context.md` is satisfied.
-
 On Windows, use a short virtual-environment path such as
 `C:\Users\<you>\.venvs\eovr` because PyTorch packages can exceed Windows path limits.
