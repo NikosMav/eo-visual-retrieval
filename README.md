@@ -4,9 +4,9 @@ An educational Earth-observation image-retrieval system built to demonstrate the
 retrieval workflow: public-data discovery, reproducible manifests, image embeddings, exact
 ranking, and honest offline evaluation.
 
-The project compares a transparent PCA baseline with frozen DINOv2 features. It currently
-provides a tested offline pipeline and command-line interface. Retrieval quality on a
-representative, leakage-safe EO benchmark has **not** yet been established.
+The project compares a transparent PCA baseline with frozen DINOv2 features. It provides a tested
+offline pipeline, command-line interface, and a first spatially separated EuroSAT benchmark.
+Broader temporal, multispectral, and cross-dataset generalization has **not** yet been established.
 
 ## What the project does
 
@@ -152,12 +152,12 @@ The full data-discovery and retrieval procedure is explained in
 ## Current evidence
 
 The verified code-health gates pass on Python 3.11, and CI tests Python 3.11 and 3.12. Bounded
-STAC, analysis-ready chip, PCA, and DINOv2 smoke runs have executed successfully. These runs prove
-that the workflow operates; they do not measure representative EO retrieval quality.
+STAC and analysis-ready chip smoke runs have executed successfully. The EuroSAT v1 benchmark uses
+1,600 index images and 400 queries with disjoint 50 km spatial cells and a 5 km guard band.
 
-The missing benchmark must compare PCA and DINOv2 on the same labeled images using spatially and
-temporally safe splits. Until then, metric values from artificial smoke data must not be used as
-portfolio performance claims.
+At `k=10`, PCA-64 achieved mAP 0.19698 and DINOv2 ViT-S/14 achieved mAP 0.60763 on the exact same
+manifest. See [EuroSAT v1 results](docs/results/eurosat-v1.md) for all metrics, per-class slices,
+qualitative examples, reproducibility evidence, and limitations.
 
 See [Validation](docs/validation.md) for exact evidence and limitations.
 
@@ -170,11 +170,12 @@ Read the guides in this order:
 3. [Sentinel-2 chip decision](docs/decisions/0001-windowed-sentinel2-chip-materialization.md) — selected design and trade-offs.
 4. [EuroSAT benchmark](docs/benchmark-eurosat.md) — dataset, split, commands, and limits.
 5. [Benchmark decision](docs/decisions/0002-georeferenced-eurosat-benchmark.md) — alternatives and rationale.
-6. [Pipeline and CLI](docs/pipeline-and-cli.md) — each action, input, and output.
-7. [Models and metrics](docs/models-and-metrics.md) — PCA, DINOv2, cosine search, and evaluation.
-8. [Learning STAC](docs/learning-stac.md) — EO catalog concepts and retrieval pitfalls.
-9. [Development](docs/development.md) — environment, tools, tests, and contribution workflow.
-10. [Validation](docs/validation.md) — what has and has not been verified.
+6. [EuroSAT v1 results](docs/results/eurosat-v1.md) — metrics, examples, evidence, and interpretation.
+7. [Pipeline and CLI](docs/pipeline-and-cli.md) — each action, input, and output.
+8. [Models and metrics](docs/models-and-metrics.md) — PCA, DINOv2, cosine search, and evaluation.
+9. [Learning STAC](docs/learning-stac.md) — EO catalog concepts and retrieval pitfalls.
+10. [Development](docs/development.md) — environment, tools, tests, and contribution workflow.
+11. [Validation](docs/validation.md) — what has and has not been verified.
 
 ## Data and privacy policy
 
@@ -186,9 +187,9 @@ Read the guides in this order:
 
 ## Roadmap
 
-The next milestone is a labeled, leakage-aware EO benchmark comparing PCA and DINOv2 on identical
-inputs and splits. Retrieval analysis, approximate search, and a small interactive product surface
-follow that benchmark.
+The next milestone is deeper retrieval analysis, beginning with an EO-specific multispectral
+encoder on the fixed split. Approximate search and a small interactive product surface follow the
+quality analysis.
 
 ## License
 

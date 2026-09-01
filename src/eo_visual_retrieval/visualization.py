@@ -71,10 +71,10 @@ def write_result_grid(
 
     tile_size = 96
     cell_width = 112
-    cell_height = 126
+    cell_height = 130
     top_margin = 42
     width = (k + 1) * cell_width
-    height = top_margin + len(selected) * cell_height
+    height = top_margin + len(selected) * cell_height + 8
     canvas = Image.new("RGB", (width, height), "white")
     draw = ImageDraw.Draw(canvas)
     backend = str(store.metadata.get("backend", "unknown"))

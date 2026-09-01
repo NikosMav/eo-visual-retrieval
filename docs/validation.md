@@ -16,16 +16,52 @@ Executed locally against the current checkout with Python 3.11.5:
 | Gate | Command or evidence | Status |
 |---|---|---|
 | Static quality | `python -m ruff check .` | Passed |
-| Unit tests | `python -m pytest` | 13 passed |
+| Unit tests | `python -m pytest` | 17 passed |
 | Dependency consistency | `python -m pip check` | Passed |
-| Coverage report | `pytest --cov=eo_visual_retrieval --cov-report=term-missing` | 50% total |
+| Coverage report | `pytest --cov=eo_visual_retrieval --cov-report=term-missing` | 60% total |
 | Current-source import | `eo_visual_retrieval.__file__` resolved under this checkout's `src/` | Passed |
-| GitHub CI | Ruff and tests on Python 3.11 and 3.12 for merge commit `d1c76a5` | Passed |
+| GitHub CI | Ruff and tests on Python 3.11 and 3.12 for commit `1d2c138` | Passed |
 
-Coverage is strongest in manifests, storage, exact retrieval, records, evaluation, and the pure
-chip-processing path. The CLI, PCA, and DINOv2 modules do not yet have direct unit coverage; STAC
-network resolution is only partially covered. CI reports coverage but does not enforce a minimum
-percentage.
+Coverage is strongest in EuroSAT preparation/audit, visualization, manifests, storage, exact
+retrieval, records, evaluation, and the pure chip-processing path. The CLI, PCA, and DINOv2 modules
+do not yet have direct unit coverage; STAC network resolution is only partially covered. CI
+reports coverage but does not enforce a minimum percentage.
+
+## Spatially separated EuroSAT v1 benchmark — 2026-09-01
+
+The official EuroSAT multispectral archive was downloaded from DOI `10.5281/zenodo.7711810` and
+verified before preparation.
+
+### Dataset and split audit
+
+| Gate | Executed evidence | Status |
+|---|---|---|
+| Archive identity | 2,065,402,329 bytes; MD5 `091174add3c8e680a49244acf185b9f0` | Passed |
+| Source discovery | 27,000 georeferenced multispectral patches | Passed |
+| Selected benchmark | 1,600 index + 400 query; 160/40 for each of 10 classes | Passed |
+| Spatial groups | 725 represented groups; no 50 km EPSG:6933 cell crossed the split | Passed |
+| Guard band | Observed minimum great-circle index/query centroid distance 5.06623 km | Passed |
+| File integrity | All 2,000 selected RGB SHA-256 values recomputed successfully | Passed |
+| Manifest identity | SHA-256 `bc0b10bf3e3cf29d7f7732529ce5f419b514e2ded3a5e2a5e6e88ebcdea45338` | Passed |
+| Model alignment | Ordered IDs, labels, splits, and manifest SHA matched across both stores | Passed |
+| Vector normalization | All PCA and DINOv2 vector norms were approximately 1.0 | Passed |
+
+### Exact-retrieval results at k=10
+
+All 400 queries were evaluated and none were skipped.
+
+| Model | P@10 | R@10 | mAP@10 | nDCG@10 |
+|---|---:|---:|---:|---:|
+| PCA-64 | 0.3015 | 0.01884 | 0.19698 | 0.31013 |
+| DINOv2 ViT-S/14 | 0.69475 | 0.04342 | 0.60763 | 0.70545 |
+
+PCA used 64 components fitted only on the 1,600 index items. DINOv2 used frozen
+`dinov2_vits14` features and produced 384-dimensional vectors. Both ranked the same index with
+exact cosine similarity. Execution used Python 3.11.5 and PyTorch 2.13.0 CPU; xFormers was not
+available, so no acceleration or throughput claim is made.
+
+Per-class metrics and inspected best/worst AP@5 grids are recorded in
+`docs/results/eurosat-v1.md`, with machine-readable k=10 results under `docs/results/`.
 
 ## Analysis-ready Sentinel-2 chip smoke validation — 2026-09-01
 
@@ -101,10 +137,7 @@ B938BF1BC15CD2EC0FEACFE3A1BB553FE8EA9CA46A7E1D8D00217F29AEF60CD9
 
 ## Evidence not yet available
 
-- Retrieval metrics on a representative labeled EO benchmark.
-- Geographic and temporal leakage controls.
-- A fair PCA-versus-DINOv2 benchmark table.
-- Per-class and qualitative error analysis.
+- Temporal or seasonal leakage controls; EuroSAT does not expose acquisition timestamps.
 - DINOv2 versus an EO-specific multispectral encoder.
 - Exact versus approximate search recall, latency, build-time, size, and memory measurements.
 - CUDA correctness or throughput measurements.
@@ -112,10 +145,10 @@ B938BF1BC15CD2EC0FEACFE3A1BB553FE8EA9CA46A7E1D8D00217F29AEF60CD9
 
 ## Allowed claims
 
-The repository may currently claim that it contains a tested offline retrieval pipeline and that
-bounded STAC, analysis-ready Sentinel-2 chip, PCA, and DINOv2 smoke paths have executed
-successfully.
+The repository may claim that it contains a tested offline retrieval pipeline; that bounded STAC
+and analysis-ready Sentinel-2 chip paths have executed; and that DINOv2 ViT-S/14 outperformed
+PCA-64 on the recorded spatially separated EuroSAT v1 class-retrieval benchmark.
 
-It must not claim a representative EO retrieval score, production readiness, geographic
-generalization, multispectral capability, approximate-search performance, or GPU acceleration
-until those claims are supported by recorded validation.
+It must not generalize that result to temporal or seasonal transfer, multispectral capability,
+other datasets, analyst utility, production readiness, approximate-search performance, or GPU
+acceleration until those claims are supported by recorded validation.

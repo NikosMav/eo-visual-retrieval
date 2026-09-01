@@ -27,10 +27,14 @@ The repository currently contains:
 - PCA and frozen DINOv2 embedding backends;
 - portable compressed embedding stores;
 - exact cosine retrieval and four ranked-retrieval metrics;
+- an executed 2,000-image, spatially separated EuroSAT benchmark;
+- aggregate and per-class PCA/DINOv2 metrics plus qualitative best/worst result grids;
 - unit tests, linting, CI, and executed smoke validation.
 
-The current evidence proves that the workflow runs. It does **not** establish retrieval quality on
-a representative EO task. No portfolio claim should exceed the evidence in `docs/validation.md`.
+The current evidence proves that the workflow runs and establishes a first bounded retrieval
+comparison on spatially separated EuroSAT v1. It does **not** establish temporal, multispectral,
+cross-dataset, or production generalization. No portfolio claim should exceed the evidence in
+`docs/validation.md`.
 
 ## Project boundaries
 
@@ -62,15 +66,16 @@ It produces separate reflectance and model-ready RGB GeoTIFFs, aligns the 20 m S
 bounded public smoke run validate the vertical slice. Bulk downloading remains out of scope until
 benchmark dataset design determines the required sampling strategy.
 
-### Milestone 2: labeled EO retrieval benchmark
+### Milestone 2: labeled EO retrieval benchmark — completed
 
 The first benchmark design is now implemented around the official georeferenced EuroSAT
 multispectral archive. It creates a 2,000-image, class-balanced RGB subset with disjoint 50 km
 spatial cells and a 5 km index/query guard band. See `docs/benchmark-eurosat.md` and ADR 0002.
 
-Remaining work is to execute preparation, audit the manifest, run both embedding backends, and
-record comparable metrics and qualitative results. A STAC-derived benchmark becomes appropriate
-once geographic groups and temporal holdouts are available.
+The executed benchmark contains 1,600 index images and 400 queries. All files and spatial policies
+were audited, and PCA/DINOv2 were evaluated on the same manifest. See
+`docs/results/eurosat-v1.md` for evidence and interpretation. A STAC-derived benchmark becomes
+appropriate once geographic groups and temporal holdouts are available.
 
 Record:
 
@@ -86,8 +91,8 @@ leakage-aware split, accompanied by qualitative success and failure examples.
 
 ### Milestone 3: retrieval analysis
 
-- Compare PCA and DINOv2 fairly on identical inputs and splits.
-- Add query-result grids and per-class error slices.
+- Compare PCA and DINOv2 fairly on identical inputs and splits. — completed for EuroSAT v1
+- Add query-result grids and per-class error slices. — completed for EuroSAT v1
 - Add geographic, seasonal, and cloud-condition slices when metadata supports them.
 - Explain what class-label relevance captures and what it misses about user intent.
 - Evaluate one EO-specific or multispectral encoder as a separate experiment.
@@ -126,6 +131,6 @@ The project is portfolio-ready when:
 
 ## Next task
 
-Execute EuroSAT benchmark version 1, verify the spatial and class-balance audit, and run PCA and
-DINOv2 on the same manifest. Then add per-class metrics and representative result grids before
-closing the benchmark gate.
+Add one EO-specific multispectral encoder to the fixed EuroSAT v1 split, with preprocessing and
+model provenance recorded. Compare it against the frozen RGB DINOv2 and PCA references without
+changing relevance, index/query membership, or exact ranking.
