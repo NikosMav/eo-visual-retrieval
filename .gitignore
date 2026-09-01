@@ -1,0 +1,26 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# EO data and generated artifacts stay local.
+data/
+artifacts/
+outputs/
+*.npz
+*.npy
+*.tif
+*.tiff
+*.jp2
+
+# Local configuration may contain private areas of interest.
+.env
+.env.*
+configs/local/
