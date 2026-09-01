@@ -20,3 +20,6 @@ def test_perfect_label_retrieval_scores_one() -> None:
     assert summary.recall_at_k == 1.0
     assert summary.map_at_k == 1.0
     assert summary.ndcg_at_k == 1.0
+    assert set(summary.per_class) == {"forest", "water"}
+    assert summary.per_class["forest"].evaluated_queries == 1
+    assert summary.to_dict()["per_class"]["water"]["precision_at_k"] == 1.0

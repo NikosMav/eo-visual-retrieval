@@ -64,9 +64,13 @@ benchmark dataset design determines the required sampling strategy.
 
 ### Milestone 2: labeled EO retrieval benchmark
 
-Create a small benchmark with defensible relevance labels. A public scene dataset such as EuroSAT
-or PatternNet can support the initial representation comparison. A STAC-derived benchmark becomes
-appropriate once geographic groups and temporal holdouts are available.
+The first benchmark design is now implemented around the official georeferenced EuroSAT
+multispectral archive. It creates a 2,000-image, class-balanced RGB subset with disjoint 50 km
+spatial cells and a 5 km index/query guard band. See `docs/benchmark-eurosat.md` and ADR 0002.
+
+Remaining work is to execute preparation, audit the manifest, run both embedding backends, and
+record comparable metrics and qualitative results. A STAC-derived benchmark becomes appropriate
+once geographic groups and temporal holdouts are available.
 
 Record:
 
@@ -122,6 +126,6 @@ The project is portfolio-ready when:
 
 ## Next task
 
-Design and implement Milestone 2 as a reproducible labeled benchmark. Start by choosing the public
-dataset, defining relevance and leakage groups, and producing one versioned manifest that both PCA
-and DINOv2 will use unchanged.
+Execute EuroSAT benchmark version 1, verify the spatial and class-balance audit, and run PCA and
+DINOv2 on the same manifest. Then add per-class metrics and representative result grids before
+closing the benchmark gate.

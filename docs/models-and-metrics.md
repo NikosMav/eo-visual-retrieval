@@ -173,6 +173,9 @@ is skipped when:
 Always report `evaluated_queries` and `skipped_queries` with the metric values. A high score over a
 small or selectively eligible query set can be misleading.
 
+The evaluator also reports each metric grouped by query class. These slices reveal whether the
+macro result reflects consistent behavior or is dominated by visually distinctive classes.
+
 ## What the current metrics do not prove
 
 The metrics do not prove:

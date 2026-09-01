@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import platform
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Any
 
@@ -36,6 +39,25 @@ def _store(records: list[Any], vectors: Any, metadata: dict[str, Any]) -> Embedd
         splits=tuple(record.split for record in records),
         metadata=metadata,
     )
+
+
+def _run_metadata(
+    records: list[Any], manifest: Path, packages: tuple[str, ...]
+) -> dict[str, Any]:
+    versions: dict[str, str] = {}
+    for package in packages:
+        try:
+            versions[package] = version(package)
+        except PackageNotFoundError:
+            versions[package] = "not-installed"
+    return {
+        "manifest_sha256": hashlib.sha256(manifest.read_bytes()).hexdigest(),
+        "items": len(records),
+        "index_items": sum(record.split == "index" for record in records),
+        "query_items": sum(record.split == "query" for record in records),
+        "python": platform.python_version(),
+        "packages": versions,
+    }
 
 
 def _manifest_build(args: argparse.Namespace) -> None:
@@ -125,6 +147,50 @@ def _stac_chip(args: argparse.Namespace) -> None:
     )
 
 
+def _benchmark_eurosat_prepare(args: argparse.Namespace) -> None:
+    from eo_visual_retrieval.benchmarks.eurosat import prepare_eurosat_benchmark
+
+    result = prepare_eurosat_benchmark(
+        args.archive,
+        output_dir=args.output_dir,
+        manifest=args.manifest,
+        queries_per_class=args.queries_per_class,
+        index_per_class=args.index_per_class,
+        group_size_m=args.group_size_km * 1000,
+        minimum_separation_m=args.minimum_separation_km * 1000,
+        seed=args.seed,
+    )
+    counts = {
+        split: sum(record.split == split for record in result.records)
+        for split in ("index", "query")
+    }
+    print(
+        json.dumps(
+            {
+                "output_dir": str(args.output_dir),
+                "manifest": str(args.manifest),
+                "discovered": result.discovered,
+                **counts,
+                "minimum_separation_km": result.minimum_separation_m / 1000,
+                "excluded_near_query": result.excluded_near_query,
+            },
+            indent=2,
+        )
+    )
+
+
+def _benchmark_eurosat_audit(args: argparse.Namespace) -> None:
+    from eo_visual_retrieval.benchmarks.eurosat import audit_eurosat_manifest
+
+    audit = audit_eurosat_manifest(
+        args.manifest,
+        image_root=args.image_root,
+        expected_index_per_class=args.expected_index_per_class,
+        expected_queries_per_class=args.expected_queries_per_class,
+    )
+    print(json.dumps(audit.to_dict(), indent=2, sort_keys=True))
+
+
 def _embed_dinov2(args: argparse.Namespace) -> None:
     from eo_visual_retrieval.embeddings.dinov2 import dinov2_embeddings
 
@@ -135,7 +201,17 @@ def _embed_dinov2(args: argparse.Namespace) -> None:
         batch_size=args.batch_size,
         device=args.device,
     )
-    store = _store(records, vectors, {"backend": "dinov2", "model": args.model})
+    store = _store(
+        records,
+        vectors,
+        {
+            "backend": "dinov2",
+            "model": args.model,
+            "device_requested": args.device,
+            "preprocessing": "RGB, 224x224 bicubic, ImageNet normalization",
+            **_run_metadata(records, args.manifest, ("numpy", "Pillow", "torch", "torchvision")),
+        },
+    )
     store.save(args.output)
     print(json.dumps({"output": str(args.output), "shape": list(vectors.shape)}, indent=2))
 
@@ -159,6 +235,9 @@ def _embed_pca(args: argparse.Namespace) -> None:
             "components": args.components,
             "image_size": args.image_size,
             "seed": args.seed,
+            "fit_partition": "index",
+            "preprocessing": "RGB, square resize, 0-1 scaling, flattened pixels",
+            **_run_metadata(records, args.manifest, ("numpy", "Pillow", "scikit-learn")),
         },
     )
     store.save(args.output)
@@ -167,7 +246,44 @@ def _embed_pca(args: argparse.Namespace) -> None:
 
 def _evaluate(args: argparse.Namespace) -> None:
     summary = evaluate_store(EmbeddingStore.load(args.embeddings), k=args.k)
-    print(json.dumps(summary.to_dict(), indent=2, sort_keys=True))
+    payload = json.dumps(summary.to_dict(), indent=2, sort_keys=True) + "\n"
+    if args.output is not None:
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        temporary = args.output.with_suffix(args.output.suffix + ".tmp")
+        temporary.write_text(payload, encoding="utf-8", newline="\n")
+        temporary.replace(args.output)
+    print(payload, end="")
+
+
+def _result_grid(args: argparse.Namespace) -> None:
+    from eo_visual_retrieval.visualization import write_result_grid
+
+    selected = write_result_grid(
+        EmbeddingStore.load(args.embeddings),
+        read_jsonl(args.manifest),
+        image_root=args.image_root,
+        output=args.output,
+        k=args.k,
+        mode=args.mode,
+    )
+    print(
+        json.dumps(
+            {
+                "output": str(args.output),
+                "mode": args.mode,
+                "k": args.k,
+                "queries": [
+                    {
+                        "item_id": evaluation.query_id,
+                        "label": evaluation.label,
+                        "average_precision_at_k": evaluation.average_precision_at_k,
+                    }
+                    for evaluation in selected
+                ],
+            },
+            indent=2,
+        )
+    )
 
 
 def _query(args: argparse.Namespace) -> None:
@@ -249,6 +365,30 @@ def build_parser() -> argparse.ArgumentParser:
     chip.add_argument("--max-pixels", type=int, default=1024 * 1024)
     chip.set_defaults(handler=_stac_chip)
 
+    eurosat = commands.add_parser(
+        "benchmark-eurosat-prepare",
+        help="prepare a class-balanced, spatially separated EuroSAT benchmark",
+    )
+    eurosat.add_argument("--archive", type=Path, required=True)
+    eurosat.add_argument("--output-dir", type=Path, required=True)
+    eurosat.add_argument("--manifest", type=Path, required=True)
+    eurosat.add_argument("--queries-per-class", type=int, default=40)
+    eurosat.add_argument("--index-per-class", type=int, default=160)
+    eurosat.add_argument("--group-size-km", type=float, default=50.0)
+    eurosat.add_argument("--minimum-separation-km", type=float, default=5.0)
+    eurosat.add_argument("--seed", type=int, default=42)
+    eurosat.set_defaults(handler=_benchmark_eurosat_prepare)
+
+    eurosat_audit = commands.add_parser(
+        "benchmark-eurosat-audit",
+        help="audit a prepared EuroSAT manifest and optionally verify image hashes",
+    )
+    eurosat_audit.add_argument("--manifest", type=Path, required=True)
+    eurosat_audit.add_argument("--image-root", type=Path)
+    eurosat_audit.add_argument("--expected-index-per-class", type=int, default=160)
+    eurosat_audit.add_argument("--expected-queries-per-class", type=int, default=40)
+    eurosat_audit.set_defaults(handler=_benchmark_eurosat_audit)
+
     dinov2 = commands.add_parser("embed-dinov2", help="embed manifest images with DINOv2")
     dinov2.add_argument("--manifest", type=Path, required=True)
     dinov2.add_argument("--image-root", type=Path, required=True)
@@ -270,7 +410,20 @@ def build_parser() -> argparse.ArgumentParser:
     evaluate = commands.add_parser("evaluate", help="evaluate label-proxy retrieval metrics")
     evaluate.add_argument("--embeddings", type=Path, required=True)
     evaluate.add_argument("--k", type=int, default=10)
+    evaluate.add_argument("--output", type=Path, help="optionally write the JSON result atomically")
     evaluate.set_defaults(handler=_evaluate)
+
+    grid = commands.add_parser(
+        "result-grid",
+        help="render one best or worst exact-retrieval query per class",
+    )
+    grid.add_argument("--embeddings", type=Path, required=True)
+    grid.add_argument("--manifest", type=Path, required=True)
+    grid.add_argument("--image-root", type=Path, required=True)
+    grid.add_argument("--output", type=Path, required=True)
+    grid.add_argument("--k", type=int, default=5)
+    grid.add_argument("--mode", choices=("best", "worst"), default="worst")
+    grid.set_defaults(handler=_result_grid)
 
     query = commands.add_parser("query", help="retrieve nearest index images for one item")
     query.add_argument("--embeddings", type=Path, required=True)

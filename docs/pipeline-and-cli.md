@@ -144,6 +144,35 @@ keeps at least one item on each side.
 The hash protects against exact duplicates crossing the split. It does not identify nearby crops,
 overlapping scenes, or repeated observations of the same location.
 
+## Path C: prepare the georeferenced EuroSAT benchmark
+
+The generic folder manifest protects only against byte-identical duplicates. The benchmark
+builder uses EuroSAT's source georeferencing to enforce the stronger published split:
+
+```powershell
+eovr benchmark-eurosat-prepare `
+  --archive data/downloads/EuroSAT_MS.zip `
+  --output-dir data/eurosat-v1/images `
+  --manifest data/eurosat-v1/manifest.jsonl `
+  --queries-per-class 40 `
+  --index-per-class 160 `
+  --group-size-km 50 `
+  --minimum-separation-km 5 `
+  --seed 42
+```
+
+The output root is passed directly to both embedding commands. Preparation verifies the official
+archive checksum, preserves source georeferencing in RGB derivatives, and records spatial split
+metadata. See [EuroSAT benchmark](benchmark-eurosat.md) for the complete contract.
+
+Re-run the split and file integrity checks without touching the dataset:
+
+```powershell
+eovr benchmark-eurosat-audit `
+  --manifest data/eurosat-v1/manifest.jsonl `
+  --image-root data/eurosat-v1/images
+```
+
 ## Generate embeddings
 
 ### PCA
@@ -176,8 +205,9 @@ eovr embed-dinov2 `
 `--device auto` selects CUDA only when the installed PyTorch build reports it as available. The
 first run may download model code and weights through the official PyTorch Hub entrypoint.
 
-Both commands preserve manifest order and write IDs, vectors, labels, splits, and backend metadata
-to a compressed NPZ store.
+Both commands preserve manifest order and write IDs, vectors, labels, splits, backend and
+preprocessing configuration, manifest SHA-256, item counts, Python version, and relevant package
+versions to a compressed NPZ store.
 
 ## Query the index
 
@@ -195,14 +225,36 @@ scores as JSON.
 ## Evaluate rankings
 
 ```powershell
-eovr evaluate --embeddings artifacts/dinov2-vits14.npz --k 10
+eovr evaluate `
+  --embeddings artifacts/dinov2-vits14.npz `
+  --k 10 `
+  --output artifacts/dinov2-vits14-k10.json
 ```
 
 Evaluation requires at least one index item and one query item. `k` cannot exceed the index size.
 A result is relevant when its label equals the query label. Unlabeled queries and labels with no
 matching index item are skipped and reported separately.
 
+The JSON output contains the macro average over eligible queries and a `per_class` section with
+the same metrics and evaluated-query count for each label.
+
 See [Models and metrics](models-and-metrics.md) before interpreting the output.
+
+## Inspect qualitative results
+
+```powershell
+eovr result-grid `
+  --embeddings artifacts/dinov2-vits14.npz `
+  --manifest data/manifests/images.jsonl `
+  --image-root data/images `
+  --output artifacts/dinov2-worst.png `
+  --k 5 `
+  --mode worst
+```
+
+The command selects one best or worst AP@k query per class and renders the query beside its exact
+top-k results. Relevance borders make class-level successes and confusions visible. Run both modes
+for each backend; individual examples complement metrics but do not replace them.
 
 ## Reproducibility checklist
 

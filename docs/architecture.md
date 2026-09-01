@@ -51,12 +51,14 @@ main security and reproducibility boundary.
 | STAC search | Validate a bounded query and collect safe item metadata | `stac.py` |
 | Preview materializer | Resolve an item, optionally sign in memory, and download a bounded image | `stac.py` |
 | Sentinel-2 chip builder | Align band windows, scale reflectance, apply SCL masks, and write georeferenced artifacts | `chips.py` |
+| EuroSAT benchmark builder | Verify provenance, group geography, enforce separation, and produce model-ready RGB inputs | `benchmarks/eurosat.py` |
 | Image manifest builder | Hash images, infer labels, and assign deterministic splits | `manifests.py` |
 | PCA backend | Learn a classical index-fitted projection and produce normalized vectors | `embeddings/pca.py` |
 | DINOv2 backend | Produce normalized frozen vision-transformer features | `embeddings/dinov2.py` |
 | Embedding store | Save vectors and retrieval metadata in a portable NPZ file | `embeddings/store.py` |
 | Exact index | Rank every index vector by cosine similarity | `retrieval.py` |
 | Evaluator | Calculate label-proxy ranked-retrieval metrics | `evaluation.py` |
+| Result-grid renderer | Select per-class best/worst queries and render exact ranked results | `visualization.py` |
 | CLI | Validate arguments and connect all stages | `cli.py` |
 
 ## Data contracts
@@ -89,6 +91,10 @@ memory.
 
 The first folder below the image root becomes the class label. Exact duplicate content is kept in
 one split, and conflicting labels for identical content are rejected.
+
+Benchmark-specific builders may add stronger invariants. EuroSAT records include source
+georeferencing and a global equal-area spatial group. Its builder prevents groups from crossing
+the split and enforces a metric guard band between query and index centroids.
 
 ### Embedding store
 

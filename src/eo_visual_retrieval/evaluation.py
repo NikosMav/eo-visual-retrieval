@@ -12,10 +12,8 @@ from eo_visual_retrieval.retrieval import ExactCosineIndex
 
 
 @dataclass(frozen=True)
-class EvaluationSummary:
+class MetricSummary:
     evaluated_queries: int
-    skipped_queries: int
-    k: int
     precision_at_k: float
     recall_at_k: float
     map_at_k: float
@@ -24,8 +22,6 @@ class EvaluationSummary:
     def to_dict(self) -> dict[str, int | float]:
         return {
             "evaluated_queries": self.evaluated_queries,
-            "skipped_queries": self.skipped_queries,
-            "k": self.k,
             "precision_at_k": self.precision_at_k,
             "recall_at_k": self.recall_at_k,
             "map_at_k": self.map_at_k,
@@ -33,7 +29,49 @@ class EvaluationSummary:
         }
 
 
-def evaluate_store(store: EmbeddingStore, *, k: int) -> EvaluationSummary:
+@dataclass(frozen=True)
+class EvaluationSummary(MetricSummary):
+    skipped_queries: int
+    k: int
+    per_class: dict[str, MetricSummary]
+
+    def to_dict(self) -> dict[str, object]:
+        return {
+            **super().to_dict(),
+            "skipped_queries": self.skipped_queries,
+            "k": self.k,
+            "per_class": {
+                label: summary.to_dict() for label, summary in sorted(self.per_class.items())
+            },
+        }
+
+
+@dataclass(frozen=True)
+class QueryEvaluation:
+    query_id: str
+    label: str
+    precision_at_k: float
+    recall_at_k: float
+    average_precision_at_k: float
+    ndcg_at_k: float
+    ranked_ids: tuple[str, ...]
+    ranked_scores: tuple[float, ...]
+    relevance: tuple[int, ...]
+
+
+def _metric_summary(values: list[tuple[str, float, float, float, float]]) -> MetricSummary:
+    return MetricSummary(
+        evaluated_queries=len(values),
+        precision_at_k=float(np.mean([value[1] for value in values])),
+        recall_at_k=float(np.mean([value[2] for value in values])),
+        map_at_k=float(np.mean([value[3] for value in values])),
+        ndcg_at_k=float(np.mean([value[4] for value in values])),
+    )
+
+
+def evaluate_queries(store: EmbeddingStore, *, k: int) -> tuple[list[QueryEvaluation], int]:
+    """Return auditable per-query rankings and metrics plus the skipped count."""
+
     index_positions = [i for i, split in enumerate(store.splits) if split == "index"]
     query_positions = [i for i, split in enumerate(store.splits) if split == "query"]
     if not index_positions or not query_positions:
@@ -46,10 +84,7 @@ def evaluate_store(store: EmbeddingStore, *, k: int) -> EvaluationSummary:
     index = ExactCosineIndex(index_ids, store.vectors[index_positions])
     label_by_id = dict(zip(index_ids, index_labels, strict=True))
 
-    precision_values: list[float] = []
-    recall_values: list[float] = []
-    ap_values: list[float] = []
-    ndcg_values: list[float] = []
+    evaluations: list[QueryEvaluation] = []
     skipped = 0
 
     for position in query_positions:
@@ -65,8 +100,8 @@ def evaluate_store(store: EmbeddingStore, *, k: int) -> EvaluationSummary:
         results = index.search(store.vectors[position], k=k, exclude_id=store.ids[position])
         relevance = [int(label_by_id[result.item_id] == query_label) for result in results]
         relevant_retrieved = sum(relevance)
-        precision_values.append(relevant_retrieved / k)
-        recall_values.append(relevant_retrieved / total_relevant)
+        precision = relevant_retrieved / k
+        recall = relevant_retrieved / total_relevant
 
         running_relevant = 0
         precision_sum = 0.0
@@ -76,20 +111,55 @@ def evaluate_store(store: EmbeddingStore, *, k: int) -> EvaluationSummary:
                 running_relevant += 1
                 precision_sum += running_relevant / rank
                 dcg += 1.0 / math.log2(rank + 1)
-        ap_values.append(precision_sum / min(total_relevant, k))
+        average_precision = precision_sum / min(total_relevant, k)
         ideal_relevant = min(total_relevant, k)
         ideal_dcg = sum(1.0 / math.log2(rank + 1) for rank in range(1, ideal_relevant + 1))
-        ndcg_values.append(dcg / ideal_dcg)
+        ndcg = dcg / ideal_dcg
+        evaluations.append(
+            QueryEvaluation(
+                query_id=store.ids[position],
+                label=query_label,
+                precision_at_k=precision,
+                recall_at_k=recall,
+                average_precision_at_k=average_precision,
+                ndcg_at_k=ndcg,
+                ranked_ids=tuple(result.item_id for result in results),
+                ranked_scores=tuple(result.score for result in results),
+                relevance=tuple(relevance),
+            )
+        )
 
-    if not precision_values:
+    return evaluations, skipped
+
+
+def evaluate_store(store: EmbeddingStore, *, k: int) -> EvaluationSummary:
+    evaluations, skipped = evaluate_queries(store, k=k)
+    metric_values = [
+        (
+            evaluation.label,
+            evaluation.precision_at_k,
+            evaluation.recall_at_k,
+            evaluation.average_precision_at_k,
+            evaluation.ndcg_at_k,
+        )
+        for evaluation in evaluations
+    ]
+
+    if not metric_values:
         raise ValueError("no labeled queries have relevant index items")
 
+    aggregate = _metric_summary(metric_values)
+    labels = sorted({value[0] for value in metric_values})
     return EvaluationSummary(
-        evaluated_queries=len(precision_values),
+        evaluated_queries=aggregate.evaluated_queries,
         skipped_queries=skipped,
         k=k,
-        precision_at_k=float(np.mean(precision_values)),
-        recall_at_k=float(np.mean(recall_values)),
-        map_at_k=float(np.mean(ap_values)),
-        ndcg_at_k=float(np.mean(ndcg_values)),
+        precision_at_k=aggregate.precision_at_k,
+        recall_at_k=aggregate.recall_at_k,
+        map_at_k=aggregate.map_at_k,
+        ndcg_at_k=aggregate.ndcg_at_k,
+        per_class={
+            label: _metric_summary([value for value in metric_values if value[0] == label])
+            for label in labels
+        },
     )
