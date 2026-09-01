@@ -1,102 +1,124 @@
 # Project context and roadmap
 
-This is the durable, sanitized context for continuing the project. It captures the useful
-decisions from the planning conversation without storing a transcript or any private job details.
-
 ## Goal
 
-Transform the original PCA image-analysis assignment into a complete Earth-observation visual
-retrieval project. The project should build practical experience with STAC, DINOv2, retrieval
-evaluation, vector search, and recommendation-style ranking while remaining honest, reproducible,
-and safe to publish.
+Build a public, educational Earth-observation visual-retrieval project that demonstrates sound
+retrieval engineering from data discovery through evaluation. The project should make each step
+understandable, reproducible, and safe to publish.
 
-The existing repository is being evolved instead of replaced because the classical-to-modern
-progression tells a coherent engineering story. The original state is preserved by the
-`legacy-pca-v1` tag and under `legacy/`.
+The intended learning outcomes are:
 
-## What exists now
+- understand STAC catalogs and safe EO data access;
+- create deterministic datasets and leakage-aware evaluation splits;
+- compare classical and modern image representations fairly;
+- implement exact ranking before approximate vector search;
+- interpret retrieval metrics without overstating what they prove;
+- evolve an evaluated offline pipeline into a small usable application.
 
-- A tested Python package and CLI rather than a notebook-only workflow.
-- Provider-neutral STAC search with sanitized manifests.
-- Bounded public preview materialization with signing kept in memory.
-- Deterministic image manifests with separate index and query partitions.
-- PCA and frozen DINOv2 ViT-S/14 embedding pipelines.
-- Exact cosine retrieval and Precision@k, Recall@k, mAP@k, and nDCG@k.
-- Unit tests, linting, CI, learning notes, an architecture decision, and a validation record.
+## Current state
 
-The current validation proves that the workflow executes. It does **not** yet prove retrieval
-quality on a representative EO task. See `docs/validation.md` for the exact evidence.
+The repository currently contains:
 
-## Key decisions
+- a typed Python package and `eovr` command-line interface;
+- provider-neutral STAC discovery with sanitized JSONL manifests;
+- bounded public preview materialization with optional in-memory signing;
+- deterministic image manifests with index/query partitions;
+- PCA and frozen DINOv2 embedding backends;
+- portable compressed embedding stores;
+- exact cosine retrieval and four ranked-retrieval metrics;
+- unit tests, linting, CI, and executed smoke validation.
 
-1. Keep one repository and preserve the old project as legacy history.
-2. Store stable STAC item identity, never expiring or signed asset URLs.
-3. Separate catalog discovery from local, reproducible image materialization.
-4. Use exact search as the reference implementation before introducing Faiss.
-5. Compare PCA and DINOv2 first; add an EO-specific encoder only after the benchmark is sound.
-6. Keep all examples public and generic; local or role-specific context stays outside Git.
-7. Delay the repository rename and main-branch migration until measured baseline results exist.
+The current evidence proves that the workflow runs. It does **not** establish retrieval quality on
+a representative EO task. No portfolio claim should exceed the evidence in `docs/validation.md`.
+
+## Project boundaries
+
+- The project is generic and public; it contains no employer or role-specific context.
+- STAC manifests contain stable identity and allowlisted metadata, never signed asset URLs.
+- Preview images are learning inputs, not analysis-ready benchmark data.
+- DINOv2 is an RGB baseline, not a multispectral EO model.
+- PCA and any other learned preprocessing must be fitted on the index/training partition only.
+- Benchmark splits must prevent spatial and temporal leakage.
+- Exact cosine search remains the quality reference when approximate search is introduced.
+- Raw imagery, generated vectors, credentials, and private areas of interest remain outside Git.
 
 ## Prioritized roadmap
 
-### Milestone 1: analysis-ready RGB chips
+### Milestone 1: analysis-ready Sentinel-2 RGB chip
 
-Add a bounded materializer for Sentinel-2 RGB bands (`B04`, `B03`, `B02`) that:
+Implement one narrow, reproducible materialization path for Sentinel-2 `B04`, `B03`, and `B02`
+bands that:
 
-- reads only the requested spatial window;
-- aligns bands and records CRS, transform, ground sampling distance, and source item identity;
+- reads only a requested spatial window;
+- aligns the bands on a documented pixel grid;
+- records CRS, affine transform, ground sampling distance, and source item identity;
 - applies documented reflectance scaling and deterministic RGB normalization;
-- handles nodata and cloud/SCL filtering explicitly;
-- produces a reproducible image manifest without source URLs;
-- includes tests for windows, metadata, scaling, and failure cases.
+- handles nodata and cloud/SCL information explicitly;
+- writes a sanitized image manifest without source URLs;
+- includes local raster fixtures and tests for pixel, metadata, and failure behavior.
 
-Preview assets remain useful for learning and qualitative checks, but not for benchmark claims.
+Bulk downloading is out of scope until this vertical slice is reproducible.
 
 ### Milestone 2: labeled EO retrieval benchmark
 
-Create a small, reproducible benchmark with defensible relevance labels. A public scene dataset
-such as EuroSAT or PatternNet is suitable for the first comparison; a STAC-derived benchmark is
-valuable once geographic groups and temporal holdouts are available.
+Create a small benchmark with defensible relevance labels. A public scene dataset such as EuroSAT
+or PatternNet can support the initial representation comparison. A STAC-derived benchmark becomes
+appropriate once geographic groups and temporal holdouts are available.
 
-The split must prevent overlapping or nearby observations of the same place from appearing in
-both index and query partitions. Record dataset version, label semantics, split seed, exclusions,
-and class balance.
+Record:
 
-**Release gate:** report PCA and DINOv2 Precision@k, Recall@k, mAP@k, and nDCG@k with leakage-aware
-splits, plus qualitative success and failure examples. Only then merge the modernization branch,
-publish v0.1, and rename the repository to `eo-visual-retrieval`.
+- dataset name, version, and provenance;
+- label semantics and known limitations;
+- split algorithm, seed, and exclusions;
+- class balance and query/index counts;
+- geographic and temporal grouping rules;
+- model and preprocessing configuration.
+
+**Benchmark gate:** report PCA and DINOv2 Precision@k, Recall@k, mAP@k, and nDCG@k on the same
+leakage-aware split, accompanied by qualitative success and failure examples.
 
 ### Milestone 3: retrieval analysis
 
-- Compare PCA and DINOv2 fairly on the same images and splits.
-- Add query-result grids and error slices by class, geography, season, and cloud condition where
-  the data supports them.
-- Document what class-label relevance captures and what it misses about user intent.
+- Compare PCA and DINOv2 fairly on identical inputs and splits.
+- Add query-result grids and per-class error slices.
+- Add geographic, seasonal, and cloud-condition slices when metadata supports them.
+- Explain what class-label relevance captures and what it misses about user intent.
 - Evaluate one EO-specific or multispectral encoder as a separate experiment.
 
 ### Milestone 4: approximate search
 
-Add a Faiss index while retaining exact cosine search as the reference. Measure recall relative to
-exact search, latency, build time, index size, and memory use at more than one corpus size.
+Add Faiss while retaining exact cosine search as the reference. Measure:
+
+- recall relative to exact search;
+- query latency;
+- index build time;
+- serialized index size;
+- runtime memory at multiple corpus sizes.
 
 ### Milestone 5: usable project surface
 
 Expose the evaluated workflow through a small API or interactive demo. A user should be able to
-select a public query chip, inspect ranked results and metadata, and understand which model and
-index produced them. Add containers and release automation only when they support this workflow.
+select or upload a public query chip, inspect ranked results and metadata, and see which model and
+index generated the ranking.
 
-## Definition of a portfolio-ready project
+Containers and release automation should be added when they support this workflow, not as isolated
+portfolio decoration.
 
-- A clean clone can reproduce the documented benchmark.
-- Tests and CI pass on supported Python versions.
-- Dataset provenance, relevance assumptions, and leakage controls are explicit.
-- Performance claims link to recorded evidence and configuration.
-- The README stays concise; deeper reasoning lives in `docs/`.
-- No private data, sensitive geography, signed URLs, or generated datasets are committed.
+## Portfolio-ready definition
+
+The project is portfolio-ready when:
+
+- a clean clone can reproduce the documented benchmark;
+- tests and CI pass on supported Python versions;
+- data provenance, relevance assumptions, and leakage controls are explicit;
+- performance claims link to recorded evidence and configuration;
+- PCA and DINOv2 results are directly comparable;
+- representative successes and failures are visible;
+- no private data, sensitive geography, signed URLs, or generated datasets are committed;
+- the repository name and release metadata match the EO visual-retrieval identity.
 
 ## Next task
 
-Implement Milestone 1 as a narrow vertical slice: materialize one small public Sentinel-2 RGB
-window into an analysis-ready chip and a sanitized manifest, then test the geospatial metadata and
-pixel-processing path. Do not expand to bulk downloads until that slice is reproducible.
-
+Implement Milestone 1 as a single tested vertical slice: materialize one small public Sentinel-2
+RGB window into an analysis-ready chip and sanitized manifest. Do not expand to batch processing
+until the spatial metadata and pixel-processing behavior are validated.

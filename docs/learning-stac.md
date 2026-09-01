@@ -46,7 +46,8 @@ For the learning workflow, materialization is restricted to bounded preview imag
 - **Spectral mismatch:** DINOv2 expects RGB while many EO products are multispectral.
 - **Proxy relevance:** sharing a scene class does not prove two images are useful to the same user.
 
-The v0.1 image manifest uses deterministic splits. Geographic grouping and temporal holdouts will be added when STAC materialization becomes part of the benchmark.
+The current image manifest uses deterministic splits. Geographic grouping and temporal holdouts
+must be added before STAC-derived imagery becomes part of the benchmark.
 
 ## Public references
 

@@ -15,9 +15,10 @@ Before making a substantial change, read:
 
 1. `README.md` for the supported workflow.
 2. `docs/project-context.md` for goals, current state, and priorities.
-3. `docs/adr/0001-evolve-to-eo-visual-retrieval.md` for the migration decision.
-4. `docs/validation.md` before making performance or quality claims.
-5. `docs/learning-stac.md` for the STAC data boundary.
+3. `docs/architecture.md` for system boundaries and component responsibilities.
+4. `docs/models-and-metrics.md` for representation and evaluation assumptions.
+5. `docs/validation.md` before making performance or quality claims.
+6. `docs/learning-stac.md` for the STAC data boundary.
 
 ## Non-negotiable boundaries
 
@@ -34,15 +35,13 @@ Before making a substantial change, read:
 
 ## Engineering expectations
 
-- Prefer small, typed, testable modules over notebook-only implementation.
+- Prefer small, typed, testable modules over exploratory-only implementation.
 - Make runs deterministic where practical and record the data/split/model configuration.
 - Add or update tests with behavior changes.
 - Run `python -m ruff check .` and `python -m pytest` before committing.
 - Update `docs/validation.md` only with evidence produced by an executed validation.
-- Keep the legacy notebook under `legacy/`; do not rewrite the tagged historical snapshot.
-- Do not merge the modernization branch or rename the repository until the labeled EO benchmark
-  gate described in `docs/project-context.md` is satisfied.
+- Do not rename the repository until the labeled EO benchmark gate described in
+  `docs/project-context.md` is satisfied.
 
 On Windows, use a short virtual-environment path such as
-`C:\Users\<you>\.venvs\eovr` because PyTorch packages can exceed legacy path limits.
-
+`C:\Users\<you>\.venvs\eovr` because PyTorch packages can exceed Windows path limits.
