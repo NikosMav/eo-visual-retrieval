@@ -140,6 +140,9 @@ DINOv2 consumes RGB imagery, so it does not directly use all bands in multispect
 
 See [`docs/validation.md`](docs/validation.md) for the current verified gates and the difference between smoke evidence and benchmark evidence.
 
+For the migration decisions, prioritized milestones, and release gate, see
+[`docs/project-context.md`](docs/project-context.md).
+
 ## Privacy and data policy
 
 - Do not commit EO imagery, credentials, signed URLs, proprietary areas of interest, or job-specific configuration.
