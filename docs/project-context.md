@@ -25,6 +25,7 @@ The repository currently contains:
 - aligned Sentinel-2 BOA-reflectance and model-ready RGB chip materialization;
 - deterministic image manifests with index/query partitions;
 - PCA, frozen RGB DINOv2, and frozen 13-band SSL4EO-S12 embedding backends;
+- a persisted PCA basis and a ranking path for images outside the original manifest;
 - a pinned frozen TerraMind-Tiny challenger, evaluated without replacing the SSL4EO reference;
 - locked CPU/CUDA dependency profiles, local MLflow evaluation tracking, and a CUDA parity smoke;
 - portable compressed embedding stores;
@@ -32,7 +33,8 @@ The repository currently contains:
 - a reproducible Faiss exact-versus-HNSW benchmark with an explicit ANN-recall contract;
 - an executed 2,000-image, spatially separated EuroSAT benchmark;
 - aggregate and per-class metrics plus qualitative best/worst grids for all three representations;
-- unit tests, linting, CI, and executed smoke validation.
+- unit tests, linting, static type checking, an enforced coverage floor, CI, and executed
+  smoke validation.
 
 The current evidence proves that the workflow runs and establishes a first bounded RGB and
 multispectral representation comparison on spatially separated EuroSAT v1. It does **not**
@@ -134,6 +136,12 @@ exact search remains the selected default. See `docs/benchmark-faiss.md`, ADR 00
 Expose the evaluated workflow through a small API or interactive demo. A user should be able to
 select or upload a public query chip, inspect ranked results and metadata, and see which model and
 index generated the ranking.
+
+The retrieval capability this needs now exists: `eovr query --image` embeds a new local image with
+the backend recorded in the store and ranks it against the index, and `embed-pca
+--projection-output` persists the one basis that is fitted inside this project. What remains for
+this milestone is the interface itself — an HTTP surface, upload handling, and result presentation
+— not the underlying ranking path.
 
 Containers and release automation should be added when they support this workflow, not as isolated
 portfolio decoration.

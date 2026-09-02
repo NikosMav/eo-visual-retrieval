@@ -3,19 +3,29 @@
 from __future__ import annotations
 
 import gc
-import hashlib
 import platform
 import time
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from importlib.metadata import version
-from pathlib import Path
 from typing import Any
 
 import numpy as np
 from numpy.typing import NDArray
 
 from eo_visual_retrieval.embeddings.store import EmbeddingStore
+from eo_visual_retrieval.hashing import file_sha256
+from eo_visual_retrieval.vectors import l2_normalize
+
+__all__ = [
+    "BuildStats",
+    "LatencyStats",
+    "ann_recall_at_k",
+    "benchmark_faiss",
+    "expand_corpus",
+    "file_sha256",
+    "l2_normalize",
+]
 
 
 @dataclass(frozen=True)
@@ -37,19 +47,6 @@ class BuildStats:
     rss_before_bytes: int
     rss_after_bytes: int
     rss_delta_bytes: int
-
-
-def l2_normalize(vectors: NDArray[np.float32]) -> NDArray[np.float32]:
-    """Return a contiguous float32 matrix whose rows have unit L2 norm."""
-    matrix = np.asarray(vectors, dtype=np.float32)
-    if matrix.ndim != 2 or matrix.shape[0] == 0 or matrix.shape[1] == 0:
-        raise ValueError("vectors must be a non-empty two-dimensional matrix")
-    if not np.isfinite(matrix).all():
-        raise ValueError("vectors must contain only finite values")
-    norms = np.linalg.norm(matrix, axis=1, keepdims=True)
-    if np.any(norms == 0):
-        raise ValueError("vectors must not contain zero-length rows")
-    return np.ascontiguousarray(matrix / norms, dtype=np.float32)
 
 
 def expand_corpus(
@@ -287,12 +284,3 @@ def benchmark_faiss(
             "Synthetic rows are perturbed copies for systems scaling only, not EO evidence.",
         ],
     }
-
-
-def file_sha256(path: Path) -> str:
-    """Return a streaming SHA-256 digest for benchmark provenance."""
-    digest = hashlib.sha256()
-    with path.open("rb") as source:
-        for chunk in iter(lambda: source.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()

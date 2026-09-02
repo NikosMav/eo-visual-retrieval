@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 import numpy as np
 import pytest
 
@@ -86,7 +88,7 @@ def test_benchmark_faiss_reports_exact_and_hnsw_contract() -> None:
     ],
 )
 def test_expand_corpus_rejects_invalid_configuration(
-    kwargs: dict[str, float | int], message: str
+    kwargs: dict[str, Any], message: str
 ) -> None:
     base = np.eye(2, dtype=np.float32)
 

@@ -6,31 +6,43 @@ import hashlib
 import math
 import zipfile
 from collections import defaultdict
+from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
 
+from eo_visual_retrieval.datasets.eurosat import (
+    EUROSAT_ARCHIVE,
+    EUROSAT_ARCHIVE_MD5,
+    EUROSAT_CLASSES,
+    EUROSAT_CLASSES_SET,
+    EUROSAT_DOI,
+    EUROSAT_SOURCE,
+    verify_archive,
+)
+from eo_visual_retrieval.hashing import file_md5
 from eo_visual_retrieval.manifests import write_jsonl
 from eo_visual_retrieval.models import ImageRecord, Split
 
-EUROSAT_DOI = "10.5281/zenodo.7711810"
-EUROSAT_ARCHIVE = "EuroSAT_MS.zip"
-EUROSAT_ARCHIVE_MD5 = "091174add3c8e680a49244acf185b9f0"
-EUROSAT_SOURCE = "eurosat-ms-v1"
+__all__ = [
+    "EUROSAT_ARCHIVE",
+    "EUROSAT_ARCHIVE_MD5",
+    "EUROSAT_CLASSES",
+    "EUROSAT_DOI",
+    "EUROSAT_SOURCE",
+    "EuroSatAudit",
+    "EuroSatCandidate",
+    "EuroSatPreparation",
+    "EuroSatSplit",
+    "audit_eurosat_manifest",
+    "discover_candidates",
+    "file_md5",
+    "prepare_eurosat_benchmark",
+    "select_spatial_split",
+]
+
 EARTH_RADIUS_M = 6_371_008.8
-EUROSAT_CLASSES = (
-    "AnnualCrop",
-    "Forest",
-    "HerbaceousVegetation",
-    "Highway",
-    "Industrial",
-    "Pasture",
-    "PermanentCrop",
-    "Residential",
-    "River",
-    "SeaLake",
-)
 
 
 @dataclass(frozen=True)
@@ -94,14 +106,11 @@ class EuroSatAudit:
         }
 
 
-def file_md5(path: Path) -> str:
-    """Return an archive integrity digest."""
+def _bounds4(values: Iterable[float]) -> tuple[float, float, float, float]:
+    """Narrow an iterable of coordinates to the fixed-width bounds contract."""
 
-    digest = hashlib.md5(usedforsecurity=False)
-    with path.open("rb") as stream:
-        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+    west, south, east, north = (float(value) for value in values)
+    return west, south, east, north
 
 
 def _rank(seed: int, namespace: str, value: str) -> bytes:
@@ -121,8 +130,7 @@ def discover_candidates(
 
     if group_size_m <= 0:
         raise ValueError("group_size_m must be positive")
-    if not archive.is_file():
-        raise ValueError(f"EuroSAT archive does not exist: {archive}")
+    verify_archive(archive, expected_md5=None)
 
     try:
         from rasterio.io import MemoryFile
@@ -147,7 +155,7 @@ def discover_candidates(
                     raise ValueError(f"archive member has no CRS: {member}")
                 if dataset.count < 4:
                     raise ValueError(f"archive member has fewer than four bands: {member}")
-                bounds = tuple(float(value) for value in dataset.bounds)
+                bounds = _bounds4(dataset.bounds)
                 center_x = (bounds[0] + bounds[2]) / 2
                 center_y = (bounds[1] + bounds[3]) / 2
                 longitude, latitude = transform(dataset.crs, "EPSG:4326", [center_x], [center_y])
@@ -170,9 +178,6 @@ def discover_candidates(
     if not candidates:
         raise ValueError(f"no EuroSAT multispectral images found in {archive}")
     return candidates
-
-
-EUROSAT_CLASSES_SET = frozenset(EUROSAT_CLASSES)
 
 
 def _spread_sample(
@@ -459,12 +464,7 @@ def prepare_eurosat_benchmark(
 ) -> EuroSatPreparation:
     """Validate, split, convert, and record one benchmark version."""
 
-    if expected_md5 is not None:
-        observed = file_md5(archive)
-        if observed.lower() != expected_md5.lower():
-            raise ValueError(
-                f"EuroSAT archive checksum mismatch: expected {expected_md5}, observed {observed}"
-            )
+    verify_archive(archive, expected_md5=expected_md5)
     candidates = discover_candidates(archive, group_size_m=group_size_m)
     split = select_spatial_split(
         candidates,
@@ -475,8 +475,12 @@ def prepare_eurosat_benchmark(
         labels=labels,
     )
     records: list[ImageRecord] = []
+    partitions: tuple[tuple[Split, tuple[EuroSatCandidate, ...]], ...] = (
+        ("index", split.index),
+        ("query", split.query),
+    )
     with zipfile.ZipFile(archive) as bundle:
-        for split_name, selected in (("index", split.index), ("query", split.query)):
+        for split_name, selected in partitions:
             for candidate in selected:
                 records.append(
                     _materialize_candidate(
@@ -534,7 +538,7 @@ def audit_eurosat_manifest(
                 member=str(record.metadata.get("archive_member", record.item_id)),
                 label=record.label,
                 source_crs=str(record.metadata.get("source_crs", "unknown")),
-                source_bounds=tuple(float(value) for value in record.metadata["source_bounds"]),
+                source_bounds=_bounds4(record.metadata["source_bounds"]),
                 longitude=float(record.metadata["centroid_lonlat"][0]),
                 latitude=float(record.metadata["centroid_lonlat"][1]),
                 equal_area_x=x,

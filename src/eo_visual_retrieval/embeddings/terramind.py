@@ -10,8 +10,14 @@ from typing import Any
 import numpy as np
 from numpy.typing import NDArray
 
-from eo_visual_retrieval.benchmarks.eurosat import EUROSAT_ARCHIVE_MD5, EUROSAT_SOURCE, file_md5
-from eo_visual_retrieval.embeddings.ssl4eo import EUROSAT_BAND_ORDER, verify_sha256
+from eo_visual_retrieval.datasets.eurosat import (
+    EUROSAT_ARCHIVE_MD5,
+    archive_members,
+    band_indices,
+    read_archive_member,
+    verify_archive,
+)
+from eo_visual_retrieval.hashing import verify_sha256
 from eo_visual_retrieval.models import ImageRecord
 
 MODEL_NAME = "terramind_v1_tiny"
@@ -34,7 +40,7 @@ BAND_ORDER = (
     "B11",
     "B12",
 )
-BAND_INDICES = tuple(EUROSAT_BAND_ORDER.index(band) for band in BAND_ORDER)
+BAND_INDICES = band_indices(BAND_ORDER)
 MODALITY_KEY = "untok_sen2l1c@224"
 
 
@@ -91,22 +97,11 @@ def terramind_embeddings(
 
     if not records or batch_size < 1:
         raise ValueError("records must be non-empty and batch_size must be positive")
-    members = []
-    for record in records:
-        member = record.metadata.get("archive_member")
-        if record.source != EUROSAT_SOURCE or not isinstance(member, str) or not member:
-            raise ValueError(
-                "TerraMind experiment requires EuroSAT source records with archive members"
-            )
-        members.append(member)
-    if len(set(members)) != len(members):
-        raise ValueError("manifest contains duplicate EuroSAT archive members")
-    if not archive.is_file() or file_md5(archive) != EUROSAT_ARCHIVE_MD5:
-        raise ValueError("EuroSAT archive missing or checksum mismatch")
+    members = archive_members(records)
+    verify_archive(archive)
     verify_sha256(checkpoint, CHECKPOINT_SHA256)
     try:
         import torch
-        from rasterio.io import MemoryFile
         from terratorch import BACKBONE_REGISTRY
         from terratorch.models.backbones.terramind.model.terramind_register import (
             v1_pretraining_mean,
@@ -129,14 +124,10 @@ def terramind_embeddings(
     batches = []
     with zipfile.ZipFile(archive) as bundle, torch.inference_mode():
         for start in range(0, len(members), batch_size):
-            arrays = []
-            for member in members[start : start + batch_size]:
-                try:
-                    content = bundle.read(member)
-                except KeyError as error:
-                    raise ValueError(f"EuroSAT archive member does not exist: {member}") from error
-                with MemoryFile(content) as memory_file, memory_file.open() as raster:
-                    arrays.append(prepare_multispectral(raster.read(), means, stds))
+            arrays = [
+                prepare_multispectral(read_archive_member(bundle, member), means, stds)
+                for member in members[start : start + batch_size]
+            ]
             tensor = torch.from_numpy(np.stack(arrays)).to(selected_device)
             tensor = torch.nn.functional.interpolate(
                 tensor, size=(224, 224), mode="bilinear", align_corners=False, antialias=True

@@ -21,6 +21,81 @@ The first three boxes record different kinds of evidence; passing one does not i
 See [Understanding the benchmarks](learning-benchmarks.md) for the evidence ladder and the exact
 training boundary.
 
+## Structural refactor and regression reproduction — 2026-09-03
+
+A maintenance pass consolidated duplicated helpers, fixed the encoder/benchmark import direction,
+persisted the fitted PCA basis, added a query path for images outside a manifest, and added static
+type checking plus a coverage floor. **No new retrieval-quality claim is made.** The purpose of the
+executed checks below was to prove that the published EuroSAT v1 evidence survives the change.
+
+### Code-health gates
+
+| Gate | Executed evidence | Status |
+|---|---|---|
+| Static quality | `python -m ruff check .` on Python 3.11.5 | Passed |
+| Static typing | Mypy 1.20.2, `disallow_untyped_defs`, 45 files in `src`, `tests`, `scripts` | Passed |
+| Typing on 3.12 | Same configuration under Python 3.12.1 | Passed |
+| Unit tests | 104 tests in the full local environment | Passed |
+| Lockfile | `uv lock --check` after adding Mypy to the `dev` group; 238 packages | Passed |
+| Locked Python 3.11 | Fresh `dev`/`geo`/`search`/`pca` environment; 103 passed, 1 skipped | Passed |
+| Locked Python 3.12 | Fresh `dev`/`geo`/`search`/`pca` environment; 103 passed, 1 skipped | Passed |
+| Dependency consistency | `uv pip check` in the fresh Python 3.11 environment, 33 packages | Passed |
+| Coverage | 79% in the full environment; 78.15% in the locked CI-equivalent environment | Passed against the new 75% floor |
+
+The suite grew from 42 to 104 tests. CLI coverage rose from 0% to 79%, and the previously
+untested PCA, projection, query-encoder, dataset-identity, hashing, and vector modules are now
+covered. One DINOv2 test needs PyTorch and skips in the lightweight environment by design.
+`scikit-learn` was split into a new `pca` extra so CI can exercise the deterministic PCA and CLI
+paths without installing PyTorch.
+
+### Published-result reproduction
+
+The committed EuroSAT v1 result JSON files were recomputed from the unchanged local embedding
+stores using the refactored evaluator, which now scores against retrievable positions rather than
+the requested `k`:
+
+| Store | Recomputed mAP@10 | Published mAP@10 | Aggregate and per-class |
+|---|---|---|---|
+| PCA-64 | 0.19697559523809524 | 0.19697559523809524 | Identical |
+| DINOv2 ViT-S/14 | 0.607631746031746 | 0.607631746031746 | Identical |
+| SSL4EO-S12 MoCo ResNet-50 | 0.8135958333333333 | 0.8135958333333333 | Identical |
+
+Every aggregate metric, `evaluated_queries`, `skipped_queries`, and per-class slice matched
+exactly. The denominator change is observable only when self-exclusion leaves fewer than `k`
+results, which does not occur at 1,600 index items and `k=10`. Those three stores were written
+before the embedding format recorded label presence and loaded correctly through the
+compatibility path, so no artifact was regenerated or replaced.
+
+`benchmark-eurosat-audit` was re-executed through the refactored dataset and benchmark modules
+against the unchanged local manifest and images. It reproduced 2,000 items, 1,600 index and 400
+query, 160/40 for each of 10 classes, 725 spatial groups, a minimum separation of
+5.066229991251209 km, 2,000 verified file hashes, and manifest SHA-256
+`bc0b10bf3e3cf29d7f7732529ce5f419b514e2ded3a5e2a5e6e88ebcdea45338` — identical to the values
+recorded for the 2026-09-02 dataset audit below.
+
+### PCA basis persistence
+
+Re-running PCA over the same 2,000 EuroSAT v1 images through the new persisted-basis code path
+reproduced the committed PCA store to a maximum absolute vector difference of
+`9.641051292419434e-6`, with a minimum absolute paired cosine of `0.9999996423721313`. The
+recomputed store returned mAP@10 `0.19697559523809524`, identical to the published value. A basis
+saved to disk and reloaded reproduced the vectors it was fitted with.
+
+### New-image query path
+
+A bounded smoke run against the existing EuroSAT v1 artifacts confirmed that:
+
+- the PCA path embedded a local file through a reloaded basis and returned that image at cosine
+  `1.0` against its own stored vector;
+- the DINOv2 path did the same at cosine `1.0000001192092896` using the model name recorded in the
+  store;
+- a store with no saved basis, and the SSL4EO-S12 store, both refused an RGB file with an
+  explanatory error rather than approximating an input.
+
+This establishes that a new image is placed in the same space as the stored corpus for the two RGB
+backends. It is **not** evidence about retrieval quality on unseen data, and no interface,
+upload handling, or concurrency behaviour was validated.
+
 ## Evaluation foundations — 2026-09-02
 
 Executed on the isolated `codex/evaluation-foundations` branch:
@@ -256,6 +331,8 @@ B938BF1BC15CD2EC0FEACFE3A1BB553FE8EA9CA46A7E1D8D00217F29AEF60CD9
 
 - Temporal or seasonal leakage controls; EuroSAT does not expose acquisition timestamps.
 - Repeatable performance across other operating systems, CPUs, thread counts, and concurrent load.
+- Retrieval quality for genuinely unseen query images; the new-image path is verified for
+  numerical agreement only.
 - ANN behavior on a genuinely larger EO corpus rather than deterministic synthetic expansion.
 - Representative GPU throughput, precision/batch-size sweeps, or cross-hardware performance.
 - API, interactive-demo, or deployment validation.

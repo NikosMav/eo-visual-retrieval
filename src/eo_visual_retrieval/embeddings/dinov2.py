@@ -35,6 +35,10 @@ def dinov2_embeddings(
         raise ValueError(f"unsupported DINOv2 model: {model_name}")
     if batch_size < 1:
         raise ValueError("batch_size must be positive")
+    # Checked before the checkpoint is fetched: downloading a model to discover
+    # there is nothing to embed wastes minutes on a first run.
+    if not paths:
+        raise ValueError("at least one image is required")
 
     try:
         import torch
@@ -70,6 +74,4 @@ def dinov2_embeddings(
             features = torch.nn.functional.normalize(features, dim=1)
             batches.append(features.cpu().numpy().astype(np.float32, copy=False))
 
-    if not batches:
-        raise ValueError("at least one image is required")
     return np.concatenate(batches, axis=0)

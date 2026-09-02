@@ -75,7 +75,7 @@ def client(monkeypatch: pytest.MonkeyPatch) -> FakeClient:
         return fake
 
     module = ModuleType("mlflow.tracking")
-    module.MlflowClient = constructor
+    module.MlflowClient = constructor  # type: ignore[attr-defined]
     monkeypatch.setitem(sys.modules, "mlflow", ModuleType("mlflow"))
     monkeypatch.setitem(sys.modules, "mlflow.tracking", module)
     monkeypatch.setenv("MLFLOW_TRACKING_URI", "https://example.invalid")

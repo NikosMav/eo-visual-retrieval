@@ -69,7 +69,12 @@ Limitations:
 - resizing forces every image into a square and may distort geometry;
 - high variance is not the same as semantic relevance;
 - sensitive to illumination, color scaling, registration, and seasonal appearance;
-- the fitted transformer is not currently saved for future unseen queries.
+- the basis is specific to the index partition it was fitted on, so a store and its saved
+  projection belong together and must not be mixed across runs.
+
+The fitted basis can be persisted with `embed-pca --projection-output` and reused to embed
+images that were not in the original manifest. That is what makes PCA usable for a query the
+corpus has never seen; see [Pipeline and CLI](pipeline-and-cli.md).
 
 ## DINOv2 baseline
 
