@@ -43,7 +43,7 @@ $env:UV_PROJECT_ENVIRONMENT = 'C:\Users\<you>\.venvs\eovr-check'
 & $uv sync --locked --python 3.11 --extra dev --extra geo --extra search
 & $uv run --locked --no-sync python -m ruff check .
 & $uv run --locked --no-sync python -m pytest
-& $uv pip check
+& $uv pip check --python $env:UV_PROJECT_ENVIRONMENT
 ```
 
 Repeat with `--python 3.12` and a different environment path to validate that interpreter.

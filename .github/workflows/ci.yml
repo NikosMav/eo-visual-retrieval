@@ -26,4 +26,4 @@ jobs:
       - run: uv sync --locked --extra dev --extra geo --extra search
       - run: uv run --locked --no-sync python -m ruff check .
       - run: uv run --locked --no-sync python -m pytest --cov=eo_visual_retrieval --cov-report=term-missing
-      - run: uv pip check
+      - run: uv pip check --python "${{ env.UV_PROJECT_ENVIRONMENT }}"
