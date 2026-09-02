@@ -21,6 +21,53 @@ The first three boxes record different kinds of evidence; passing one does not i
 See [Understanding the benchmarks](learning-benchmarks.md) for the evidence ladder and the exact
 training boundary.
 
+## Dependency vulnerability review — 2026-09-03
+
+Three Dependabot alerts were open against `uv.lock`. Each was checked for an available upgrade
+path rather than assessed by severity alone.
+
+| Alert | Package | Severity | Outcome |
+|---|---|---|---|
+| GHSA-6w46-j5rx-g56g | pytest | Medium | Fixed: constraint widened, lock moved 8.4.2 to 9.1.1 |
+| GHSA-g6cj-pr64-35w5 | cryptography | High | No upgrade path; blocked by MLflow |
+| GHSA-h7x2-h6g9-p789 | mlflow | High | No patched release exists |
+
+### pytest
+
+The declared constraint was `>=8,<9`, which excluded the patched 9.0.3. It is now `>=9.0.3,<10`
+with `pytest-cov>=7,<8`. Executed on locked Python 3.11 and 3.12 environments with pytest 9.1.1:
+103 passed and 1 skipped in each, Ruff and Mypy clean, coverage 78.15%, and `uv pip check`
+reported all 31 packages compatible. No test needed changing.
+
+### cryptography and MLflow
+
+Both alerts originate from the optional `experiments` group and cannot currently be resolved by
+upgrading:
+
+- `mlflow 3.15.2` declares `cryptography<50,>=43.0.0`, while the cryptography advisory is first
+  patched in `50.0.0`. Nothing else in this project depends on cryptography: it is reached only
+  through MLflow and through `google-auth`, which is itself an MLflow dependency and accepts any
+  version from 38 upward.
+- `mlflow 3.15.2` is the latest published release, and the MLflow advisory records no patched
+  version.
+
+Scope of the exposure in this repository, for the record rather than as a dismissal:
+
+- The MLflow advisory concerns `mlflow/server/handlers.py` and `mlflow/server/gateway_api.py`,
+  reached by creating an AI Gateway secret and calling the gateway proxy endpoint. This project
+  never runs the AI Gateway. `tracking.py` uses `MlflowClient` against a local SQLite file and
+  rejects non-local tracking directories. The documented `mlflow ui` command starts a local
+  viewer bound to `127.0.0.1` for inspection.
+- The cryptography advisory concerns PKCS#7 `EnvelopedData` decryption. This project performs no
+  PKCS#7 operations.
+- Neither package is installed by CI, by the core package, or by any embedding or benchmark path.
+  Both arrive only with `--extra experiments`.
+
+No alert was dismissed on the basis of the above. `mlflow-skinny` would drop the cryptography
+dependency entirely, but it omits SQLAlchemy and Alembic and would therefore break the local
+SQLite tracking store this project documents. That trade-off is recorded here as an open choice,
+not a decision.
+
 ## Structural refactor and regression reproduction — 2026-09-03
 
 A maintenance pass consolidated duplicated helpers, fixed the encoder/benchmark import direction,
