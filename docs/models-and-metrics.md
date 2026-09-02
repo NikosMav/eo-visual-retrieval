@@ -35,6 +35,7 @@ flowchart LR
 | PCA-64 | No | Yes, index-fitted projection | No |
 | DINOv2 | Yes | No, checkpoint is frozen | No |
 | SSL4EO-S12 | Yes | No, checkpoint is frozen | No |
+| TerraMind-Tiny challenger | Yes | No, checkpoint is frozen | No |
 
 This distinction is explained step by step in
 [Understanding training, retrieval, and the benchmarks](learning-benchmarks.md).
@@ -123,6 +124,19 @@ This experiment uses no EuroSAT labels during embedding. It changes both the pre
 and available input bands relative to DINOv2, so a score difference measures the representation
 pipeline as a whole; it does not by itself prove that non-visible bands caused the difference.
 See [ADR 0003](decisions/0003-ssl4eo-s12-multispectral-encoder.md) for model selection and risks.
+
+## TerraMind-Tiny challenger
+
+The optional TerraTorch backend loads a pinned TerraMind-Tiny checkpoint, consumes the same
+13-band L1C archive members, and produces a 192-dimensional vector by averaging the final
+normalized patch features and applying L2 normalization. It uses fixed published pretraining
+statistics in raw digital-number units, not SSL4EO's clipping and 0-1 scaling. All required
+backbone weights must match; the adapter rejects missing weights rather than retaining random
+initialization. See the [fixed TerraMind protocol](benchmark-terramind.md).
+
+This is an experimental frozen representation, not a newly trained model or an assumed winner.
+EuroSAT v1 is now explicitly a regression/development benchmark; fresh held-out data is required
+for confirmatory selection. Executed outcomes, if available, are recorded in validation.
 
 ## Fair model comparison
 

@@ -56,8 +56,9 @@ flowchart LR
     M2[Milestone 2<br/>leakage-aware benchmark<br/>completed]
     M3[Milestone 3<br/>representation analysis<br/>completed for EuroSAT v1]
     M4[Milestone 4<br/>approximate search<br/>completed v1]
-    M5[Milestone 5<br/>usable product surface<br/>next]
-    M1 --> M2 --> M3 --> M4 --> M5
+    E[Evaluation foundations<br/>current phase]
+    M5[Milestone 5<br/>usable product surface<br/>after evaluation foundations]
+    M1 --> M2 --> M3 --> M4 --> E --> M5
 ```
 
 ### Milestone 1: analysis-ready Sentinel-2 RGB chip — completed
@@ -151,7 +152,14 @@ The project is portfolio-ready when:
 
 ## Next task
 
-Begin Milestone 5 by defining the narrowest useful local product surface. It should accept or
-select a public query image, use an existing evaluated embedding backend, display ranked results
-and safe metadata, expose which index produced the ranking, and preserve exact search as the
-default and regression oracle.
+Complete the [evaluation-foundations phase](evaluation-foundations.md) before the interface:
+
+1. Validate locked environments, CPU/CUDA numerical agreement, and local experiment tracking.
+2. Add a frozen TerraMind-Tiny regression comparison without replacing the SSL4EO reference.
+3. Specify new geographically separated development/final data; already-inspected EuroSAT queries
+   cannot become an untouched holdout by splitting them again.
+4. Tune on development queries only, then test a Qdrant adapter against exact search.
+5. Select the product backend from evidence and return to the narrow interface milestone.
+
+Paid services, gated-model accounts, bulk dataset downloads, and distributed Milvus deployment
+remain deferred. The choices and consequences are recorded in ADR 0005.

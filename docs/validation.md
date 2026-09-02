@@ -21,9 +21,39 @@ The first three boxes record different kinds of evidence; passing one does not i
 See [Understanding the benchmarks](learning-benchmarks.md) for the evidence ladder and the exact
 training boundary.
 
-## Code health — 2026-09-02
+## Evaluation foundations — 2026-09-02
 
-Executed locally against the current checkout with Python 3.11.5:
+Executed on the isolated `codex/evaluation-foundations` branch:
+
+| Gate | Executed evidence | Status |
+|---|---|---|
+| Lockfile | `uv 0.12.9`; `uv lock --check`; 234 resolved package variants | Passed |
+| Fresh Windows Python 3.11.5 | Locked dev/geo/search environment; 41 tests; Ruff | Passed |
+| Fresh Windows Python 3.12.1 | Locked dev/geo/search environment; 41 tests | Passed |
+| Dependency consistency | `uv pip check` in both validation environments; original CPU `pip check` | Passed |
+| Coverage | 41 tests, 68% total; local tracking module 91% | Passed; no minimum enforced |
+| Local MLflow | MLflow 3.15.2, local SQLite and inspected aggregate-only artifact | Passed |
+| Tracked SSL4EO regression | Existing store, 400 queries, zero skipped, mAP@10 0.8135958333 | Reproduced |
+| Optuna availability | Optuna 4.9.0; eight seeded synthetic scalar-objective trials | Smoke only, no retrieval tuning |
+| GitHub vulnerability alerts | Enabled via API; subsequent status returned successfully | Enabled, not a clean vulnerability audit |
+| TerraMind checkpoint | Public pinned revision, 211,873,402 bytes, SHA-256 matched published LFS identity | Passed |
+
+The tracked SSL4EO store hash was
+`4a0b54291346ab9a9ec12570759c5c36365f0011b6aade09400101dcacf63b07` and local MLflow run ID was
+`73daf4bdef5f42e3b28a166b72e4ddcd`. Its artifact contained aggregate metrics and allowlisted
+content identities only: no image IDs, labels, vectors, imagery, or provider URLs.
+
+The original CPU environment and original embedding stores were not replaced. CUDA parity,
+TerraMind inference/quality, and the expanded remote CI matrix are not implied by the gates above;
+their outcomes must be recorded separately after execution. The frozen TerraMind input and strict
+weight-loading contracts have lightweight tests, not yet a model-quality claim.
+
+The first foundation install hit a missing Python 3.11 Windows wheel for `stringzilla 5.1.2`.
+The lock now constrains that platform to 5.1.1; no C++ build tools were installed.
+
+## Previous code-health baseline — 2026-09-02
+
+Executed locally before the evaluation-foundations phase with Python 3.11.5:
 
 | Gate | Command or evidence | Status |
 |---|---|---|

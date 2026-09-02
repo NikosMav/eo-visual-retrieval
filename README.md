@@ -18,9 +18,11 @@ established.
 - Prepares a bounded, class-balanced EuroSAT benchmark with spatial leakage controls.
 - Builds deterministic index/query manifests from labeled local images.
 - Generates PCA, DINOv2, or EuroSAT-specific SSL4EO-S12 image embeddings.
+- Provides an experimental pinned, frozen TerraMind-Tiny S2L1C embedding adapter.
 - Ranks images with exact cosine similarity.
 - Benchmarks Faiss HNSW recall, latency, construction time, and storage against exact search.
 - Reports Precision@k, Recall@k, mAP@k, and nDCG@k.
+- Optionally records aggregate evaluations in local MLflow without uploading imagery or vectors.
 - Records the difference between executed evidence and planned work.
 
 ## System at a glance
@@ -74,6 +76,10 @@ query use disjoint 50 km spatial cells and a 5 km guard band. See the
 
 Python 3.11 is recommended for the complete ML stack. On Windows, use a short environment path
 because PyTorch packages contain deeply nested files.
+
+For the reproducible locked workflow, isolated CUDA setup, and local experiment tracking, follow
+[Evaluation foundations](docs/evaluation-foundations.md). The pip commands below remain a simple
+editable-install alternative, but do not reproduce the committed lockfile.
 
 ```powershell
 py -3.11 -m venv C:\Users\<you>\.venvs\eovr
@@ -198,6 +204,7 @@ Read the guides in this order:
 11. [Learning STAC](docs/learning-stac.md) — EO catalog concepts and retrieval pitfalls.
 12. [Development](docs/development.md) — environment, tools, tests, and contribution workflow.
 13. [Validation](docs/validation.md) — what has and has not been verified.
+14. [Evaluation foundations](docs/evaluation-foundations.md) — locked environments, GPU checks, model-selection gates, and local tracking.
 
 ## Data and privacy policy
 
@@ -209,9 +216,11 @@ Read the guides in this order:
 
 ## Roadmap
 
-The next milestone is a small product surface that exposes the evaluated workflow while making the
-model and exact-versus-approximate index choice visible. Exact search remains the current default;
-Faiss HNSW is an evaluated scale option, not a blanket replacement.
+Before the product surface, the current phase strengthens reproducibility, validates GPU inference,
+and evaluates a frozen TerraMind challenger. New held-out data is required for confirmatory model
+selection. Exact search remains the default; Qdrant is the first future product-store experiment,
+and Milvus is deferred until scale evidence justifies it. See
+[ADR 0005](docs/decisions/0005-evaluation-foundations-before-product.md).
 
 ## License
 

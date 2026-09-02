@@ -35,9 +35,13 @@ geo = [
 ]
 ml = [
   "scikit-learn>=1.4,<2",
-  "torch>=2.2,<3",
-  "torchvision>=0.17,<1",
+  "torch>=2.13,<2.14",
+  "torchvision>=0.28,<0.29",
 ]
+cpu = ["torch>=2.13,<2.14", "torchvision>=0.28,<0.29"]
+cuda = ["torch>=2.13,<2.14", "torchvision>=0.28,<0.29"]
+experiments = ["mlflow>=3,<4", "optuna>=4,<5"]
+foundation = ["terratorch>=1.2.4,<2"]
 search = [
   "faiss-cpu>=1.15,<2",
   "psutil>=7,<8",
@@ -53,6 +57,32 @@ eovr = "eo_visual_retrieval.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/eo_visual_retrieval"]
+
+[tool.uv]
+required-version = ">=0.12.9,<0.13"
+conflicts = [[{ extra = "cpu" }, { extra = "cuda" }]]
+# 5.1.2 has no CPython 3.11 Windows wheel; avoid an unnecessary C++ compiler.
+constraint-dependencies = ["stringzilla<5.1.2; sys_platform == 'win32' and python_version < '3.12'"]
+
+[tool.uv.sources]
+torch = [
+  { index = "pytorch-cpu", extra = "cpu", marker = "sys_platform != 'darwin'" },
+  { index = "pytorch-cu130", extra = "cuda", marker = "sys_platform != 'darwin'" },
+]
+torchvision = [
+  { index = "pytorch-cpu", extra = "cpu", marker = "sys_platform != 'darwin'" },
+  { index = "pytorch-cu130", extra = "cuda", marker = "sys_platform != 'darwin'" },
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[[tool.uv.index]]
+name = "pytorch-cu130"
+url = "https://download.pytorch.org/whl/cu130"
+explicit = true
 
 [tool.pytest.ini_options]
 addopts = "-q"

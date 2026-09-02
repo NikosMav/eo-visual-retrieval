@@ -322,6 +322,17 @@ If `--corpus-size` exceeds the real index count, deterministic perturbed copies 
 result is marked synthetic. Such a run measures search mechanics only. See
 [Exact versus approximate search benchmark](benchmark-faiss.md) before interpreting its output.
 
+## Optional foundation-model and tracking actions
+
+`eovr embed-terramind` runs the pinned frozen TerraMind-Tiny S2L1C experiment. It requires local
+verified data/checkpoint files and the `foundation`, `ml`, and `geo` groups. See
+[TerraMind protocol](benchmark-terramind.md) for exact inputs, transforms, and commands.
+
+`eovr evaluate --tracking-dir outputs/tracking` adds local MLflow logging to the unchanged exact
+evaluation path. Without this option, MLflow is not imported or required. Tracking stores only
+aggregate metrics and allowlisted content identities; full per-class reports remain in the
+requested local JSON. See [Evaluation foundations](evaluation-foundations.md).
+
 ## Reproducibility checklist
 
 For a benchmark run, record:

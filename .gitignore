@@ -24,3 +24,14 @@ outputs/
 .env
 .env.*
 configs/local/
+
+# Local experiment databases, checkpoints, and tracking artifacts.
+mlruns/
+mlartifacts/
+*.db
+*.sqlite
+*.sqlite3
+*.ckpt
+*.pth
+*.pt
+*.safetensors
