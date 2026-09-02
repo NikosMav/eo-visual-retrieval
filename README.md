@@ -24,21 +24,22 @@ established.
 
 ## System at a glance
 
-```text
-STAC API                                      Selected EO patches + manifest
-   |                                                    |
-   v                                         +----------+-----------+
-sanitized item manifest                      | RGB derivatives      | 13 bands
-   |                                         v             v        v
-   +--> bounded previews                    PCA         DINOv2   SSL4EO-S12
-   |                                         |             |        |
-   +--> reflectance + RGB chip               +-------------+--------+
-                                                         |
-                                                 normalized vectors
-                                                         |
-                                                 exact cosine search
-                                                         |
-                                                 ranked evaluation
+```mermaid
+flowchart LR
+    STAC[Public STAC catalog] --> Safe[Sanitized item manifest]
+    Safe --> Preview[Bounded previews<br/>learning and inspection only]
+    Safe --> Chip[Analysis-ready reflectance + RGB chips]
+
+    EuroSAT[EuroSAT v1<br/>fixed spatial split] --> RGB[RGB derivatives]
+    EuroSAT --> MS[13-band source patches]
+    RGB --> PCA[PCA-64]
+    RGB --> DINO[Frozen DINOv2]
+    MS --> SSL[Frozen SSL4EO-S12]
+    PCA --> Vectors[Normalized embeddings]
+    DINO --> Vectors
+    SSL --> Vectors
+    Vectors --> Search[Exact cosine search]
+    Search --> Eval[Ranked retrieval metrics + result grids]
 ```
 
 STAC discovery and benchmark evaluation are separate on purpose. Preview assets help teach the
@@ -46,6 +47,17 @@ data-access workflow, but they are not analysis-ready chips and must not be used
 quantitative retrieval claims.
 
 See [Architecture](docs/architecture.md) for the components, boundaries, and design decisions.
+
+## Are we training models?
+
+Not the neural networks. DINOv2 and SSL4EO-S12 are pretrained by their original authors and remain
+frozen here: this project loads their weights and runs inference to create embeddings. PCA is the
+only representation fitted inside this project, using index images only and no class labels.
+EuroSAT labels are used only after retrieval to score rankings.
+
+Read [Understanding training, retrieval, and the benchmarks](docs/learning-benchmarks.md) for the
+complete visual explanation of pretraining, fitting, inference, splitting, ranking, metrics, and
+what the current evidence does and does not prove.
 
 ## Current benchmark phase
 
@@ -122,7 +134,7 @@ eovr manifest-build `
   --output data/manifests/images.jsonl
 ```
 
-Generate both embedding baselines:
+Generate the two generic RGB embedding baselines:
 
 ```powershell
 eovr embed-pca `
@@ -165,17 +177,18 @@ See [Validation](docs/validation.md) for exact evidence and limitations.
 Read the guides in this order:
 
 1. [Project context and roadmap](docs/project-context.md) — goal, current state, and next work.
-2. [Architecture](docs/architecture.md) — components, data boundaries, and design choices.
-3. [Sentinel-2 chip decision](docs/decisions/0001-windowed-sentinel2-chip-materialization.md) — selected design and trade-offs.
-4. [EuroSAT benchmark](docs/benchmark-eurosat.md) — dataset, split, commands, and limits.
-5. [Benchmark decision](docs/decisions/0002-georeferenced-eurosat-benchmark.md) — alternatives and rationale.
-6. [Multispectral encoder decision](docs/decisions/0003-ssl4eo-s12-multispectral-encoder.md) — model choice, alternatives, preprocessing, and risks.
-7. [EuroSAT v1 results](docs/results/eurosat-v1.md) — metrics, examples, evidence, and interpretation.
-8. [Pipeline and CLI](docs/pipeline-and-cli.md) — each action, input, and output.
-9. [Models and metrics](docs/models-and-metrics.md) — representations, cosine search, and evaluation.
-10. [Learning STAC](docs/learning-stac.md) — EO catalog concepts and retrieval pitfalls.
-11. [Development](docs/development.md) — environment, tools, tests, and contribution workflow.
-12. [Validation](docs/validation.md) — what has and has not been verified.
+2. [Understanding the benchmarks](docs/learning-benchmarks.md) — training, frozen models, splits, metrics, and evidence.
+3. [Architecture](docs/architecture.md) — components, data boundaries, and design choices.
+4. [Sentinel-2 chip decision](docs/decisions/0001-windowed-sentinel2-chip-materialization.md) — selected design and trade-offs.
+5. [EuroSAT benchmark](docs/benchmark-eurosat.md) — dataset, split, commands, and limits.
+6. [Benchmark decision](docs/decisions/0002-georeferenced-eurosat-benchmark.md) — alternatives and rationale.
+7. [Multispectral encoder decision](docs/decisions/0003-ssl4eo-s12-multispectral-encoder.md) — model choice, alternatives, preprocessing, and risks.
+8. [EuroSAT v1 results](docs/results/eurosat-v1.md) — metrics, examples, evidence, and interpretation.
+9. [Pipeline and CLI](docs/pipeline-and-cli.md) — each action, input, and output.
+10. [Models and metrics](docs/models-and-metrics.md) — representations, cosine search, and evaluation.
+11. [Learning STAC](docs/learning-stac.md) — EO catalog concepts and retrieval pitfalls.
+12. [Development](docs/development.md) — environment, tools, tests, and contribution workflow.
+13. [Validation](docs/validation.md) — what has and has not been verified.
 
 ## Data and privacy policy
 

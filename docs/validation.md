@@ -9,6 +9,17 @@ production readiness.
 Update this record only after executing the relevant validation. Keep planned work in
 `docs/project-context.md`.
 
+```mermaid
+flowchart LR
+    Tests[Tests and CI<br/>code behavior] --> Smoke[Smoke runs<br/>small real paths]
+    Smoke --> Benchmark[EuroSAT v1 benchmark<br/>bounded model comparison]
+    Benchmark -. does not establish .-> Missing[Temporal · cross-dataset · product · scale]
+```
+
+The first three boxes record different kinds of evidence; passing one does not imply the next.
+See [Understanding the benchmarks](learning-benchmarks.md) for the evidence ladder and the exact
+training boundary.
+
 ## Code health — 2026-09-02
 
 Executed locally against the current checkout with Python 3.11.5:
@@ -20,7 +31,7 @@ Executed locally against the current checkout with Python 3.11.5:
 | Dependency consistency | `python -m pip check` | Passed |
 | Coverage report | `pytest --cov=eo_visual_retrieval --cov-report=term-missing` | 58% total |
 | Current-source import | `eo_visual_retrieval.__file__` resolved under this checkout's `src/` | Passed |
-| GitHub CI | Ruff and tests on Python 3.11 and 3.12 for commit `1d2c138` | Passed |
+| GitHub CI | Ruff and tests on Python 3.11 and 3.12 for commit `1b851ca` | Passed |
 
 Coverage is strongest in EuroSAT preparation/audit, visualization, manifests, storage, exact
 retrieval, records, evaluation, SSL4EO input preparation, and the pure chip-processing path. The

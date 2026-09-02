@@ -49,6 +49,16 @@ extra bands. No portfolio claim should exceed the evidence in `docs/validation.m
 
 ## Prioritized roadmap
 
+```mermaid
+flowchart LR
+    M1[Milestone 1<br/>analysis-ready chips<br/>completed]
+    M2[Milestone 2<br/>leakage-aware benchmark<br/>completed]
+    M3[Milestone 3<br/>representation analysis<br/>completed for EuroSAT v1]
+    M4[Milestone 4<br/>approximate search<br/>next]
+    M5[Milestone 5<br/>usable product surface<br/>planned]
+    M1 --> M2 --> M3 --> M4 --> M5
+```
+
 ### Milestone 1: analysis-ready Sentinel-2 RGB chip — completed
 
 The first narrow materialization path for Sentinel-2 `B04`, `B03`, and `B02` now:
@@ -73,7 +83,7 @@ multispectral archive. It creates a 2,000-image, class-balanced RGB subset with 
 spatial cells and a 5 km index/query guard band. See `docs/benchmark-eurosat.md` and ADR 0002.
 
 The executed benchmark contains 1,600 index images and 400 queries. All files and spatial policies
-were audited, and PCA/DINOv2 were evaluated on the same manifest. See
+were audited, and PCA, DINOv2, and SSL4EO-S12 were evaluated on the same manifest. See
 `docs/results/eurosat-v1.md` for evidence and interpretation. A STAC-derived benchmark becomes
 appropriate once geographic groups and temporal holdouts are available.
 
@@ -86,8 +96,9 @@ Record:
 - geographic and temporal grouping rules;
 - model and preprocessing configuration.
 
-**Benchmark gate:** report PCA and DINOv2 Precision@k, Recall@k, mAP@k, and nDCG@k on the same
-leakage-aware split, accompanied by qualitative success and failure examples.
+**Benchmark gate:** report PCA, DINOv2, and SSL4EO-S12 Precision@k, Recall@k, mAP@k, and nDCG@k on
+the same leakage-aware split, accompanied by qualitative success and failure examples. — completed
+for EuroSAT v1
 
 ### Milestone 3: retrieval analysis
 
@@ -125,7 +136,8 @@ The project is portfolio-ready when:
 - tests and CI pass on supported Python versions;
 - data provenance, relevance assumptions, and leakage controls are explicit;
 - performance claims link to recorded evidence and configuration;
-- PCA and DINOv2 results are directly comparable;
+- PCA and DINOv2 are directly comparable on RGB, while SSL4EO-S12 preserves the selected patches,
+  split, relevance, and ranker with its explicitly different 13-band input;
 - representative successes and failures are visible;
 - no private data, sensitive geography, signed URLs, or generated datasets are committed;
 - the repository name and release metadata match the EO visual-retrieval identity.

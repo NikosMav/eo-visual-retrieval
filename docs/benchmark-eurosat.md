@@ -10,6 +10,23 @@ The experiment compares representation quality, not supervised classification. P
 SSL4EO-S12 do not train on EuroSAT labels. Labels are used only to define relevance during
 evaluation.
 
+```mermaid
+flowchart TD
+    Archive[EuroSAT archive<br/>27,000 georeferenced patches] --> Split[Deterministic spatial split]
+    Split --> Index[1,600 index patches]
+    Split --> Query[400 held-out query patches]
+    Index --> Models[Create index embeddings]
+    Query --> ModelsQ[Create query embeddings]
+    Models --> Search[Exact cosine search]
+    ModelsQ --> Search
+    Search --> Results[Top 10 results per query]
+    Results --> AnswerKey[Compare class labels]
+    AnswerKey --> Evidence[Metrics · per-class slices · result grids]
+```
+
+For a plain-language explanation of pretraining, PCA fitting, frozen inference, and every metric,
+read [Understanding training, retrieval, and the benchmarks](learning-benchmarks.md) first.
+
 ## Dataset and provenance
 
 [EuroSAT](https://github.com/phelber/EuroSAT) contains 27,000 georeferenced Sentinel-2 patches in

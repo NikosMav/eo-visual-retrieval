@@ -2,14 +2,20 @@
 
 ## Mental model
 
-The command-line workflow moves through four durable artifacts:
+The command-line workflow moves through a sequence of durable, inspectable artifacts:
 
-```text
-STAC manifest -> local images -> image manifest -> embedding store -> rankings/metrics
+```mermaid
+flowchart LR
+    STAC[Sanitized STAC manifest] --> Images[Local EO images or chips]
+    Images --> Manifest[Image manifest + fixed split]
+    Manifest --> Embed[Embedding command]
+    Embed --> Store[Embedding store]
+    Store --> Query[Exact rankings]
+    Store --> Eval[Metrics + per-class slices]
 ```
 
 Each command performs one bounded transformation. This makes failures easier to diagnose and lets
-PCA and DINOv2 reuse the same data and split.
+all representations reuse the same selected patches and split.
 
 ## Install the command
 
@@ -161,9 +167,9 @@ eovr benchmark-eurosat-prepare `
   --seed 42
 ```
 
-The output root is passed directly to both embedding commands. Preparation verifies the official
-archive checksum, preserves source georeferencing in RGB derivatives, and records spatial split
-metadata. See [EuroSAT benchmark](benchmark-eurosat.md) for the complete contract.
+The manifest and selected patches are shared by all three embedding commands. Preparation verifies
+the official archive checksum, preserves source georeferencing in RGB derivatives, and records
+spatial split metadata. See [EuroSAT benchmark](benchmark-eurosat.md) for the complete contract.
 
 Re-run the split and file integrity checks without touching the dataset:
 

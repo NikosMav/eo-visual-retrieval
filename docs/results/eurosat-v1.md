@@ -98,6 +98,17 @@ layout and appearance.
 
 ## Reproducibility evidence
 
+```mermaid
+flowchart LR
+    Archive[Verified EuroSAT archive] --> Manifest[Audited immutable manifest]
+    Manifest --> Stores[Three aligned embedding stores]
+    Stores --> Exact[Exact cosine rankings]
+    Exact --> JSON[Machine-readable metrics]
+    Exact --> Grids[Best and worst result grids]
+    JSON --> Claims[Bounded documented claims]
+    Grids --> Claims
+```
+
 | Property | Executed value |
 |---|---|
 | Source | Official EuroSAT multispectral archive, DOI `10.5281/zenodo.7711810` |

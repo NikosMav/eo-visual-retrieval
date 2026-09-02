@@ -17,33 +17,52 @@ Those choices keep the quality baseline understandable before scale-oriented com
 
 ## High-level design
 
-```text
-                          DATA ACQUISITION
+```mermaid
+flowchart TD
+    subgraph Acquisition[Public data acquisition]
+        STAC[STAC API] --> Items[Sanitized StacItemRecord JSONL]
+        Items --> Preview[Bounded preview]
+        Items --> Chip[Aligned reflectance + RGB chip]
+    end
 
-STAC API --search--> StacItemRecord JSONL --resolve/sign--> local preview
-                           |                    |
-                    stable metadata only       +--> aligned reflectance + RGB chip
-
-
-                         RETRIEVAL PIPELINE
-
-selected EO patches + ImageRecord JSONL
-         |
-         +--> RGB files ------> PCA / DINOv2 --------+
-         |                                            |
-         +--> 13-band archive -> SSL4EO-S12 ----------+--> EmbeddingStore NPZ
-                                                               |
-                                                +--------------+--------------+
-                                                |                             |
-                                                v                             v
-                                       ExactCosineIndex                 offline evaluator
-                                                |                             |
-                                                v                             v
-                                         ranked item IDs        P@k / R@k / mAP@k / nDCG@k
+    subgraph Benchmark[Retrieval benchmark]
+        Manifest[Selected EO patches + ImageRecord JSONL] --> RGB[RGB files]
+        Manifest --> MS[13-band source archive]
+        RGB --> PCA[PCA]
+        RGB --> DINO[Frozen DINOv2]
+        MS --> SSL[Frozen SSL4EO-S12]
+        PCA --> Store[EmbeddingStore NPZ]
+        DINO --> Store
+        SSL --> Store
+        Store --> Exact[ExactCosineIndex]
+        Store --> Evaluator[Offline evaluator]
+        Exact --> Rankings[Ranked item IDs]
+        Evaluator --> Metrics[P@k · R@k · mAP@k · nDCG@k]
+    end
 ```
 
 The acquisition and retrieval paths meet at local image files, not at provider URLs. This is the
 main security and reproducibility boundary.
+
+## Learning and training boundary
+
+```mermaid
+flowchart LR
+    External[External pretraining] --> DWeights[DINOv2 checkpoint]
+    External --> SWeights[SSL4EO-S12 checkpoint]
+    DWeights --> Frozen[Frozen inference only]
+    SWeights --> Frozen
+    Index[Index RGB pixels] --> Fit[Fit PCA in this project]
+    Fit --> FrozenPCA[Fixed PCA transform]
+    Frozen --> Vectors[Embedding vectors]
+    FrozenPCA --> Vectors
+    Labels[EuroSAT labels] --> Evaluation[Evaluation only]
+    Vectors --> Evaluation
+```
+
+No neural-network weights are updated in this repository. PCA is fitted on index pixels only,
+without class labels. See [Understanding the benchmarks](learning-benchmarks.md) for the complete
+learning-oriented explanation.
 
 ## Components
 

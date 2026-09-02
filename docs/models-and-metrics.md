@@ -16,6 +16,29 @@ This project starts with PCA and DINOv2 as a classical-versus-modern RGB compari
 SSL4EO-S12 as a frozen EO-specific 13-band experiment. No model is assumed to be best before
 measurement.
 
+## Training status at a glance
+
+```mermaid
+flowchart LR
+    Index[Index images] --> PCAFit[Fit PCA without labels]
+    PCAFit --> PCAEmbed[PCA embeddings]
+    DCheckpoint[Pretrained DINOv2 checkpoint] --> DEmbed[Frozen RGB inference]
+    SCheckpoint[Pretrained SSL4EO checkpoint] --> SEmbed[Frozen 13-band inference]
+    PCAEmbed --> Rank[Exact cosine ranking]
+    DEmbed --> Rank
+    SEmbed --> Rank
+    Rank --> Labels[Labels used only for evaluation]
+```
+
+| Model | Pretrained? | Parameters learned in this repository? | EuroSAT labels used for learning? |
+|---|---:|---:|---:|
+| PCA-64 | No | Yes, index-fitted projection | No |
+| DINOv2 | Yes | No, checkpoint is frozen | No |
+| SSL4EO-S12 | Yes | No, checkpoint is frozen | No |
+
+This distinction is explained step by step in
+[Understanding training, retrieval, and the benchmarks](learning-benchmarks.md).
+
 ## PCA baseline
 
 Principal Component Analysis learns orthogonal directions that explain the greatest variance in a
@@ -208,7 +231,7 @@ The metrics do not prove:
 - usefulness for a specific analyst task;
 - calibrated semantic similarity;
 - online latency or scalability;
-- superiority to an EO-specific model.
+- universal superiority of one representation outside EuroSAT v1.
 
 Those claims require an appropriate dataset, leakage controls, error analysis, and executed
 validation. See [Validation](validation.md) for the current evidence boundary.
