@@ -28,10 +28,10 @@ Executed on the isolated `codex/evaluation-foundations` branch:
 | Gate | Executed evidence | Status |
 |---|---|---|
 | Lockfile | `uv 0.12.9`; `uv lock --check`; 234 resolved package variants | Passed |
-| Fresh Windows Python 3.11.5 | Locked dev/geo/search environment; 41 tests; Ruff | Passed |
-| Fresh Windows Python 3.12.1 | Locked dev/geo/search environment; 41 tests | Passed |
+| Fresh Windows Python 3.11.5 | Locked dev/geo/search environment; 42 tests; Ruff | Passed |
+| Fresh Windows Python 3.12.1 | Locked dev/geo/search environment; 42 tests | Passed |
 | Dependency consistency | `uv pip check` in both validation environments; original CPU `pip check` | Passed |
-| Coverage | 41 tests, 68% total; local tracking module 91% | Passed; no minimum enforced |
+| Coverage | 42 tests, 68% total; local tracking module 91% | Passed; no minimum enforced |
 | Local MLflow | MLflow 3.15.2, local SQLite and inspected aggregate-only artifact | Passed |
 | Tracked SSL4EO regression | Existing store, 400 queries, zero skipped, mAP@10 0.8135958333 | Reproduced |
 | Optuna availability | Optuna 4.9.0; eight seeded synthetic scalar-objective trials | Smoke only, no retrieval tuning |
@@ -42,6 +42,10 @@ The tracked SSL4EO store hash was
 `4a0b54291346ab9a9ec12570759c5c36365f0011b6aade09400101dcacf63b07` and local MLflow run ID was
 `73daf4bdef5f42e3b28a166b72e4ddcd`. Its artifact contained aggregate metrics and allowlisted
 content identities only: no image IDs, labels, vectors, imagery, or provider URLs.
+
+Published GPU JSON was compared exactly with its executed local report; TerraMind metrics and
+manifest/checkpoint hashes were checked against the local report/store. CI now validates the
+format of provenance hashes in every published result JSON to catch transcription errors.
 
 The original CPU environment and original embedding stores were not replaced. Remote CI run
 `33657731176` passed all four Linux/Windows, Python 3.11/3.12 jobs for commit `e1244da`.

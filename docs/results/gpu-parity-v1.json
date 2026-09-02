@@ -6,7 +6,7 @@
   "cuda_runtime": "13.0",
   "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
   "gpu_memory_bytes": 4294443008,
-  "manifest_sha256": "bc0b10bf3e3cf29d7f7732529ce5f419b514e2ded3a5e6e88ebcdea45338",
+  "manifest_sha256": "bc0b10bf3e3cf29d7f7732529ce5f419b514e2ded3a5e2a5e6e88ebcdea45338",
   "selected_ids_sha256": "65599455bbbcf64183cb93d763dd12b100a5dee02f01c7a5cb59e50e262798cf",
   "checkpoint_sha256": "df8b932e2a23a0773febedf3f650aa7d342b805f7876ca5ed6b139d7245d7c09",
   "shape": [40, 2048],

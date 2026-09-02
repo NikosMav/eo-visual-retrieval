@@ -7,7 +7,7 @@
   "checkpoint_revision": "2b5ac0a3ed7dd7e922ccfd595b56607f342df343",
   "checkpoint_sha256": "e56ea9ebcd4451078b9ca4893d5cd8a89bbee376ae16829c3e7fbbbc76de0eba",
   "embedding_store_sha256": "4fbf446657a20ade619593a4bc618045029a3d53a0b1f92b5a68e9fdd935b187",
-  "manifest_sha256": "bc0b10bf3e3cf29d7f7732529ce5f419b514e2ded3a5e6e88ebcdea45338",
+  "manifest_sha256": "bc0b10bf3e3cf29d7f7732529ce5f419b514e2ded3a5e2a5e6e88ebcdea45338",
   "index_items": 1600,
   "query_items": 400,
   "alignment_with_pca_dinov2_ssl4eo": {
