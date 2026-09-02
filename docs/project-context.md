@@ -25,6 +25,8 @@ The repository currently contains:
 - aligned Sentinel-2 BOA-reflectance and model-ready RGB chip materialization;
 - deterministic image manifests with index/query partitions;
 - PCA, frozen RGB DINOv2, and frozen 13-band SSL4EO-S12 embedding backends;
+- a pinned frozen TerraMind-Tiny challenger, evaluated without replacing the SSL4EO reference;
+- locked CPU/CUDA dependency profiles, local MLflow evaluation tracking, and a CUDA parity smoke;
 - portable compressed embedding stores;
 - exact cosine retrieval and four ranked-retrieval metrics;
 - a reproducible Faiss exact-versus-HNSW benchmark with an explicit ANN-recall contract;
@@ -152,14 +154,15 @@ The project is portfolio-ready when:
 
 ## Next task
 
-Complete the [evaluation-foundations phase](evaluation-foundations.md) before the interface:
+The first [evaluation-foundations gates](evaluation-foundations.md) are complete: locked local and
+remote CI environments, CPU/CUDA parity, local tracking, and the frozen TerraMind comparison.
+SSL4EO remains the reference after TerraMind scored 0.68688 versus 0.81360 mAP@10. Next:
 
-1. Validate locked environments, CPU/CUDA numerical agreement, and local experiment tracking.
-2. Add a frozen TerraMind-Tiny regression comparison without replacing the SSL4EO reference.
-3. Specify new geographically separated development/final data; already-inspected EuroSAT queries
+1. Specify new geographically separated development/final data; already-inspected EuroSAT queries
    cannot become an untouched holdout by splitting them again.
-4. Tune on development queries only, then test a Qdrant adapter against exact search.
-5. Select the product backend from evidence and return to the narrow interface milestone.
+2. Define multi-label relevance and a bounded acquisition plan before downloading BigEarthNet.
+3. Tune on development queries only, then test a Qdrant adapter against exact search.
+4. Select the product backend from evidence and return to the narrow interface milestone.
 
 Paid services, gated-model accounts, bulk dataset downloads, and distributed Milvus deployment
 remain deferred. The choices and consequences are recorded in ADR 0005.

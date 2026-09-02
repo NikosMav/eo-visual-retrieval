@@ -92,8 +92,9 @@ flowchart TD
 
 ## Action items
 
-- [ ] Validate locked environments and GPU parity; record only executed outcomes in validation.
-- [ ] Add a reproducible frozen TerraMind input/checkpoint contract and regression comparison.
+- [x] Validate locked environments and GPU parity; record only executed outcomes in validation.
+- [x] Add a reproducible frozen TerraMind input/checkpoint contract and regression comparison.
+  Observed mAP@10 0.68688 did not beat SSL4EO's 0.81360; retain SSL4EO as the reference.
 - [ ] Specify and acquire a bounded new dataset with development/final partitions.
 - [ ] Run Optuna only on development inputs, then freeze configuration.
 - [ ] Test a Qdrant adapter against exact search before selecting a product database.

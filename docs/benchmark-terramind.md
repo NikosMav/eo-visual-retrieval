@@ -8,7 +8,9 @@ an independent final test or proof that a newer model is better.
 
 The encoder is pretrained externally. This project does not train or fine-tune it. It uses no
 class labels for embedding generation, no generated modalities, and no coordinate/time inputs.
-The model does not replace SSL4EO-S12 by virtue of being installed.
+The model does not replace SSL4EO-S12 by virtue of being installed. The
+[executed regression result](results/terramind-v1.md) scored mAP@10 0.68688; SSL4EO remains the
+reference at 0.81360.
 
 ## Fixed protocol
 

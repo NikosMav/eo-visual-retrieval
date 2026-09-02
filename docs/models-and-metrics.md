@@ -136,7 +136,8 @@ initialization. See the [fixed TerraMind protocol](benchmark-terramind.md).
 
 This is an experimental frozen representation, not a newly trained model or an assumed winner.
 EuroSAT v1 is now explicitly a regression/development benchmark; fresh held-out data is required
-for confirmatory selection. Executed outcomes, if available, are recorded in validation.
+for confirmatory selection. The executed mAP@10 was 0.68688, below SSL4EO's 0.81360 and above
+DINOv2's 0.60763. See [TerraMind results](results/terramind-v1.md) for the complete evidence.
 
 ## Fair model comparison
 
