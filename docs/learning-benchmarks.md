@@ -181,9 +181,32 @@ flowchart BT
     Tests --> Smoke --> Benchmark --> Transfer --> Product
 ```
 
-The project has code-health evidence, bounded STAC/chip smoke evidence, and one spatially separated
-EuroSAT retrieval benchmark. It does not yet have temporal, cross-dataset, user-utility,
-approximate-search, GPU-throughput, or production evidence.
+The project has code-health evidence, bounded STAC/chip smoke evidence, one spatially separated
+EuroSAT representation benchmark, and one CPU exact-versus-HNSW systems benchmark. It does not yet
+have temporal, cross-dataset, user-utility, GPU-throughput, or production evidence.
+
+## Two kinds of recall now exist
+
+The word “recall” appears in two independent evaluations:
+
+| Name | Compares | Question |
+|---|---|---|
+| Semantic Recall@10 | Result class labels with the query class | How many of all label-relevant index images were retrieved? |
+| ANN recall@10 | HNSW result IDs with exact result IDs | How faithfully did approximate search copy exact search? |
+
+```mermaid
+flowchart TD
+    Query[One query embedding] --> Exact[Exact top-10 IDs]
+    Query --> HNSW[HNSW top-10 IDs]
+    Exact --> Labels[Compare labels<br/>semantic metrics]
+    Exact --> Overlap[Compare IDs<br/>ANN recall@10]
+    HNSW --> Overlap
+```
+
+At the current 1,600-item scale, exact search stays the default. The 50k synthetic DINOv2 run
+showed that HNSW can trade exact-neighbor recall for speed, but those added rows are perturbed
+copies rather than new EO observations. Read [the Faiss benchmark](benchmark-faiss.md) and
+[its executed results](results/faiss-v1.md) for the complete explanation.
 
 ## Would we train a model later?
 
@@ -205,5 +228,7 @@ supervised training loop, label leakage, hyperparameter tuning, or a much larger
 - [EuroSAT benchmark guide](benchmark-eurosat.md): exact data preparation and commands.
 - [Models and metrics](models-and-metrics.md): representation and metric details.
 - [EuroSAT v1 results](results/eurosat-v1.md): aggregate results, per-class slices, and examples.
+- [Faiss benchmark](benchmark-faiss.md): exact search, HNSW, ANN recall, and systems measurements.
+- [Faiss v1 results](results/faiss-v1.md): the executed real and synthetic scale matrix.
 - [Validation record](validation.md): executed evidence and prohibited claims.
 - [Architecture](architecture.md): system components and data boundaries.

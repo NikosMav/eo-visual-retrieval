@@ -304,6 +304,32 @@ def _evaluate(args: argparse.Namespace) -> None:
     print(payload, end="")
 
 
+def _benchmark_faiss(args: argparse.Namespace) -> None:
+    from eo_visual_retrieval.faiss_benchmark import benchmark_faiss, file_sha256
+
+    store = EmbeddingStore.load(args.embeddings)
+    result = benchmark_faiss(
+        store,
+        corpus_size=args.corpus_size,
+        k=args.k,
+        m=args.m,
+        ef_construction=args.ef_construction,
+        ef_search_values=tuple(args.ef_search),
+        threads=args.threads,
+        warmups=args.warmups,
+        repeats=args.repeats,
+        seed=args.seed,
+        noise_std=args.noise_std,
+    )
+    result["source"]["embedding_store_sha256"] = file_sha256(args.embeddings)
+    payload = json.dumps(result, indent=2, sort_keys=True) + "\n"
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    temporary = args.output.with_suffix(args.output.suffix + ".tmp")
+    temporary.write_text(payload, encoding="utf-8", newline="\n")
+    temporary.replace(args.output)
+    print(payload, end="")
+
+
 def _result_grid(args: argparse.Namespace) -> None:
     from eo_visual_retrieval.visualization import write_result_grid
 
@@ -473,6 +499,24 @@ def build_parser() -> argparse.ArgumentParser:
     evaluate.add_argument("--k", type=int, default=10)
     evaluate.add_argument("--output", type=Path, help="optionally write the JSON result atomically")
     evaluate.set_defaults(handler=_evaluate)
+
+    faiss_benchmark = commands.add_parser(
+        "benchmark-faiss",
+        help="compare exact Faiss cosine search with HNSW ANN",
+    )
+    faiss_benchmark.add_argument("--embeddings", type=Path, required=True)
+    faiss_benchmark.add_argument("--output", type=Path, required=True)
+    faiss_benchmark.add_argument("--corpus-size", type=int, required=True)
+    faiss_benchmark.add_argument("--k", type=int, default=10)
+    faiss_benchmark.add_argument("--m", type=int, default=32)
+    faiss_benchmark.add_argument("--ef-construction", type=int, default=200)
+    faiss_benchmark.add_argument("--ef-search", type=int, nargs="+", default=[16, 32, 64, 128])
+    faiss_benchmark.add_argument("--threads", type=int, default=1)
+    faiss_benchmark.add_argument("--warmups", type=int, default=2)
+    faiss_benchmark.add_argument("--repeats", type=int, default=7)
+    faiss_benchmark.add_argument("--seed", type=int, default=42)
+    faiss_benchmark.add_argument("--noise-std", type=float, default=0.01)
+    faiss_benchmark.set_defaults(handler=_benchmark_faiss)
 
     grid = commands.add_parser(
         "result-grid",

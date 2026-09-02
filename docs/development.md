@@ -9,6 +9,7 @@ src/eo_visual_retrieval/
   manifests.py           deterministic local-image manifests
   stac.py                catalog discovery and preview materialization
   retrieval.py           exact cosine index
+  faiss_benchmark.py     exact-versus-HNSW systems benchmark
   evaluation.py          ranked-retrieval metrics
   embeddings/
     pca.py               classical pixel/PCA baseline
@@ -28,7 +29,7 @@ older Windows path limits when the environment lives inside an already long chec
 ```powershell
 py -3.11 -m venv C:\Users\<you>\.venvs\eovr
 C:\Users\<you>\.venvs\eovr\Scripts\python -m pip install --upgrade pip
-C:\Users\<you>\.venvs\eovr\Scripts\python -m pip install -e ".[dev,stac,geo,ml]"
+C:\Users\<you>\.venvs\eovr\Scripts\python -m pip install -e ".[dev,stac,geo,ml,search]"
 ```
 
 An editable install points Python at the current checkout. If the repository is moved or another
@@ -51,6 +52,7 @@ Optional groups add:
 - `stac`: PySTAC Client, Planetary Computer signing, and HTTP downloads;
 - `geo`: Rasterio for windowed, aligned geospatial raster processing;
 - `ml`: scikit-learn PCA and PyTorch/torchvision DINOv2 execution;
+- `search`: Faiss CPU indexes and psutil process-memory observations;
 - `dev`: Ruff, Pytest, and pytest-cov.
 
 This lets lightweight CI test the deterministic core without downloading model checkpoints.
@@ -85,6 +87,7 @@ The current tests cover:
 - rejection of duplicate content with conflicting labels;
 - embedding-store persistence;
 - exact-cosine ranking, self-exclusion, and zero-vector handling;
+- Faiss normalization, deterministic scale expansion, ANN overlap, and exact/HNSW contracts;
 - perfect synthetic label retrieval;
 - STAC query bounds and manifest sanitization.
 
@@ -96,6 +99,7 @@ High-value missing tests include:
 - HTTP retries, byte limits, partial-file cleanup, and media-type fallback;
 - malformed embedding-store archives;
 - skipped-query and non-perfect metric examples;
+- CLI-level Faiss output and argument validation;
 - future geospatial windows, transforms, scaling, nodata, and cloud masks.
 
 Network and large-model tests should not make the default unit suite slow or unreliable. Use small

@@ -1,0 +1,154 @@
+{
+  "benchmark": "faiss-exact-vs-hnsw",
+  "configuration": {
+    "ef_construction": 200,
+    "ef_search_values": [
+      16,
+      32,
+      64,
+      128
+    ],
+    "m": 32,
+    "metric": "cosine_via_normalized_inner_product",
+    "threads": 1
+  },
+  "environment": {
+    "faiss_cpu": "1.15.0",
+    "numpy": "2.4.6",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "psutil": "7.2.2",
+    "python": "3.11.5"
+  },
+  "exact": {
+    "build": {
+      "rss_after_bytes": 106094592,
+      "rss_before_bytes": 92950528,
+      "rss_delta_bytes": 13144064,
+      "seconds": 0.00408469999092631,
+      "serialized_bytes": 13107245
+    },
+    "index": "IndexFlatIP",
+    "latency": {
+      "median_ms_per_query": 0.017223000031663105,
+      "p95_ms_per_query": 0.017924074993061367,
+      "repetitions": 7,
+      "warmups": 2
+    }
+  },
+  "generated_at_utc": "2026-09-02T12:18:10.195641+00:00",
+  "hnsw": {
+    "build": {
+      "rss_after_bytes": 112381952,
+      "rss_before_bytes": 98590720,
+      "rss_delta_bytes": 13791232,
+      "seconds": 0.3681243000028189,
+      "serialized_bytes": 13541986
+    },
+    "index": "IndexHNSWFlat",
+    "searches": [
+      {
+        "ann_recall_at_k": 0.9947499999999999,
+        "ef_search": 16,
+        "latency": {
+          "median_ms_per_query": 0.03683800001454074,
+          "p95_ms_per_query": 0.0377777499743388,
+          "repetitions": 7,
+          "warmups": 2
+        },
+        "speedup_vs_exact_median": 0.4675335258392101
+      },
+      {
+        "ann_recall_at_k": 0.9995,
+        "ef_search": 32,
+        "latency": {
+          "median_ms_per_query": 0.059680999984266236,
+          "p95_ms_per_query": 0.061474249967432115,
+          "repetitions": 7,
+          "warmups": 2
+        },
+        "speedup_vs_exact_median": 0.28858430716984673
+      },
+      {
+        "ann_recall_at_k": 1.0,
+        "ef_search": 64,
+        "latency": {
+          "median_ms_per_query": 0.08427024993579835,
+          "p95_ms_per_query": 0.08710657498886576,
+          "repetitions": 7,
+          "warmups": 2
+        },
+        "speedup_vs_exact_median": 0.204378176696812
+      },
+      {
+        "ann_recall_at_k": 1.0,
+        "ef_search": 128,
+        "latency": {
+          "median_ms_per_query": 0.1450832499540411,
+          "p95_ms_per_query": 0.14676070000132313,
+          "repetitions": 7,
+          "warmups": 2
+        },
+        "speedup_vs_exact_median": 0.11871115402445795
+      }
+    ]
+  },
+  "measurement_notes": [
+    "ANN recall is top-k overlap with IndexFlatIP, not semantic class recall.",
+    "Latency is measured for the full query batch and divided by its row count.",
+    "RSS deltas are approximate process-level observations and may include allocator effects.",
+    "Synthetic rows are perturbed copies for systems scaling only, not EO evidence."
+  ],
+  "schema_version": 1,
+  "source": {
+    "base_index_rows": 1600,
+    "embedding_metadata": {
+      "archive_md5": "091174add3c8e680a49244acf185b9f0",
+      "backend": "ssl4eo-s12",
+      "bands": [
+        "B01",
+        "B02",
+        "B03",
+        "B04",
+        "B05",
+        "B06",
+        "B07",
+        "B08",
+        "B8A",
+        "B09",
+        "B10",
+        "B11",
+        "B12"
+      ],
+      "checkpoint_filename": "resnet50_sentinel2_all_moco-df8b932e.pth",
+      "checkpoint_repository": "torchgeo/resnet50_sentinel2_all_moco",
+      "checkpoint_revision": "da4f3c9dbe09272eb902f3b37f46635fa4726879",
+      "checkpoint_sha256": "df8b932e2a23a0773febedf3f650aa7d342b805f7876ca5ed6b139d7245d7c09",
+      "device_requested": "auto",
+      "frozen": true,
+      "index_items": 1600,
+      "items": 2000,
+      "manifest_sha256": "bc0b10bf3e3cf29d7f7732529ce5f419b514e2ded3a5e2a5e6e88ebcdea45338",
+      "model": "ssl4eo-s12-moco-resnet50",
+      "packages": {
+        "numpy": "2.4.6",
+        "rasterio": "1.4.4",
+        "torch": "2.13.0",
+        "torchvision": "0.28.0"
+      },
+      "preprocessing": "13-band L1C DN clipped to 0-10000 and divided by 10000; resize 256, center crop 224",
+      "python": "3.11.5",
+      "query_items": 400
+    },
+    "embedding_store_sha256": "4a0b54291346ab9a9ec12570759c5c36365f0011b6aade09400101dcacf63b07",
+    "query_rows": 400
+  },
+  "workload": {
+    "corpus_rows": 1600,
+    "dimension": 2048,
+    "expansion_noise_std_per_dimension": 0.01,
+    "expansion_seed": 42,
+    "k": 10,
+    "synthetic_expansion": false,
+    "synthetic_rows": 0
+  }
+}

@@ -282,6 +282,46 @@ The command selects one best or worst AP@k query per class and renders the query
 top-k results. Relevance borders make class-level successes and confusions visible. Run both modes
 for each backend; individual examples complement metrics but do not replace them.
 
+## Benchmark approximate search
+
+Install the optional search group, then compare Faiss exact search with HNSW on an existing
+embedding store:
+
+```powershell
+python -m pip install -e ".[search]"
+
+eovr benchmark-faiss `
+  --embeddings artifacts/eurosat-v1-dinov2-vits14.npz `
+  --output docs/results/faiss-v1-dinov2-1600.json `
+  --corpus-size 1600 `
+  --k 10 `
+  --m 32 `
+  --ef-construction 200 `
+  --ef-search 16 32 64 128 `
+  --threads 1 `
+  --warmups 2 `
+  --repeats 7
+```
+
+The command takes already-created vectors; it does not train an encoder. It normalizes index and
+query rows, uses Faiss `IndexFlatIP` for exact top-k IDs, constructs one `IndexHNSWFlat`, and
+queries that graph at each `efSearch` value.
+
+```mermaid
+flowchart LR
+    NPZ[EmbeddingStore NPZ] --> Split[Index rows + query rows]
+    Split --> Flat[IndexFlatIP]
+    Split --> HNSW[IndexHNSWFlat]
+    Flat --> ExactIDs[Exact top-k IDs]
+    HNSW --> ApproxIDs[Approximate top-k IDs]
+    ExactIDs --> JSON[Recall overlap + cost JSON]
+    ApproxIDs --> JSON
+```
+
+If `--corpus-size` exceeds the real index count, deterministic perturbed copies are added and the
+result is marked synthetic. Such a run measures search mechanics only. See
+[Exact versus approximate search benchmark](benchmark-faiss.md) before interpreting its output.
+
 ## Reproducibility checklist
 
 For a benchmark run, record:
@@ -294,6 +334,7 @@ For a benchmark run, record:
 - embedding backend, model, dimensions, and preprocessing;
 - `k` values;
 - package versions, Python version, and device;
+- search index type, metric, threads, construction/search parameters, and corpus-size provenance;
 - exclusions, skipped queries, and known leakage risks.
 
 Generated data and embeddings stay outside Git. Commit sanitized configuration, aggregate metrics,
@@ -312,3 +353,5 @@ and enough provenance for another person to reproduce the run.
 | `chip contains ... pixels` | The requested spatial window exceeds the configured safety bound |
 | `s2:processing_baseline` missing | The reflectance offset cannot be determined safely |
 | CUDA requested but unavailable | The installed PyTorch build or machine does not expose CUDA |
+| `Faiss benchmark dependencies are missing` | Install the optional `search` dependency group |
+| `every ef_search value must be at least k` | HNSW search breadth is too small for the requested result count |

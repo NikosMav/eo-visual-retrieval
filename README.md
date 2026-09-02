@@ -1,8 +1,8 @@
 # EO Visual Retrieval
 
 An educational Earth-observation image-retrieval system built to demonstrate the complete
-retrieval workflow: public-data discovery, reproducible manifests, image embeddings, exact
-ranking, and honest offline evaluation.
+retrieval workflow: public-data discovery, reproducible manifests, image embeddings, exact and
+approximate ranking, and honest offline evaluation.
 
 The project compares transparent PCA, frozen RGB DINOv2, and frozen 13-band SSL4EO-S12 features.
 It provides a tested offline pipeline, command-line interface, and a first spatially separated
@@ -19,6 +19,7 @@ established.
 - Builds deterministic index/query manifests from labeled local images.
 - Generates PCA, DINOv2, or EuroSAT-specific SSL4EO-S12 image embeddings.
 - Ranks images with exact cosine similarity.
+- Benchmarks Faiss HNSW recall, latency, construction time, and storage against exact search.
 - Reports Precision@k, Recall@k, mAP@k, and nDCG@k.
 - Records the difference between executed evidence and planned work.
 
@@ -38,8 +39,11 @@ flowchart LR
     PCA --> Vectors[Normalized embeddings]
     DINO --> Vectors
     SSL --> Vectors
-    Vectors --> Search[Exact cosine search]
-    Search --> Eval[Ranked retrieval metrics + result grids]
+    Vectors --> Exact[Exact cosine<br/>quality reference]
+    Vectors --> HNSW[Faiss HNSW<br/>approximate candidate]
+    Exact --> Eval[Semantic retrieval metrics<br/>+ result grids]
+    Exact --> Systems[ANN overlap + latency<br/>build · bytes · RSS]
+    HNSW --> Systems
 ```
 
 STAC discovery and benchmark evaluation are separate on purpose. Preview assets help teach the
@@ -74,7 +78,7 @@ because PyTorch packages contain deeply nested files.
 ```powershell
 py -3.11 -m venv C:\Users\<you>\.venvs\eovr
 C:\Users\<you>\.venvs\eovr\Scripts\python -m pip install --upgrade pip
-C:\Users\<you>\.venvs\eovr\Scripts\python -m pip install -e ".[dev,stac,geo,ml]"
+C:\Users\<you>\.venvs\eovr\Scripts\python -m pip install -e ".[dev,stac,geo,ml,search]"
 ```
 
 Confirm the local code is healthy:
@@ -170,6 +174,11 @@ SSL4EO-S12 achieved 0.81360 on the same selected patches, split, relevance defin
 ranker. See [EuroSAT v1 results](docs/results/eurosat-v1.md) for all metrics, per-class slices,
 qualitative examples, reproducibility evidence, and limitations.
 
+The Faiss v1 experiment found that exact search remains the best default for the real 1,600-item
+corpus. On a 50k synthetic DINOv2 scaling workload, HNSW at `efSearch=16` was 2.06× faster but
+retained 85.2% of the exact top-10 neighbors; raising recall to 97.6% removed the speed advantage.
+See [Faiss v1 results](docs/results/faiss-v1.md) for the complete matrix and evidence limits.
+
 See [Validation](docs/validation.md) for exact evidence and limitations.
 
 ## Documentation
@@ -179,13 +188,13 @@ Read the guides in this order:
 1. [Project context and roadmap](docs/project-context.md) — goal, current state, and next work.
 2. [Understanding the benchmarks](docs/learning-benchmarks.md) — training, frozen models, splits, metrics, and evidence.
 3. [Architecture](docs/architecture.md) — components, data boundaries, and design choices.
-4. [Sentinel-2 chip decision](docs/decisions/0001-windowed-sentinel2-chip-materialization.md) — selected design and trade-offs.
-5. [EuroSAT benchmark](docs/benchmark-eurosat.md) — dataset, split, commands, and limits.
-6. [Benchmark decision](docs/decisions/0002-georeferenced-eurosat-benchmark.md) — alternatives and rationale.
-7. [Multispectral encoder decision](docs/decisions/0003-ssl4eo-s12-multispectral-encoder.md) — model choice, alternatives, preprocessing, and risks.
-8. [EuroSAT v1 results](docs/results/eurosat-v1.md) — metrics, examples, evidence, and interpretation.
-9. [Pipeline and CLI](docs/pipeline-and-cli.md) — each action, input, and output.
-10. [Models and metrics](docs/models-and-metrics.md) — representations, cosine search, and evaluation.
+4. [EuroSAT benchmark](docs/benchmark-eurosat.md) — dataset, split, commands, and limits.
+5. [EuroSAT v1 results](docs/results/eurosat-v1.md) — semantic metrics, examples, and interpretation.
+6. [Faiss benchmark](docs/benchmark-faiss.md) — exact/ANN concepts, protocol, commands, and metrics.
+7. [Faiss v1 results](docs/results/faiss-v1.md) — executed scale matrix and current index decision.
+8. [Pipeline and CLI](docs/pipeline-and-cli.md) — each action, input, and output.
+9. [Models and metrics](docs/models-and-metrics.md) — representations and both recall definitions.
+10. [Architecture decisions](docs/decisions/) — alternatives, decisions, trade-offs, and risks.
 11. [Learning STAC](docs/learning-stac.md) — EO catalog concepts and retrieval pitfalls.
 12. [Development](docs/development.md) — environment, tools, tests, and contribution workflow.
 13. [Validation](docs/validation.md) — what has and has not been verified.
@@ -200,9 +209,9 @@ Read the guides in this order:
 
 ## Roadmap
 
-The next milestone is approximate search: add Faiss while retaining exact cosine search as the
-quality reference, then measure recall, query latency, build time, index size, and memory. A small
-interactive product surface follows the scaling analysis.
+The next milestone is a small product surface that exposes the evaluated workflow while making the
+model and exact-versus-approximate index choice visible. Exact search remains the current default;
+Faiss HNSW is an evaluated scale option, not a blanket replacement.
 
 ## License
 

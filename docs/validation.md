@@ -13,7 +13,8 @@ Update this record only after executing the relevant validation. Keep planned wo
 flowchart LR
     Tests[Tests and CI<br/>code behavior] --> Smoke[Smoke runs<br/>small real paths]
     Smoke --> Benchmark[EuroSAT v1 benchmark<br/>bounded model comparison]
-    Benchmark -. does not establish .-> Missing[Temporal · cross-dataset · product · scale]
+    Benchmark --> Systems[Faiss systems benchmark<br/>exact vs HNSW]
+    Systems -. does not establish .-> Missing[Temporal · cross-dataset · product · production]
 ```
 
 The first three boxes record different kinds of evidence; passing one does not imply the next.
@@ -27,14 +28,14 @@ Executed locally against the current checkout with Python 3.11.5:
 | Gate | Command or evidence | Status |
 |---|---|---|
 | Static quality | `python -m ruff check .` | Passed |
-| Unit tests | `python -m pytest` | 23 passed |
+| Unit tests | `python -m pytest` | 29 passed |
 | Dependency consistency | `python -m pip check` | Passed |
-| Coverage report | `pytest --cov=eo_visual_retrieval --cov-report=term-missing` | 58% total |
+| Coverage report | `pytest --cov=eo_visual_retrieval --cov-report=term-missing` | 59% total |
 | Current-source import | `eo_visual_retrieval.__file__` resolved under this checkout's `src/` | Passed |
 | GitHub CI | Ruff and tests on Python 3.11 and 3.12 for commit `1b851ca` | Passed |
 
 Coverage is strongest in EuroSAT preparation/audit, visualization, manifests, storage, exact
-retrieval, records, evaluation, SSL4EO input preparation, and the pure chip-processing path. The
+retrieval, Faiss benchmark logic, records, evaluation, SSL4EO input preparation, and the pure chip-processing path. The
 CLI, PCA, and DINOv2 modules do not yet have direct unit coverage; STAC network resolution is only
 partially covered. CI reports coverage but does not enforce a minimum percentage.
 
@@ -81,6 +82,36 @@ changes both pretraining domain and model input bands; it is not an extra-band a
 
 Per-class metrics and inspected best/worst AP@5 grids are recorded in
 `docs/results/eurosat-v1.md`, with machine-readable k=10 results under `docs/results/`.
+
+## Faiss exact-versus-HNSW benchmark — 2026-09-02
+
+Executed on Windows 10 build 26200 with Python 3.11.5, `faiss-cpu 1.15.0`, one CPU thread, and all
+400 EuroSAT v1 queries. Every run used normalized inner product, `k=10`, HNSW `M=32`,
+`efConstruction=200`, two warmup batches, and seven measured batches.
+
+### Real 1,600-vector stores
+
+| Store | Exact median ms/query | Selected HNSW observation | Outcome |
+|---|---:|---|---|
+| PCA-64 | 0.01227 | ef=16: 0.00652 ms, ANN recall 0.92950 | Faster only with 7.1% exact-neighbor loss |
+| DINOv2 | 0.00687 | ef=16: 0.01286 ms, ANN recall 0.97400 | HNSW slower |
+| SSL4EO-S12 | 0.01722 | ef=16: 0.03684 ms, ANN recall 0.99475 | HNSW slower |
+
+### DINOv2 scale tiers
+
+| Corpus | Provenance | Exact ms/query | HNSW ef=16 | HNSW ef=64 |
+|---:|---|---:|---|---|
+| 10,000 | 1,600 real + 8,400 synthetic rows | 0.02420 | 0.02472 ms; recall 0.95575 | 0.05988 ms; recall 0.99550 |
+| 50,000 | 1,600 real + 48,400 synthetic rows | 0.11755 | 0.05705 ms; recall 0.85175 | 0.12289 ms; recall 0.97625 |
+
+The 50k tier demonstrates a systems trade-off, not EO quality at scale. HNSW build and serialized
+size were also larger: 18.608 seconds and 86.22 MiB versus 0.01436 seconds and 73.24 MiB for Flat.
+Process RSS deltas were recorded but are treated as approximate because native allocator reuse
+affects before/after observations.
+
+The selected current policy is exact search for 1,600 items. Machine-readable evidence and the
+full parameter sweep are in `docs/results/faiss-v1-*.json`; interpretation is in
+`docs/results/faiss-v1.md`.
 
 ## Analysis-ready Sentinel-2 chip smoke validation — 2026-09-01
 
@@ -157,7 +188,8 @@ B938BF1BC15CD2EC0FEACFE3A1BB553FE8EA9CA46A7E1D8D00217F29AEF60CD9
 ## Evidence not yet available
 
 - Temporal or seasonal leakage controls; EuroSAT does not expose acquisition timestamps.
-- Exact versus approximate search recall, latency, build-time, size, and memory measurements.
+- Repeatable performance across other operating systems, CPUs, thread counts, and concurrent load.
+- ANN behavior on a genuinely larger EO corpus rather than deterministic synthetic expansion.
 - CUDA correctness or throughput measurements.
 - API, interactive-demo, or deployment validation.
 
@@ -166,8 +198,10 @@ B938BF1BC15CD2EC0FEACFE3A1BB553FE8EA9CA46A7E1D8D00217F29AEF60CD9
 The repository may claim that it contains a tested offline retrieval pipeline; that bounded STAC
 and analysis-ready Sentinel-2 chip paths have executed; that DINOv2 ViT-S/14 outperformed PCA-64;
 and that the frozen 13-band SSL4EO-S12 representation outperformed both RGB baselines on the
-recorded spatially separated EuroSAT v1 class-retrieval benchmark.
+recorded spatially separated EuroSAT v1 class-retrieval benchmark. It may also claim that the
+recorded one-thread Windows experiment found exact search preferable at 1,600 items and measured a
+speed/recall trade-off for HNSW on a 50k synthetic DINOv2 workload.
 
 It must not generalize that result to temporal or seasonal transfer, the causal benefit of
-non-visible bands, other datasets, analyst utility, production readiness, approximate-search
-performance, or GPU acceleration until those claims are supported by recorded validation.
+non-visible bands, other datasets, analyst utility, production readiness, ANN performance on real
+large EO corpora or other hardware, or GPU acceleration until supported by recorded validation.

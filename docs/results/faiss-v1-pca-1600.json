@@ -1,0 +1,134 @@
+{
+  "benchmark": "faiss-exact-vs-hnsw",
+  "configuration": {
+    "ef_construction": 200,
+    "ef_search_values": [
+      16,
+      32,
+      64,
+      128
+    ],
+    "m": 32,
+    "metric": "cosine_via_normalized_inner_product",
+    "threads": 1
+  },
+  "environment": {
+    "faiss_cpu": "1.15.0",
+    "numpy": "2.4.6",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "psutil": "7.2.2",
+    "python": "3.11.5"
+  },
+  "exact": {
+    "build": {
+      "rss_after_bytes": 49565696,
+      "rss_before_bytes": 49123328,
+      "rss_delta_bytes": 442368,
+      "seconds": 0.0001770000089891255,
+      "serialized_bytes": 409645
+    },
+    "index": "IndexFlatIP",
+    "latency": {
+      "median_ms_per_query": 0.012273250031284988,
+      "p95_ms_per_query": 0.012707800007774495,
+      "repetitions": 7,
+      "warmups": 2
+    }
+  },
+  "generated_at_utc": "2026-09-02T12:17:50.058184+00:00",
+  "hnsw": {
+    "build": {
+      "rss_after_bytes": 51535872,
+      "rss_before_bytes": 51290112,
+      "rss_delta_bytes": 245760,
+      "seconds": 0.06770739998319186,
+      "serialized_bytes": 844386
+    },
+    "index": "IndexHNSWFlat",
+    "searches": [
+      {
+        "ann_recall_at_k": 0.9295000000000002,
+        "ef_search": 16,
+        "latency": {
+          "median_ms_per_query": 0.006520999959320761,
+          "p95_ms_per_query": 0.00665082498017,
+          "repetitions": 7,
+          "warmups": 2
+        },
+        "speedup_vs_exact_median": 1.8821116558576687
+      },
+      {
+        "ann_recall_at_k": 0.9647500000000001,
+        "ef_search": 32,
+        "latency": {
+          "median_ms_per_query": 0.011142750008730218,
+          "p95_ms_per_query": 0.011253725024289452,
+          "repetitions": 7,
+          "warmups": 2
+        },
+        "speedup_vs_exact_median": 1.101456105689263
+      },
+      {
+        "ann_recall_at_k": 0.9815,
+        "ef_search": 64,
+        "latency": {
+          "median_ms_per_query": 0.02113225003995467,
+          "p95_ms_per_query": 0.02190054999664426,
+          "repetitions": 7,
+          "warmups": 2
+        },
+        "speedup_vs_exact_median": 0.5807829269519336
+      },
+      {
+        "ann_recall_at_k": 0.99075,
+        "ef_search": 128,
+        "latency": {
+          "median_ms_per_query": 0.044791749969590455,
+          "p95_ms_per_query": 0.04504597499180818,
+          "repetitions": 7,
+          "warmups": 2
+        },
+        "speedup_vs_exact_median": 0.27400693296460654
+      }
+    ]
+  },
+  "measurement_notes": [
+    "ANN recall is top-k overlap with IndexFlatIP, not semantic class recall.",
+    "Latency is measured for the full query batch and divided by its row count.",
+    "RSS deltas are approximate process-level observations and may include allocator effects.",
+    "Synthetic rows are perturbed copies for systems scaling only, not EO evidence."
+  ],
+  "schema_version": 1,
+  "source": {
+    "base_index_rows": 1600,
+    "embedding_metadata": {
+      "backend": "pca",
+      "components": 64,
+      "fit_partition": "index",
+      "image_size": 64,
+      "index_items": 1600,
+      "items": 2000,
+      "manifest_sha256": "bc0b10bf3e3cf29d7f7732529ce5f419b514e2ded3a5e2a5e6e88ebcdea45338",
+      "packages": {
+        "Pillow": "12.3.0",
+        "numpy": "2.4.6",
+        "scikit-learn": "1.9.0"
+      },
+      "preprocessing": "RGB, square resize, 0-1 scaling, flattened pixels",
+      "python": "3.11.5",
+      "query_items": 400,
+      "seed": 42
+    },
+    "embedding_store_sha256": "580742b9b21665450bb3d504d45dd74d9f6e65e8833d2ead460f4ee38508ecf2",
+    "query_rows": 400
+  },
+  "workload": {
+    "corpus_rows": 1600,
+    "dimension": 64,
+    "expansion_noise_std_per_dimension": 0.01,
+    "expansion_seed": 42,
+    "k": 10,
+    "synthetic_expansion": false,
+    "synthetic_rows": 0
+  }
+}

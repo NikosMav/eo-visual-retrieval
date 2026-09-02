@@ -10,7 +10,7 @@ The current system is deliberately small:
 
 - files and JSONL manifests instead of a database;
 - compressed NumPy arrays instead of a vector service;
-- exact cosine search instead of an approximate index;
+- exact cosine search as the default plus an isolated Faiss HNSW benchmark path;
 - a command-line interface instead of an API or web application.
 
 Those choices keep the quality baseline understandable before scale-oriented components are added.
@@ -34,9 +34,12 @@ flowchart TD
         PCA --> Store[EmbeddingStore NPZ]
         DINO --> Store
         SSL --> Store
-        Store --> Exact[ExactCosineIndex]
+        Store --> Exact[Exact cosine / Faiss Flat<br/>quality reference]
+        Store --> HNSW[Faiss HNSW<br/>approximate experiment]
         Store --> Evaluator[Offline evaluator]
         Exact --> Rankings[Ranked item IDs]
+        Exact --> SearchEval[ANN recall + systems cost]
+        HNSW --> SearchEval
         Evaluator --> Metrics[P@k · R@k · mAP@k · nDCG@k]
     end
 ```
@@ -78,6 +81,7 @@ learning-oriented explanation.
 | SSL4EO-S12 backend | Read selected 13-band archive members and produce normalized frozen EO features | `embeddings/ssl4eo.py` |
 | Embedding store | Save vectors and retrieval metadata in a portable NPZ file | `embeddings/store.py` |
 | Exact index | Rank every index vector by cosine similarity | `retrieval.py` |
+| Faiss benchmark | Compare exact normalized inner product with HNSW at fixed scale tiers | `faiss_benchmark.py` |
 | Evaluator | Calculate label-proxy ranked-retrieval metrics | `evaluation.py` |
 | Result-grid renderer | Select per-class best/worst queries and render exact ranked results | `visualization.py` |
 | CLI | Validate arguments and connect all stages | `cli.py` |
@@ -192,6 +196,7 @@ The byte RGB file is the model input. It does not replace the reflectance artifa
 - The PCA transformer is not persisted for embedding unseen images later.
 - The query command accepts an ID already in an embedding store, not a new uploaded image.
 - Exact search is intentionally linear in corpus size.
+- HNSW is benchmarked but is not the current default query path.
 - There is no API, database, job runner, or interactive result viewer.
 
 These constraints define the roadmap rather than hidden production claims.

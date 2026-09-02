@@ -151,7 +151,35 @@ All embeddings are L2-normalized, so search reduces to a matrix-vector dot produ
 indicate closer directions in embedding space.
 
 Exact search scores every index vector. It is simple and gives the reference ranking against which
-future approximate search must be measured.
+approximate search is measured.
+
+## Faiss exact and HNSW search
+
+Faiss `IndexFlatIP` scores every normalized vector and is the exact systems reference.
+`IndexHNSWFlat` builds a navigable graph and visits only a candidate subset during a query. Adding
+vectors to that graph is index construction, not model training: no image encoder weights change.
+
+Approximate-search recall has a different denominator from semantic Recall@k:
+
+```text
+ANN recall@k = exact top-k neighbor IDs also returned by HNSW / k
+```
+
+ANN recall answers whether HNSW reproduced the exact ranker. Semantic Recall@k, described below,
+answers how many label-relevant items were found. Never report one as the other.
+
+```mermaid
+flowchart LR
+    V[Same normalized embeddings] --> E[Exact top-k IDs]
+    V --> A[HNSW top-k IDs]
+    E --> O[ANN recall@k<br/>ID overlap]
+    A --> O
+    E --> L[Semantic metrics<br/>compare class labels]
+```
+
+See [the Faiss benchmark](benchmark-faiss.md) and
+[executed v1 results](results/faiss-v1.md) for configuration, latency, construction, storage, and
+memory measurements.
 
 ## Relevance definition
 

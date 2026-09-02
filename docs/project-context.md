@@ -27,6 +27,7 @@ The repository currently contains:
 - PCA, frozen RGB DINOv2, and frozen 13-band SSL4EO-S12 embedding backends;
 - portable compressed embedding stores;
 - exact cosine retrieval and four ranked-retrieval metrics;
+- a reproducible Faiss exact-versus-HNSW benchmark with an explicit ANN-recall contract;
 - an executed 2,000-image, spatially separated EuroSAT benchmark;
 - aggregate and per-class metrics plus qualitative best/worst grids for all three representations;
 - unit tests, linting, CI, and executed smoke validation.
@@ -54,8 +55,8 @@ flowchart LR
     M1[Milestone 1<br/>analysis-ready chips<br/>completed]
     M2[Milestone 2<br/>leakage-aware benchmark<br/>completed]
     M3[Milestone 3<br/>representation analysis<br/>completed for EuroSAT v1]
-    M4[Milestone 4<br/>approximate search<br/>next]
-    M5[Milestone 5<br/>usable product surface<br/>planned]
+    M4[Milestone 4<br/>approximate search<br/>completed v1]
+    M5[Milestone 5<br/>usable product surface<br/>next]
     M1 --> M2 --> M3 --> M4 --> M5
 ```
 
@@ -109,15 +110,21 @@ for EuroSAT v1
 - Evaluate one EO-specific or multispectral encoder as a separate experiment. — completed with
   SSL4EO-S12 on EuroSAT v1
 
-### Milestone 4: approximate search
+### Milestone 4: approximate search — completed v1
 
-Add Faiss while retaining exact cosine search as the reference. Measure:
+Faiss `IndexFlatIP` now provides the exact normalized-inner-product reference and
+`IndexHNSWFlat` provides the approximate candidate. The executed v1 matrix measures:
 
 - recall relative to exact search;
 - query latency;
 - index build time;
 - serialized index size;
 - runtime memory at multiple corpus sizes.
+
+The real 1,600-vector PCA, DINOv2, and SSL4EO-S12 stores were measured. Deterministic DINOv2
+expansions at 10k and 50k rows provide systems-only scaling evidence. At the current real corpus,
+exact search remains the selected default. See `docs/benchmark-faiss.md`, ADR 0004, and
+`docs/results/faiss-v1.md`.
 
 ### Milestone 5: usable project surface
 
@@ -144,6 +151,7 @@ The project is portfolio-ready when:
 
 ## Next task
 
-Begin Milestone 4 with a reproducible Faiss experiment that treats exact cosine results as ground
-truth. Define corpus-size tiers and record approximate recall, latency, build time, serialized
-index size, and runtime memory without replacing the exact quality reference.
+Begin Milestone 5 by defining the narrowest useful local product surface. It should accept or
+select a public query image, use an existing evaluated embedding backend, display ranked results
+and safe metadata, expose which index produced the ranking, and preserve exact search as the
+default and regression oracle.
