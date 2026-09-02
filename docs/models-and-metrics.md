@@ -12,8 +12,9 @@ The representation determines what “similar” means:
 - DINOv2 features tend to capture more reusable visual structure and semantics;
 - an EO-specific multispectral model may also capture information outside visible RGB.
 
-This project starts with PCA and DINOv2 because they provide a useful classical-versus-modern
-comparison. Neither model is assumed to be best before measurement.
+This project starts with PCA and DINOv2 as a classical-versus-modern RGB comparison, then adds
+SSL4EO-S12 as a frozen EO-specific 13-band experiment. No model is assumed to be best before
+measurement.
 
 ## PCA baseline
 
@@ -80,18 +81,40 @@ Limitations:
 
 For these reasons, DINOv2 is an RGB baseline, not an EO-specific multispectral model.
 
+## SSL4EO-S12 multispectral experiment
+
+SSL4EO-S12 is a self-supervised EO representation pretrained on geographically diverse,
+multi-season Sentinel-1 and Sentinel-2 imagery. The selected MoCo ResNet-50 checkpoint consumes
+all 13 Sentinel-2 Level-1C bands and returns a 2,048-dimensional feature vector.
+
+The current pipeline:
+
+1. verifies the official EuroSAT archive and pinned checkpoint checksums;
+2. reads only each manifest-selected 13-band TIFF member from the archive;
+3. moves EuroSAT's last-position `B8A` band between `B08` and `B09` as expected by the model;
+4. clips digital numbers to 0–10,000 and divides by 10,000;
+5. resizes to 256 × 256 and takes a centered 224 × 224 crop;
+6. runs the frozen ResNet-50 encoder and L2-normalizes its output.
+
+This experiment uses no EuroSAT labels during embedding. It changes both the pretraining domain
+and available input bands relative to DINOv2, so a score difference measures the representation
+pipeline as a whole; it does not by itself prove that non-visible bands caused the difference.
+See [ADR 0003](decisions/0003-ssl4eo-s12-multispectral-encoder.md) for model selection and risks.
+
 ## Fair model comparison
 
-A PCA-versus-DINOv2 benchmark is meaningful only when both use:
+A representation benchmark is meaningful only when every model uses:
 
-- the same source images;
+- the same selected source patches, while model-appropriate inputs are recorded explicitly;
 - the same index/query split;
 - the same relevance labels;
 - the same query exclusions;
 - the same `k` values;
 - recorded preprocessing and model configuration.
 
-Changing both the dataset and model at once prevents a causal interpretation of the result.
+Changing both the selected dataset and model at once prevents a useful interpretation. Using RGB
+for PCA/DINOv2 and 13 bands for SSL4EO-S12 is intentional, but means the multispectral comparison
+is not a controlled band ablation.
 
 ## Exact cosine retrieval
 

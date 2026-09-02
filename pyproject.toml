@@ -5,12 +5,12 @@ build-backend = "hatchling.build"
 [project]
 name = "eo-visual-retrieval"
 version = "0.1.0"
-description = "STAC-aware Earth-observation image retrieval with PCA and DINOv2 embeddings."
+description = "STAC-aware Earth-observation retrieval with RGB and multispectral embeddings."
 readme = "README.md"
 requires-python = ">=3.11,<3.13"
 license = { file = "LICENSE.md" }
 authors = [{ name = "Nikos Mavrapidis" }]
-keywords = ["earth-observation", "stac", "retrieval", "dinov2", "pca"]
+keywords = ["earth-observation", "stac", "retrieval", "dinov2", "ssl4eo", "pca"]
 classifiers = [
   "Development Status :: 3 - Alpha",
   "License :: OSI Approved :: MIT License",

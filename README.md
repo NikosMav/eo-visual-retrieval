@@ -4,9 +4,10 @@ An educational Earth-observation image-retrieval system built to demonstrate the
 retrieval workflow: public-data discovery, reproducible manifests, image embeddings, exact
 ranking, and honest offline evaluation.
 
-The project compares a transparent PCA baseline with frozen DINOv2 features. It provides a tested
-offline pipeline, command-line interface, and a first spatially separated EuroSAT benchmark.
-Broader temporal, multispectral, and cross-dataset generalization has **not** yet been established.
+The project compares transparent PCA, frozen RGB DINOv2, and frozen 13-band SSL4EO-S12 features.
+It provides a tested offline pipeline, command-line interface, and a first spatially separated
+EuroSAT benchmark. Broader temporal and cross-dataset generalization has **not** yet been
+established.
 
 ## What the project does
 
@@ -16,7 +17,7 @@ Broader temporal, multispectral, and cross-dataset generalization has **not** ye
 - Builds aligned, georeferenced Sentinel-2 reflectance and model-ready RGB chips.
 - Prepares a bounded, class-balanced EuroSAT benchmark with spatial leakage controls.
 - Builds deterministic index/query manifests from labeled local images.
-- Generates PCA or DINOv2 image embeddings.
+- Generates PCA, DINOv2, or EuroSAT-specific SSL4EO-S12 image embeddings.
 - Ranks images with exact cosine similarity.
 - Reports Precision@k, Recall@k, mAP@k, and nDCG@k.
 - Records the difference between executed evidence and planned work.
@@ -24,17 +25,14 @@ Broader temporal, multispectral, and cross-dataset generalization has **not** ye
 ## System at a glance
 
 ```text
-STAC API                                      Labeled local RGB images
+STAC API                                      Selected EO patches + manifest
    |                                                    |
-   v                                                    v
-sanitized item manifest                     deterministic image manifest
-   |                                                    |
-   +--> bounded previews                               |
-   |                                         +----------+----------+
-   +--> reflectance + RGB chip ------------->|                     |
-                                             PCA                 DINOv2
-                                              |                     |
-                                              +----------+----------+
+   v                                         +----------+-----------+
+sanitized item manifest                      | RGB derivatives      | 13 bands
+   |                                         v             v        v
+   +--> bounded previews                    PCA         DINOv2   SSL4EO-S12
+   |                                         |             |        |
+   +--> reflectance + RGB chip               +-------------+--------+
                                                          |
                                                  normalized vectors
                                                          |
@@ -155,8 +153,9 @@ The verified code-health gates pass on Python 3.11, and CI tests Python 3.11 and
 STAC and analysis-ready chip smoke runs have executed successfully. The EuroSAT v1 benchmark uses
 1,600 index images and 400 queries with disjoint 50 km spatial cells and a 5 km guard band.
 
-At `k=10`, PCA-64 achieved mAP 0.19698 and DINOv2 ViT-S/14 achieved mAP 0.60763 on the exact same
-manifest. See [EuroSAT v1 results](docs/results/eurosat-v1.md) for all metrics, per-class slices,
+At `k=10`, PCA-64 achieved mAP 0.19698, DINOv2 ViT-S/14 achieved 0.60763, and 13-band
+SSL4EO-S12 achieved 0.81360 on the same selected patches, split, relevance definition, and exact
+ranker. See [EuroSAT v1 results](docs/results/eurosat-v1.md) for all metrics, per-class slices,
 qualitative examples, reproducibility evidence, and limitations.
 
 See [Validation](docs/validation.md) for exact evidence and limitations.
@@ -170,12 +169,13 @@ Read the guides in this order:
 3. [Sentinel-2 chip decision](docs/decisions/0001-windowed-sentinel2-chip-materialization.md) — selected design and trade-offs.
 4. [EuroSAT benchmark](docs/benchmark-eurosat.md) — dataset, split, commands, and limits.
 5. [Benchmark decision](docs/decisions/0002-georeferenced-eurosat-benchmark.md) — alternatives and rationale.
-6. [EuroSAT v1 results](docs/results/eurosat-v1.md) — metrics, examples, evidence, and interpretation.
-7. [Pipeline and CLI](docs/pipeline-and-cli.md) — each action, input, and output.
-8. [Models and metrics](docs/models-and-metrics.md) — PCA, DINOv2, cosine search, and evaluation.
-9. [Learning STAC](docs/learning-stac.md) — EO catalog concepts and retrieval pitfalls.
-10. [Development](docs/development.md) — environment, tools, tests, and contribution workflow.
-11. [Validation](docs/validation.md) — what has and has not been verified.
+6. [Multispectral encoder decision](docs/decisions/0003-ssl4eo-s12-multispectral-encoder.md) — model choice, alternatives, preprocessing, and risks.
+7. [EuroSAT v1 results](docs/results/eurosat-v1.md) — metrics, examples, evidence, and interpretation.
+8. [Pipeline and CLI](docs/pipeline-and-cli.md) — each action, input, and output.
+9. [Models and metrics](docs/models-and-metrics.md) — representations, cosine search, and evaluation.
+10. [Learning STAC](docs/learning-stac.md) — EO catalog concepts and retrieval pitfalls.
+11. [Development](docs/development.md) — environment, tools, tests, and contribution workflow.
+12. [Validation](docs/validation.md) — what has and has not been verified.
 
 ## Data and privacy policy
 
@@ -187,9 +187,9 @@ Read the guides in this order:
 
 ## Roadmap
 
-The next milestone is deeper retrieval analysis, beginning with an EO-specific multispectral
-encoder on the fixed split. Approximate search and a small interactive product surface follow the
-quality analysis.
+The next milestone is approximate search: add Faiss while retaining exact cosine search as the
+quality reference, then measure recall, query latency, build time, index size, and memory. A small
+interactive product surface follows the scaling analysis.
 
 ## License
 

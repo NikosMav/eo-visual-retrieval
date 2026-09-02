@@ -216,6 +216,55 @@ def _embed_dinov2(args: argparse.Namespace) -> None:
     print(json.dumps({"output": str(args.output), "shape": list(vectors.shape)}, indent=2))
 
 
+def _embed_ssl4eo(args: argparse.Namespace) -> None:
+    from eo_visual_retrieval.benchmarks.eurosat import EUROSAT_ARCHIVE_MD5
+    from eo_visual_retrieval.embeddings.ssl4eo import (
+        CHECKPOINT_FILENAME,
+        CHECKPOINT_REPOSITORY,
+        CHECKPOINT_REVISION,
+        CHECKPOINT_SHA256,
+        MODEL_NAME,
+        SSL4EO_BAND_ORDER,
+        ssl4eo_embeddings,
+    )
+
+    records = read_jsonl(args.manifest)
+    vectors = ssl4eo_embeddings(
+        records,
+        archive=args.archive,
+        checkpoint=args.checkpoint,
+        batch_size=args.batch_size,
+        device=args.device,
+    )
+    store = _store(
+        records,
+        vectors,
+        {
+            "backend": "ssl4eo-s12",
+            "model": MODEL_NAME,
+            "checkpoint_repository": CHECKPOINT_REPOSITORY,
+            "checkpoint_revision": CHECKPOINT_REVISION,
+            "checkpoint_filename": CHECKPOINT_FILENAME,
+            "checkpoint_sha256": CHECKPOINT_SHA256,
+            "archive_md5": EUROSAT_ARCHIVE_MD5,
+            "bands": list(SSL4EO_BAND_ORDER),
+            "device_requested": args.device,
+            "frozen": True,
+            "preprocessing": (
+                "13-band L1C DN clipped to 0-10000 and divided by 10000; "
+                "resize 256, center crop 224"
+            ),
+            **_run_metadata(
+                records,
+                args.manifest,
+                ("numpy", "torch", "torchvision", "rasterio"),
+            ),
+        },
+    )
+    store.save(args.output)
+    print(json.dumps({"output": str(args.output), "shape": list(vectors.shape)}, indent=2))
+
+
 def _embed_pca(args: argparse.Namespace) -> None:
     from eo_visual_retrieval.embeddings.pca import pca_embeddings
 
@@ -397,6 +446,18 @@ def build_parser() -> argparse.ArgumentParser:
     dinov2.add_argument("--batch-size", type=int, default=8)
     dinov2.add_argument("--device", default="auto")
     dinov2.set_defaults(handler=_embed_dinov2)
+
+    ssl4eo = commands.add_parser(
+        "embed-ssl4eo",
+        help="embed selected EuroSAT members with frozen 13-band SSL4EO-S12",
+    )
+    ssl4eo.add_argument("--manifest", type=Path, required=True)
+    ssl4eo.add_argument("--archive", type=Path, required=True)
+    ssl4eo.add_argument("--checkpoint", type=Path, required=True)
+    ssl4eo.add_argument("--output", type=Path, required=True)
+    ssl4eo.add_argument("--batch-size", type=int, default=16)
+    ssl4eo.add_argument("--device", default="auto")
+    ssl4eo.set_defaults(handler=_embed_ssl4eo)
 
     pca = commands.add_parser("embed-pca", help="embed images with index-fitted PCA")
     pca.add_argument("--manifest", type=Path, required=True)

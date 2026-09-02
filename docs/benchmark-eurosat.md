@@ -2,12 +2,13 @@
 
 ## What this experiment asks
 
-Given a held-out Sentinel-2 RGB patch, can an embedding rank patches from the same broad EuroSAT
+Given a held-out Sentinel-2 patch, can an embedding rank patches from the same broad EuroSAT
 land-use/land-cover class above patches from other classes when index and query geography are
-separated?
+separated? PCA and DINOv2 see its RGB derivative; SSL4EO-S12 sees its 13-band source.
 
-The experiment compares representation quality, not supervised classification. PCA and DINOv2 do
-not train on EuroSAT labels. Labels are used only to define relevance during evaluation.
+The experiment compares representation quality, not supervised classification. PCA, DINOv2, and
+SSL4EO-S12 do not train on EuroSAT labels. Labels are used only to define relevance during
+evaluation.
 
 ## Dataset and provenance
 
@@ -24,7 +25,8 @@ not train on EuroSAT labels. Labels are used only to define relevance during eva
 | License | MIT, according to the official project repository |
 
 The archive is used instead of the smaller RGB package because its GeoTIFFs preserve the CRS and
-affine transform needed for leakage control. Only the selected RGB derivatives are embedded.
+affine transform needed for leakage control. Selected RGB derivatives feed PCA and DINOv2;
+SSL4EO-S12 reads the same selected patches' 13-band members directly from the verified archive.
 
 ## Download and prepare
 
@@ -84,9 +86,9 @@ RGB uses source bands 4, 3, and 2 and a fixed 0–2750 digital-number stretch. I
 and does not calculate per-image contrast, which would make model inputs depend on each image's
 histogram.
 
-## Run both baselines
+## Run the representation models
 
-Both commands consume the exact same manifest and image root:
+The RGB baselines consume the exact same manifest and image root:
 
 ```powershell
 eovr embed-pca `
@@ -106,6 +108,31 @@ eovr embed-dinov2 `
   --output artifacts/eurosat-v1-dinov2-vits14.npz
 ```
 
+For the multispectral experiment, download the pinned SSL4EO-S12 MoCo ResNet-50 checkpoint
+registered by TorchGeo. The repository revision and final SHA-256 are enforced by the code:
+
+```powershell
+New-Item -ItemType Directory -Force data/models | Out-Null
+curl.exe -L --continue-at - `
+  --output data/models/resnet50_sentinel2_all_moco-df8b932e.pth `
+  https://hf.co/torchgeo/resnet50_sentinel2_all_moco/resolve/da4f3c9dbe09272eb902f3b37f46635fa4726879/resnet50_sentinel2_all_moco-df8b932e.pth
+
+eovr embed-ssl4eo `
+  --manifest data/eurosat-v1/manifest.jsonl `
+  --archive data/downloads/EuroSAT_MS.zip `
+  --checkpoint data/models/resnet50_sentinel2_all_moco-df8b932e.pth `
+  --batch-size 16 `
+  --device auto `
+  --output artifacts/eurosat-v1-ssl4eo-s12-moco-resnet50.npz
+```
+
+The SSL4EO-S12 authors publish the pretrained weights under CC BY 4.0. This project references and
+locally downloads the checkpoint but does not redistribute it.
+
+The checkpoint expects all 13 Level-1C bands with `B8A` between `B08` and `B09`. Input digital
+numbers are clipped to 0–10,000, divided by 10,000, resized to 256 × 256, and center-cropped to
+224 × 224. The model remains frozen and does not use EuroSAT labels.
+
 Evaluate at the same cutoffs, starting with `k=10`:
 
 ```powershell
@@ -118,6 +145,11 @@ eovr evaluate `
   --embeddings artifacts/eurosat-v1-dinov2-vits14.npz `
   --k 10 `
   --output artifacts/eurosat-v1-dinov2-vits14-k10.json
+
+eovr evaluate `
+  --embeddings artifacts/eurosat-v1-ssl4eo-s12-moco-resnet50.npz `
+  --k 10 `
+  --output artifacts/eurosat-v1-ssl4eo-s12-moco-resnet50-k10.json
 ```
 
 Evaluation returns macro means over eligible queries plus the same metrics per class. The class
@@ -157,6 +189,7 @@ Before reporting model scores, verify and record:
 - all 400 queries have relevant index items and none are skipped;
 - the manifest hash is unchanged between model runs;
 - PCA was fitted only on the 1,600 index images;
+- SSL4EO-S12 used all 13 source bands in the documented order and remained frozen;
 - model, package, Python, and device versions are recorded.
 
 ## What a score means
@@ -166,6 +199,6 @@ example, two `Residential` scenes can differ greatly in density and structure, w
 scene can visually overlap `SeaLake` or vegetated classes. Aggregate metrics therefore need
 per-class results and result grids showing successes and failures.
 
-This benchmark does not establish seasonal, temporal, sensor, cloud, or multispectral
-generalization. Those are later experiments with metadata that can support the corresponding
-holdouts.
+This benchmark does not establish seasonal, temporal, sensor, cloud, or cross-dataset
+generalization. The SSL4EO-S12 run tests one multispectral representation on this fixed dataset;
+it does not isolate the value of extra bands or establish broader multispectral generalization.

@@ -2,49 +2,70 @@
 
 ## Outcome
 
-Frozen DINOv2 ViT-S/14 substantially outperformed the 64-component flattened-pixel PCA baseline
-on the same spatially separated EuroSAT RGB benchmark. DINOv2 improved every evaluated class,
-with the largest mAP@10 gains on `Residential` and `Industrial`.
+Frozen 13-band SSL4EO-S12 produced the strongest exact-retrieval result on the unchanged,
+spatially separated EuroSAT v1 split. It exceeded frozen RGB DINOv2 in every aggregate metric and
+in per-class mAP@10 for all 10 classes. DINOv2 still substantially outperformed flattened-pixel
+PCA, preserving the original classical-versus-modern RGB finding.
 
 | Model | P@10 | R@10 | mAP@10 | nDCG@10 | Queries | Skipped |
 |---|---:|---:|---:|---:|---:|---:|
 | PCA-64 | 0.3015 | 0.01884 | 0.19698 | 0.31013 | 400 | 0 |
-| DINOv2 ViT-S/14 | **0.69475** | **0.04342** | **0.60763** | **0.70545** | 400 | 0 |
-| Absolute change | +0.39325 | +0.02458 | +0.41066 | +0.39532 | — | — |
+| DINOv2 ViT-S/14 | 0.69475 | 0.04342 | 0.60763 | 0.70545 | 400 | 0 |
+| SSL4EO-S12 MoCo ResNet-50 | **0.8530** | **0.05331** | **0.81360** | **0.86472** | 400 | 0 |
 
 Recall looks numerically small because every query has 160 relevant index images while only 10
-results can be returned. The maximum possible R@10 is therefore `10 / 160 = 0.0625`. DINOv2's
-P@10 corresponds to 6.9475 relevant results in the average top 10, compared with 3.015 for PCA.
+results can be returned. The maximum possible R@10 is therefore `10 / 160 = 0.0625`. SSL4EO-S12's
+P@10 corresponds to 8.53 relevant results in the average top 10, compared with 6.9475 for DINOv2
+and 3.015 for PCA. Relative to DINOv2, SSL4EO-S12 improved P@10 by 0.15825 and mAP@10 by 0.20596.
 
 Machine-readable results:
 
 - [PCA-64 metrics](eurosat-v1-pca-64-k10.json)
 - [DINOv2 ViT-S/14 metrics](eurosat-v1-dinov2-vits14-k10.json)
+- [SSL4EO-S12 metrics](eurosat-v1-ssl4eo-s12-moco-resnet50-k10.json)
 
 ## Per-class comparison
 
-| Class | PCA P@10 | DINOv2 P@10 | PCA mAP@10 | DINOv2 mAP@10 | mAP change |
-|---|---:|---:|---:|---:|---:|
-| AnnualCrop | 0.2750 | 0.6650 | 0.1551 | 0.5616 | +0.4065 |
-| Forest | 0.6250 | 0.9125 | 0.5040 | 0.8685 | +0.3645 |
-| HerbaceousVegetation | 0.2800 | 0.6950 | 0.1729 | 0.5822 | +0.4093 |
-| Highway | 0.1275 | 0.5075 | 0.0675 | 0.4037 | +0.3361 |
-| Industrial | 0.3025 | 0.8875 | 0.1542 | 0.8542 | +0.7001 |
-| Pasture | 0.3700 | 0.6675 | 0.2420 | 0.5771 | +0.3351 |
-| PermanentCrop | 0.1800 | 0.5575 | 0.0958 | 0.4116 | +0.3158 |
-| Residential | 0.1175 | 0.8350 | 0.0509 | 0.7715 | +0.7206 |
-| River | 0.2200 | 0.4000 | 0.1238 | 0.2744 | +0.1507 |
-| SeaLake | 0.5175 | 0.8200 | 0.4036 | 0.7715 | +0.3679 |
+| Class | PCA mAP@10 | DINOv2 mAP@10 | SSL4EO mAP@10 | SSL4EO − DINOv2 |
+|---|---:|---:|---:|---:|
+| AnnualCrop | 0.1551 | 0.5616 | 0.7662 | +0.2046 |
+| Forest | 0.5040 | 0.8685 | 0.9540 | +0.0856 |
+| HerbaceousVegetation | 0.1729 | 0.5822 | 0.7749 | +0.1928 |
+| Highway | 0.0675 | 0.4037 | 0.5947 | +0.1911 |
+| Industrial | 0.1542 | 0.8542 | 0.9093 | +0.0551 |
+| Pasture | 0.2420 | 0.5771 | 0.8364 | +0.2593 |
+| PermanentCrop | 0.0958 | 0.4116 | 0.6987 | +0.2872 |
+| Residential | 0.0509 | 0.7715 | 0.9242 | +0.1527 |
+| River | 0.1238 | 0.2744 | 0.7219 | +0.4475 |
+| SeaLake | 0.4036 | 0.7715 | 0.9555 | +0.1840 |
 
-DINOv2's strongest mAP@10 classes were `Forest` (0.8685) and `Industrial` (0.8542). Its weakest
-were `River` (0.2744), `Highway` (0.4037), and `PermanentCrop` (0.4116). This makes River-like
-linear features and heterogeneous agricultural patterns priorities for deeper error analysis.
+SSL4EO-S12's strongest mAP@10 classes were `SeaLake` (0.9555) and `Forest` (0.9540). `Highway`
+remained its weakest class at 0.5947. The largest improvement over DINOv2 was on `River` (+0.4475),
+consistent with multispectral surface information helping this representation distinguish water
+and vegetation, although this benchmark cannot attribute the gain to particular bands.
 
 ## Qualitative inspection
 
 Green borders mark same-class results, red borders mark different-class results, and blue marks
 the query. Each grid selects one query per class by AP@5; these are distribution endpoints, not
 additional aggregate evidence.
+
+### SSL4EO-S12 best cases
+
+![SSL4EO-S12 best query per class](../assets/eurosat-v1-ssl4eo-best.png)
+
+Every selected best case retrieved five same-class results. The model grouped visibly varied crop,
+built, forest, river, and open-water scenes even though ranking used the full multispectral source
+rather than the RGB rendering shown here.
+
+### SSL4EO-S12 failure cases
+
+![SSL4EO-S12 worst query per class](../assets/eurosat-v1-ssl4eo-worst.png)
+
+The worst rows show meaningful confusion rather than uniformly perfect retrieval. Atypical
+agricultural scenes cross crop labels; highway and industrial queries can favor other built areas;
+and the worst residential and river queries retrieve visually plausible neighboring classes. This
+also exposes the mismatch between broad EuroSAT labels and some notions of visual similarity.
 
 ### DINOv2 best cases
 
@@ -91,19 +112,22 @@ layout and appearance.
 | Python | 3.11.5 |
 | PCA | 64 components, 64×64 RGB, fitted on index only; scikit-learn 1.9.0 |
 | DINOv2 | `dinov2_vits14`, 224×224 RGB, frozen 384-d vectors; PyTorch 2.13.0 CPU |
+| SSL4EO-S12 | MoCo ResNet-50, 13-band L1C, frozen 2,048-d vectors; checkpoint SHA-256 `df8b932e2a23a0773febedf3f650aa7d342b805f7876ca5ed6b139d7245d7c09` |
 | Ranking | Exact cosine similarity |
 | Relevance | Binary EuroSAT class agreement |
 
-Both stores contain identical ordered IDs, labels, splits, and manifest hashes. All vector norms
-were within floating-point tolerance of 1.0.
+All three stores contain identical ordered IDs, labels, splits, and manifest hashes. SSL4EO-S12
+embedding generation took 126.87 seconds on the recorded CPU environment. Its vector norms ranged
+from 0.99999976 to 1.00000012; no throughput claim is inferred from this single run.
 
 ## Evidence boundary
 
-This result supports a narrow claim: on EuroSAT v1 under the recorded spatial split and binary
-class relevance, frozen RGB DINOv2 ranks same-class images substantially better than PCA-64.
+This result supports two narrow claims: under the recorded EuroSAT v1 spatial split and binary
+class relevance, frozen RGB DINOv2 ranks same-class images substantially better than PCA-64, and
+frozen 13-band SSL4EO-S12 ranks them better than both RGB representations.
 
 It does **not** establish temporal or seasonal generalization because EuroSAT does not expose
-acquisition timestamps. It also does not establish multispectral performance, transfer to another
-dataset, analyst usefulness, online latency, or production readiness. Best/worst examples were
-chosen after evaluation and must not be treated as representative averages.
-
+acquisition timestamps. It also does not isolate the contribution of extra bands from EO-specific
+pretraining, rule out model-pretraining geography overlap, establish transfer to another dataset,
+or demonstrate analyst usefulness, online latency, or production readiness. Best/worst examples
+were chosen after evaluation and must not be treated as representative averages.

@@ -24,17 +24,17 @@ The repository currently contains:
 - bounded public preview materialization with optional in-memory signing;
 - aligned Sentinel-2 BOA-reflectance and model-ready RGB chip materialization;
 - deterministic image manifests with index/query partitions;
-- PCA and frozen DINOv2 embedding backends;
+- PCA, frozen RGB DINOv2, and frozen 13-band SSL4EO-S12 embedding backends;
 - portable compressed embedding stores;
 - exact cosine retrieval and four ranked-retrieval metrics;
 - an executed 2,000-image, spatially separated EuroSAT benchmark;
-- aggregate and per-class PCA/DINOv2 metrics plus qualitative best/worst result grids;
+- aggregate and per-class metrics plus qualitative best/worst grids for all three representations;
 - unit tests, linting, CI, and executed smoke validation.
 
-The current evidence proves that the workflow runs and establishes a first bounded retrieval
-comparison on spatially separated EuroSAT v1. It does **not** establish temporal, multispectral,
-cross-dataset, or production generalization. No portfolio claim should exceed the evidence in
-`docs/validation.md`.
+The current evidence proves that the workflow runs and establishes a first bounded RGB and
+multispectral representation comparison on spatially separated EuroSAT v1. It does **not**
+establish temporal, cross-dataset, or production generalization, nor isolate the causal value of
+extra bands. No portfolio claim should exceed the evidence in `docs/validation.md`.
 
 ## Project boundaries
 
@@ -95,7 +95,8 @@ leakage-aware split, accompanied by qualitative success and failure examples.
 - Add query-result grids and per-class error slices. — completed for EuroSAT v1
 - Add geographic, seasonal, and cloud-condition slices when metadata supports them.
 - Explain what class-label relevance captures and what it misses about user intent.
-- Evaluate one EO-specific or multispectral encoder as a separate experiment.
+- Evaluate one EO-specific or multispectral encoder as a separate experiment. — completed with
+  SSL4EO-S12 on EuroSAT v1
 
 ### Milestone 4: approximate search
 
@@ -131,6 +132,6 @@ The project is portfolio-ready when:
 
 ## Next task
 
-Add one EO-specific multispectral encoder to the fixed EuroSAT v1 split, with preprocessing and
-model provenance recorded. Compare it against the frozen RGB DINOv2 and PCA references without
-changing relevance, index/query membership, or exact ranking.
+Begin Milestone 4 with a reproducible Faiss experiment that treats exact cosine results as ground
+truth. Define corpus-size tiers and record approximate recall, latency, build time, serialized
+index size, and runtime memory without replacing the exact quality reference.

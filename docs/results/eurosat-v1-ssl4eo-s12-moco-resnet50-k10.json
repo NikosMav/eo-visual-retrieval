@@ -1,0 +1,81 @@
+{
+  "evaluated_queries": 400,
+  "k": 10,
+  "map_at_k": 0.8135958333333333,
+  "ndcg_at_k": 0.864721790793744,
+  "per_class": {
+    "AnnualCrop": {
+      "evaluated_queries": 40,
+      "map_at_k": 0.7661656746031745,
+      "ndcg_at_k": 0.8434597680778321,
+      "precision_at_k": 0.82,
+      "recall_at_k": 0.05125
+    },
+    "Forest": {
+      "evaluated_queries": 40,
+      "map_at_k": 0.9540079365079365,
+      "ndcg_at_k": 0.9689086005806361,
+      "precision_at_k": 0.96,
+      "recall_at_k": 0.06
+    },
+    "HerbaceousVegetation": {
+      "evaluated_queries": 40,
+      "map_at_k": 0.7749285714285714,
+      "ndcg_at_k": 0.8309873678178196,
+      "precision_at_k": 0.8125,
+      "recall_at_k": 0.05078125
+    },
+    "Highway": {
+      "evaluated_queries": 40,
+      "map_at_k": 0.5947162698412699,
+      "ndcg_at_k": 0.6830933987356043,
+      "precision_at_k": 0.6525000000000001,
+      "recall_at_k": 0.040781250000000005
+    },
+    "Industrial": {
+      "evaluated_queries": 40,
+      "map_at_k": 0.9093154761904764,
+      "ndcg_at_k": 0.9295429151077508,
+      "precision_at_k": 0.9324999999999999,
+      "recall_at_k": 0.05828124999999999
+    },
+    "Pasture": {
+      "evaluated_queries": 40,
+      "map_at_k": 0.8364265873015875,
+      "ndcg_at_k": 0.88443204241977,
+      "precision_at_k": 0.875,
+      "recall_at_k": 0.0546875
+    },
+    "PermanentCrop": {
+      "evaluated_queries": 40,
+      "map_at_k": 0.6987470238095238,
+      "ndcg_at_k": 0.7922585942296327,
+      "precision_at_k": 0.78,
+      "recall_at_k": 0.04875
+    },
+    "Residential": {
+      "evaluated_queries": 40,
+      "map_at_k": 0.9241974206349205,
+      "ndcg_at_k": 0.9468083343117794,
+      "precision_at_k": 0.9475,
+      "recall_at_k": 0.05921875
+    },
+    "River": {
+      "evaluated_queries": 40,
+      "map_at_k": 0.7219414682539682,
+      "ndcg_at_k": 0.7980839199706213,
+      "precision_at_k": 0.78,
+      "recall_at_k": 0.04875
+    },
+    "SeaLake": {
+      "evaluated_queries": 40,
+      "map_at_k": 0.9555119047619047,
+      "ndcg_at_k": 0.9696429666859935,
+      "precision_at_k": 0.9700000000000001,
+      "recall_at_k": 0.060625000000000005
+    }
+  },
+  "precision_at_k": 0.8530000000000001,
+  "recall_at_k": 0.053312500000000006,
+  "skipped_queries": 0
+}

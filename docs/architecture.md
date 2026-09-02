@@ -27,18 +27,19 @@ STAC API --search--> StacItemRecord JSONL --resolve/sign--> local preview
 
                          RETRIEVAL PIPELINE
 
-labeled image folders
+selected EO patches + ImageRecord JSONL
          |
-         v
-ImageRecord JSONL --load--> image pixels --embed--> EmbeddingStore NPZ
-                                                     |
-                                      +--------------+--------------+
-                                      |                             |
-                                      v                             v
-                             ExactCosineIndex                 offline evaluator
-                                      |                             |
-                                      v                             v
-                               ranked item IDs        P@k / R@k / mAP@k / nDCG@k
+         +--> RGB files ------> PCA / DINOv2 --------+
+         |                                            |
+         +--> 13-band archive -> SSL4EO-S12 ----------+--> EmbeddingStore NPZ
+                                                               |
+                                                +--------------+--------------+
+                                                |                             |
+                                                v                             v
+                                       ExactCosineIndex                 offline evaluator
+                                                |                             |
+                                                v                             v
+                                         ranked item IDs        P@k / R@k / mAP@k / nDCG@k
 ```
 
 The acquisition and retrieval paths meet at local image files, not at provider URLs. This is the
@@ -55,6 +56,7 @@ main security and reproducibility boundary.
 | Image manifest builder | Hash images, infer labels, and assign deterministic splits | `manifests.py` |
 | PCA backend | Learn a classical index-fitted projection and produce normalized vectors | `embeddings/pca.py` |
 | DINOv2 backend | Produce normalized frozen vision-transformer features | `embeddings/dinov2.py` |
+| SSL4EO-S12 backend | Read selected 13-band archive members and produce normalized frozen EO features | `embeddings/ssl4eo.py` |
 | Embedding store | Save vectors and retrieval metadata in a portable NPZ file | `embeddings/store.py` |
 | Exact index | Rank every index vector by cosine similarity | `retrieval.py` |
 | Evaluator | Calculate label-proxy ranked-retrieval metrics | `evaluation.py` |
@@ -91,6 +93,11 @@ memory.
 
 The first folder below the image root becomes the class label. Exact duplicate content is kept in
 one split, and conflicting labels for identical content are rejected.
+
+For the EuroSAT multispectral experiment, the same record also carries its stable
+`archive_member`. The SSL4EO-S12 backend reads that member directly from the verified source ZIP;
+it does not create or persist a duplicate multispectral dataset. RGB paths remain useful for PCA,
+DINOv2, and human-readable result grids.
 
 Benchmark-specific builders may add stronger invariants. EuroSAT records include source
 georeferencing and a global equal-area spatial group. Its builder prevents groups from crossing

@@ -205,7 +205,27 @@ eovr embed-dinov2 `
 `--device auto` selects CUDA only when the installed PyTorch build reports it as available. The
 first run may download model code and weights through the official PyTorch Hub entrypoint.
 
-Both commands preserve manifest order and write IDs, vectors, labels, splits, backend and
+### SSL4EO-S12
+
+For the fixed EuroSAT benchmark, download the pinned TorchGeo checkpoint into the ignored local
+model directory as described in the [benchmark guide](benchmark-eurosat.md), then run:
+
+```powershell
+eovr embed-ssl4eo `
+  --manifest data/eurosat-v1/manifest.jsonl `
+  --archive data/downloads/EuroSAT_MS.zip `
+  --checkpoint data/models/resnet50_sentinel2_all_moco-df8b932e.pth `
+  --batch-size 16 `
+  --device auto `
+  --output artifacts/eurosat-v1-ssl4eo-s12-moco-resnet50.npz
+```
+
+This command verifies both inputs, reads selected 13-band members directly from the source ZIP,
+applies the pinned band order and preprocessing, and writes frozen 2,048-dimensional features. It
+works only with `eurosat-ms-v1` records carrying an `archive_member`; it is deliberately narrower
+than the generic RGB backends.
+
+All embedding commands preserve manifest order and write IDs, vectors, labels, splits, backend and
 preprocessing configuration, manifest SHA-256, item counts, Python version, and relevant package
 versions to a compressed NPZ store.
 
