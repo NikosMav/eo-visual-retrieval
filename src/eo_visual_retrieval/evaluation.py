@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
+from typing import Any
 
 import numpy as np
 
@@ -19,7 +20,7 @@ class MetricSummary:
     map_at_k: float
     ndcg_at_k: float
 
-    def to_dict(self) -> dict[str, int | float]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "evaluated_queries": self.evaluated_queries,
             "precision_at_k": self.precision_at_k,
@@ -35,7 +36,7 @@ class EvaluationSummary(MetricSummary):
     k: int
     per_class: dict[str, MetricSummary]
 
-    def to_dict(self) -> dict[str, object]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             **super().to_dict(),
             "skipped_queries": self.skipped_queries,
@@ -100,7 +101,11 @@ def evaluate_queries(store: EmbeddingStore, *, k: int) -> tuple[list[QueryEvalua
         results = index.search(store.vectors[position], k=k, exclude_id=store.ids[position])
         relevance = [int(label_by_id[result.item_id] == query_label) for result in results]
         relevant_retrieved = sum(relevance)
-        precision = relevant_retrieved / k
+        # Excluding the query from its own index can leave fewer than k results.
+        # Scoring against the requested k would then penalise a ranking for
+        # positions that could not exist, so use what was actually retrievable.
+        retrieved = len(results)
+        precision = relevant_retrieved / retrieved
         recall = relevant_retrieved / total_relevant
 
         running_relevant = 0
@@ -111,8 +116,8 @@ def evaluate_queries(store: EmbeddingStore, *, k: int) -> tuple[list[QueryEvalua
                 running_relevant += 1
                 precision_sum += running_relevant / rank
                 dcg += 1.0 / math.log2(rank + 1)
-        average_precision = precision_sum / min(total_relevant, k)
-        ideal_relevant = min(total_relevant, k)
+        ideal_relevant = min(total_relevant, retrieved)
+        average_precision = precision_sum / ideal_relevant
         ideal_dcg = sum(1.0 / math.log2(rank + 1) for rank in range(1, ideal_relevant + 1))
         ndcg = dcg / ideal_dcg
         evaluations.append(

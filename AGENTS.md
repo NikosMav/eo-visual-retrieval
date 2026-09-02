@@ -36,9 +36,15 @@ Before making a substantial change, read:
 ## Engineering expectations
 
 - Prefer small, typed, testable modules over exploratory-only implementation.
+- Keep shared facts in one place. Content digests live in `hashing.py`, vector normalization in
+  `vectors.py`, and dataset identity in `datasets/`. A representation must never import a
+  benchmark; `tests/test_architecture.py` enforces this.
 - Make runs deterministic where practical and record the data/split/model configuration.
-- Add or update tests with behavior changes.
-- Run `python -m ruff check .` and `python -m pytest` before committing.
+- Add or update tests with behavior changes. Coverage must stay at or above 75%.
+- Run `python -m ruff check .`, `python -m mypy`, and `python -m pytest` before committing.
+- When a change touches the evaluator, the embedding format, or a representation, recompute the
+  committed results in `docs/results/` from the existing local stores and confirm they still
+  match before claiming the change is safe.
 - Update `docs/validation.md` only with evidence produced by an executed validation.
 On Windows, use a short virtual-environment path such as
 `C:\Users\<you>\.venvs\eovr` because PyTorch packages can exceed Windows path limits.

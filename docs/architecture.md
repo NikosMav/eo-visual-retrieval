@@ -73,6 +73,9 @@ learning-oriented explanation.
 
 | Component | Responsibility | Main module |
 |---|---|---|
+| Content digests | Produce one streaming SHA-256/MD5 identity for every artifact | `hashing.py` |
+| Vector preparation | Enforce finite, unit-length rows before any cosine comparison | `vectors.py` |
+| EuroSAT dataset identity | Hold the archive checksum, band order, and member access | `datasets/eurosat.py` |
 | STAC search | Validate a bounded query and collect safe item metadata | `stac.py` |
 | Preview materializer | Resolve an item, optionally sign in memory, and download a bounded image | `stac.py` |
 | Sentinel-2 chip builder | Align band windows, scale reflectance, apply SCL masks, and write georeferenced artifacts | `chips.py` |
@@ -82,6 +85,8 @@ learning-oriented explanation.
 | DINOv2 backend | Produce normalized frozen vision-transformer features | `embeddings/dinov2.py` |
 | SSL4EO-S12 backend | Read selected 13-band archive members and produce normalized frozen EO features | `embeddings/ssl4eo.py` |
 | TerraMind-Tiny experiment | Strictly load a pinned frozen encoder and pool S2L1C patch features | `embeddings/terramind.py` |
+| PCA projection | Persist the fitted basis so unseen images enter the same space | `embeddings/projection.py` |
+| Query encoder | Embed one new image with the backend recorded in a store | `embeddings/encode.py` |
 | Embedding store | Save vectors and retrieval metadata in a portable NPZ file | `embeddings/store.py` |
 | Exact index | Rank every index vector by cosine similarity | `retrieval.py` |
 | Faiss benchmark | Compare exact normalized inner product with HNSW at fixed scale tiers | `faiss_benchmark.py` |
@@ -146,6 +151,10 @@ as a scalable online index format.
 
 The system depends on the following rules:
 
+0. Shared facts have one implementation. Content digests, vector normalization, and dataset
+   identity live in leaf modules; a representation never imports a benchmark. This is
+   enforced by `tests/test_architecture.py`, because a second copy of a digest or a
+   normalization rule is how an index and its queries silently stop agreeing.
 1. Signed or credential-bearing URLs are never persisted.
 2. STAC queries and downloads are bounded.
 3. Learned preprocessing is fitted on index/training data only.
@@ -155,6 +164,8 @@ The system depends on the following rules:
 7. The query image is excluded when it also exists in the index.
 8. Benchmark claims use leakage-aware splits and recorded configuration.
 9. Exact search remains available as the reference for approximate-search experiments.
+10. A new image is embedded by the same backend and preprocessing that produced the store it
+    is compared against, or it is refused.
 
 ## Why two manifests exist
 
@@ -197,11 +208,15 @@ The byte RGB file is the model input. It does not replace the reflectance artifa
 - Chip materialization currently processes one item and one WGS84 bounding box per command.
 - Deterministic content-hash splitting prevents exact duplicate leakage but not geographic or
   temporal leakage.
-- The PCA transformer is not persisted for embedding unseen images later.
-- The query command accepts an ID already in an embedding store, not a new uploaded image.
+- Query-by-new-image works for the RGB backends only. The multispectral encoders read 13-band
+  members from a verified archive, so they refuse an RGB upload rather than approximating one.
+- The PCA basis is saved only when `embed-pca --projection-output` is given; a store produced
+  without it can still be queried by item ID, but not with a new image.
 - Exact search is intentionally linear in corpus size.
 - HNSW is benchmarked but is not the current default query path.
 - There is no product API, serving database, job runner, or interactive retrieval viewer.
+  The CLI can now rank a new local image, which is the capability such a surface would need,
+  but no HTTP interface, upload handling, or session state exists.
   Optional local MLflow SQLite stores experiment metrics, not the serving corpus.
 
 These constraints define the roadmap rather than hidden production claims.

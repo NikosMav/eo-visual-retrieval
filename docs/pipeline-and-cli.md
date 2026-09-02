@@ -190,11 +190,18 @@ eovr embed-pca `
   --components 64 `
   --image-size 64 `
   --seed 42 `
-  --output artifacts/pca-64.npz
+  --output artifacts/pca-64.npz `
+  --projection-output artifacts/pca-64-projection.npz
 ```
 
 PCA is fitted only on index items and then transforms every item. The requested component count
 cannot exceed the number of index samples or flattened input dimensions.
+
+`--projection-output` is optional but recommended. PCA is the one representation this project
+fits itself, so its basis cannot be recovered from a public checkpoint. Saving it is what allows
+an image outside this manifest to be embedded later; without it, the store can only be queried by
+an ID it already contains. The saved file holds the mean, the components, the image size, and the
+seed, and records the same run metadata as the store.
 
 ### DINOv2
 
@@ -237,6 +244,11 @@ versions to a compressed NPZ store.
 
 ## Query the index
 
+Both forms build an index from records whose split is `index` and print the backend, the query
+identity, and ranked item IDs with cosine scores as JSON.
+
+### By stored item
+
 ```powershell
 eovr query `
   --embeddings artifacts/dinov2-vits14.npz `
@@ -244,9 +256,31 @@ eovr query `
   --k 5
 ```
 
-The query ID must already exist in the store. The command creates an index from records whose
-split is `index`, excludes the query ID if necessary, and prints ranked item IDs with cosine
-scores as JSON.
+The query ID must already exist in the store, and is excluded from its own results.
+
+### By a new local image
+
+```powershell
+eovr query `
+  --embeddings artifacts/pca-64.npz `
+  --image data/incoming/unseen-chip.png `
+  --projection artifacts/pca-64-projection.npz `
+  --k 5
+```
+
+The image is embedded with the backend recorded in the store's own metadata, so a ranking is
+never produced by preprocessing that disagrees with the vectors it is compared against.
+
+| Store backend | New-image query | Requirement |
+|---|---|---|
+| `pca` | Supported | `--projection` from `embed-pca --projection-output` |
+| `dinov2` | Supported | The model name recorded in the store; weights are fetched on first use |
+| `ssl4eo-s12` | Refused | Reads 13-band members from the verified archive, not an RGB file |
+| `terramind` | Refused | Same 13-band archive contract |
+
+The multispectral backends refuse rather than approximate: an RGB rendering is not the input
+those encoders were pretrained on, and silently substituting one would invalidate the ranking.
+Query them with `--item-id` against the prepared benchmark instead.
 
 ## Evaluate rankings
 

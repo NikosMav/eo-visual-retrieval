@@ -282,9 +282,11 @@ def _embed_terramind(args: argparse.Namespace) -> None:
 
 def _embed_pca(args: argparse.Namespace) -> None:
     from eo_visual_retrieval.embeddings.pca import pca_embeddings
+    from eo_visual_retrieval.embeddings.projection import PcaProjection
 
     records = read_jsonl(args.manifest)
-    vectors = pca_embeddings(
+    run_metadata = _run_metadata(records, args.manifest, ("numpy", "Pillow", "scikit-learn"))
+    vectors, projection = pca_embeddings(
         _paths(records, args.image_root),
         [record.split for record in records],
         components=args.components,
@@ -301,11 +303,22 @@ def _embed_pca(args: argparse.Namespace) -> None:
             "seed": args.seed,
             "fit_partition": "index",
             "preprocessing": "RGB, square resize, 0-1 scaling, flattened pixels",
-            **_run_metadata(records, args.manifest, ("numpy", "Pillow", "scikit-learn")),
+            **run_metadata,
         },
     )
     store.save(args.output)
-    print(json.dumps({"output": str(args.output), "shape": list(vectors.shape)}, indent=2))
+    result = {"output": str(args.output), "shape": list(vectors.shape)}
+    if args.projection_output is not None:
+        saved = PcaProjection(
+            mean=projection.mean,
+            components=projection.components,
+            image_size=projection.image_size,
+            seed=projection.seed,
+            metadata={**projection.metadata, **run_metadata},
+        )
+        saved.save(args.projection_output)
+        result["projection"] = str(args.projection_output)
+    print(json.dumps(result, indent=2))
 
 
 def _evaluate(args: argparse.Namespace) -> None:
@@ -386,18 +399,48 @@ def _result_grid(args: argparse.Namespace) -> None:
 
 def _query(args: argparse.Namespace) -> None:
     store = EmbeddingStore.load(args.embeddings)
-    try:
-        query_position = store.ids.index(args.item_id)
-    except ValueError as error:
-        raise ValueError(f"item ID not found: {args.item_id}") from error
     index_positions = [i for i, split in enumerate(store.splits) if split == "index"]
+    if not index_positions:
+        raise ValueError("embedding store contains no index items to search")
     index = ExactCosineIndex(
         [store.ids[i] for i in index_positions],
         store.vectors[index_positions],
     )
-    results = index.search(store.vectors[query_position], k=args.k, exclude_id=args.item_id)
-    payload = [{"item_id": result.item_id, "score": result.score} for result in results]
-    print(json.dumps(payload, indent=2))
+
+    if args.image is not None:
+        from eo_visual_retrieval.embeddings.encode import embed_query_image
+        from eo_visual_retrieval.embeddings.projection import PcaProjection
+
+        projection = (
+            None if args.projection is None else PcaProjection.load(args.projection)
+        )
+        vector = embed_query_image(
+            args.image, store=store, projection=projection, device=args.device
+        )
+        exclude_id = None
+        query_identity: dict[str, Any] = {"image": str(args.image)}
+    else:
+        try:
+            query_position = store.ids.index(args.item_id)
+        except ValueError as error:
+            raise ValueError(f"item ID not found: {args.item_id}") from error
+        vector = store.vectors[query_position]
+        exclude_id = args.item_id
+        query_identity = {"item_id": args.item_id}
+
+    results = index.search(vector, k=args.k, exclude_id=exclude_id)
+    print(
+        json.dumps(
+            {
+                "query": query_identity,
+                "backend": str(store.metadata.get("backend", "unknown")),
+                "results": [
+                    {"item_id": result.item_id, "score": result.score} for result in results
+                ],
+            },
+            indent=2,
+        )
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -526,6 +569,11 @@ def build_parser() -> argparse.ArgumentParser:
     pca.add_argument("--components", type=int, default=64)
     pca.add_argument("--image-size", type=int, default=64)
     pca.add_argument("--seed", type=int, default=42)
+    pca.add_argument(
+        "--projection-output",
+        type=Path,
+        help="save the fitted PCA basis so unseen images can be embedded later",
+    )
     pca.set_defaults(handler=_embed_pca)
 
     evaluate = commands.add_parser("evaluate", help="evaluate label-proxy retrieval metrics")
@@ -567,9 +615,23 @@ def build_parser() -> argparse.ArgumentParser:
     grid.add_argument("--mode", choices=("best", "worst"), default="worst")
     grid.set_defaults(handler=_result_grid)
 
-    query = commands.add_parser("query", help="retrieve nearest index images for one item")
+    query = commands.add_parser(
+        "query",
+        help="retrieve nearest index images for a stored item or a new local image",
+    )
     query.add_argument("--embeddings", type=Path, required=True)
-    query.add_argument("--item-id", required=True)
+    subject = query.add_mutually_exclusive_group(required=True)
+    subject.add_argument("--item-id", help="an item already present in the embedding store")
+    subject.add_argument(
+        "--image", type=Path, help="a local RGB image that is not in the store"
+    )
+    query.add_argument(
+        "--projection",
+        type=Path,
+        help="fitted PCA basis from embed-pca --projection-output; required with --image "
+        "when the store was built by the pca backend",
+    )
+    query.add_argument("--device", default="auto")
     query.add_argument("--k", type=int, default=5)
     query.set_defaults(handler=_query)
     return parser

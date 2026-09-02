@@ -8,6 +8,8 @@ import numpy as np
 from numpy.typing import NDArray
 from PIL import Image
 
+from eo_visual_retrieval.embeddings.projection import PcaProjection
+
 
 def load_flat_rgb(paths: list[Path], image_size: int = 64) -> NDArray[np.float32]:
     if image_size < 8:
@@ -21,15 +23,15 @@ def load_flat_rgb(paths: list[Path], image_size: int = 64) -> NDArray[np.float32
     return np.stack(vectors)
 
 
-def pca_embeddings(
-    paths: list[Path],
+def fit_pca_projection(
+    pixels: NDArray[np.float32],
     splits: list[str],
     *,
     components: int = 64,
     image_size: int = 64,
     seed: int = 42,
-) -> NDArray[np.float32]:
-    """Fit PCA on index images only, then transform every image."""
+) -> PcaProjection:
+    """Fit a reusable PCA basis on index rows only, without class labels."""
 
     try:
         from sklearn.decomposition import PCA
@@ -37,7 +39,8 @@ def pca_embeddings(
         message = 'PCA support is optional; install with pip install -e ".[ml]"'
         raise RuntimeError(message) from error
 
-    pixels = load_flat_rgb(paths, image_size=image_size)
+    if len(splits) != pixels.shape[0]:
+        raise ValueError("splits must describe every pixel row")
     index_mask = np.asarray([split == "index" for split in splits])
     index_count = int(index_mask.sum())
     max_components = min(index_count, pixels.shape[1])
@@ -46,12 +49,43 @@ def pca_embeddings(
 
     model = PCA(n_components=components, random_state=seed)
     model.fit(pixels[index_mask])
-    vectors = np.asarray(model.transform(pixels), dtype=np.float32)
-    return l2_normalize(vectors)
+    return PcaProjection(
+        mean=np.asarray(model.mean_, dtype=np.float32),
+        components=np.asarray(model.components_, dtype=np.float32),
+        image_size=image_size,
+        seed=seed,
+        metadata={
+            "backend": "pca",
+            "components": components,
+            "image_size": image_size,
+            "seed": seed,
+            "fit_partition": "index",
+            "fit_items": index_count,
+            "preprocessing": "RGB, square resize, 0-1 scaling, flattened pixels",
+        },
+    )
 
 
-def l2_normalize(vectors: NDArray[np.float32]) -> NDArray[np.float32]:
-    norms = np.linalg.norm(vectors, axis=1, keepdims=True)
-    if np.any(norms == 0):
-        raise ValueError("cannot normalize a zero-length embedding")
-    return np.asarray(vectors / norms, dtype=np.float32)
+def pca_embeddings(
+    paths: list[Path],
+    splits: list[str],
+    *,
+    components: int = 64,
+    image_size: int = 64,
+    seed: int = 42,
+) -> tuple[NDArray[np.float32], PcaProjection]:
+    """Fit PCA on index images only, then transform every image.
+
+    The fitted projection is returned alongside the vectors so it can be saved
+    and reused to embed images that were not part of this manifest.
+    """
+
+    pixels = load_flat_rgb(paths, image_size=image_size)
+    projection = fit_pca_projection(
+        pixels,
+        splits,
+        components=components,
+        image_size=image_size,
+        seed=seed,
+    )
+    return projection.transform(pixels), projection

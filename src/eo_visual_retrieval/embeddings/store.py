@@ -40,6 +40,12 @@ class EmbeddingStore:
             ids=np.asarray(self.ids, dtype=np.str_),
             vectors=np.asarray(self.vectors, dtype=np.float32),
             labels=np.asarray([label or "" for label in self.labels], dtype=np.str_),
+            # An unlabeled row and a row labeled "" are different things: the first
+            # is skipped by the evaluator, the second is a class of its own. NPZ
+            # cannot hold None, so presence travels in its own array.
+            label_present=np.asarray(
+                [label is not None for label in self.labels], dtype=np.bool_
+            ),
             splits=np.asarray(self.splits, dtype=np.str_),
             metadata=np.asarray(json.dumps(self.metadata, sort_keys=True), dtype=np.str_),
         )
@@ -48,7 +54,19 @@ class EmbeddingStore:
     @classmethod
     def load(cls, path: Path) -> EmbeddingStore:
         with np.load(path, allow_pickle=False) as archive:
-            labels = tuple(str(value) or None for value in archive["labels"].tolist())
+            raw_labels = [str(value) for value in archive["labels"].tolist()]
+            if "label_present" in archive.files:
+                present = [bool(value) for value in archive["label_present"].tolist()]
+                if len(present) != len(raw_labels):
+                    raise ValueError("embedding store label presence does not match labels")
+            else:
+                # Stores written before label presence was recorded: an empty
+                # string was the only available encoding of "unlabeled".
+                present = [bool(label) for label in raw_labels]
+            labels = tuple(
+                label if is_present else None
+                for label, is_present in zip(raw_labels, present, strict=True)
+            )
             metadata = json.loads(str(archive["metadata"].item()))
             return cls(
                 ids=tuple(str(value) for value in archive["ids"].tolist()),

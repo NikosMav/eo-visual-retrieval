@@ -8,17 +8,10 @@ from collections import defaultdict
 from collections.abc import Iterable
 from pathlib import Path
 
-from eo_visual_retrieval.models import ImageRecord
+from eo_visual_retrieval.hashing import file_sha256
+from eo_visual_retrieval.models import ImageRecord, Split
 
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp", ".tif", ".tiff"}
-
-
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as stream:
-        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def _split_rank(key: str, seed: int) -> bytes:
@@ -55,7 +48,7 @@ def build_image_manifest(
     label_by_hash: dict[str, str | None] = {}
     for path in paths:
         relative = path.relative_to(image_root)
-        content_hash = _sha256(path)
+        content_hash = file_sha256(path)
         label = relative.parts[0] if len(relative.parts) > 1 else None
         if content_hash in label_by_hash and label_by_hash[content_hash] != label:
             raise ValueError("identical image content has conflicting labels")
@@ -77,7 +70,7 @@ def build_image_manifest(
 
     records: list[ImageRecord] = []
     for relative, content_hash, label in entries:
-        split = "query" if content_hash in query_hashes else "index"
+        split: Split = "query" if content_hash in query_hashes else "index"
         records.append(
             ImageRecord(
                 item_id=relative.as_posix(),

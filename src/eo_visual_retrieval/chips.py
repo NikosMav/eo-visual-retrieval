@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-import hashlib
 import json
 import math
 import re
+from collections.abc import Mapping
 from dataclasses import dataclass
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
@@ -15,6 +15,7 @@ from urllib.parse import urlparse
 import numpy as np
 from numpy.typing import NDArray
 
+from eo_visual_retrieval.hashing import file_sha256
 from eo_visual_retrieval.manifests import write_jsonl
 from eo_visual_retrieval.models import ImageRecord, StacItemRecord
 
@@ -55,14 +56,6 @@ def _validate_bounds(bounds: tuple[float, float, float, float]) -> None:
 
 def _safe_stem(item_id: str) -> str:
     return re.sub(r"[^A-Za-z0-9._-]+", "-", item_id).strip(".-") or "item"
-
-
-def _sha256(path: Path) -> str:
-    digest = hashlib.sha256()
-    with path.open("rb") as stream:
-        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
 
 
 def _aligned_window(
@@ -189,7 +182,7 @@ def _write_chip_files(
 
 
 def build_sentinel2_chip(
-    sources: dict[str, str | Path],
+    sources: Mapping[str, str | Path],
     *,
     output_dir: Path,
     item_id: str,
@@ -326,8 +319,8 @@ def build_sentinel2_chip(
         "reflectance_max": reflectance_max,
         "scl_masked_classes": list(DEFAULT_MASKED_SCL_CLASSES if mask_scl else ()),
         "reflectance_path": reflectance_path.name,
-        "reflectance_sha256": _sha256(reflectance_path),
-        "sha256": _sha256(rgb_path),
+        "reflectance_sha256": file_sha256(reflectance_path),
+        "sha256": file_sha256(rgb_path),
     }
     image_record = ImageRecord(
         item_id=item_id,

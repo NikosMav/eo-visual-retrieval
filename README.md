@@ -19,8 +19,9 @@ established.
 - Prepares a bounded, class-balanced EuroSAT benchmark with spatial leakage controls.
 - Builds deterministic index/query manifests from labeled local images.
 - Generates PCA, DINOv2, or EuroSAT-specific SSL4EO-S12 image embeddings.
+- Persists the fitted PCA basis so images outside the original manifest can be embedded.
 - Provides an experimental pinned, frozen TerraMind-Tiny S2L1C embedding adapter.
-- Ranks images with exact cosine similarity.
+- Ranks images with exact cosine similarity, for a stored item or a new local RGB image.
 - Benchmarks Faiss HNSW recall, latency, construction time, and storage against exact search.
 - Reports Precision@k, Recall@k, mAP@k, and nDCG@k.
 - Optionally records aggregate evaluations in local MLflow without uploading imagery or vectors.
@@ -92,6 +93,7 @@ Confirm the local code is healthy:
 
 ```powershell
 C:\Users\<you>\.venvs\eovr\Scripts\python -m ruff check .
+C:\Users\<you>\.venvs\eovr\Scripts\python -m mypy
 C:\Users\<you>\.venvs\eovr\Scripts\python -m pytest
 ```
 
@@ -152,7 +154,8 @@ eovr embed-pca `
   --manifest data/manifests/images.jsonl `
   --image-root data/images `
   --components 64 `
-  --output artifacts/pca-64.npz
+  --output artifacts/pca-64.npz `
+  --projection-output artifacts/pca-64-projection.npz
 
 eovr embed-dinov2 `
   --manifest data/manifests/images.jsonl `
@@ -165,15 +168,21 @@ Evaluate and inspect results:
 ```powershell
 eovr evaluate --embeddings artifacts/dinov2-vits14.npz --k 10
 eovr query --embeddings artifacts/dinov2-vits14.npz --item-id forest/example.jpg --k 5
+eovr query --embeddings artifacts/dinov2-vits14.npz --image data/incoming/unseen.png --k 5
 ```
+
+The last form embeds an image the corpus has never seen, using the backend recorded in the
+store. The multispectral backends refuse it, because they read 13-band archive members rather
+than RGB files.
 
 The full data-discovery and retrieval procedure is explained in
 [Pipeline and CLI](docs/pipeline-and-cli.md).
 
 ## Current evidence
 
-The verified code-health gates pass on Python 3.11, and CI tests Python 3.11 and 3.12. Bounded
-STAC and analysis-ready chip smoke runs have executed successfully. The EuroSAT v1 benchmark uses
+The verified code-health gates — lint, type checking, and tests — pass on Python 3.11, and CI
+tests Python 3.11 and 3.12 on Linux and Windows. Bounded STAC and analysis-ready chip smoke runs
+have executed successfully. The EuroSAT v1 benchmark uses
 1,600 index images and 400 queries with disjoint 50 km spatial cells and a 5 km guard band.
 
 At `k=10`, PCA-64 achieved mAP 0.19698, DINOv2 ViT-S/14 achieved 0.60763, and 13-band
