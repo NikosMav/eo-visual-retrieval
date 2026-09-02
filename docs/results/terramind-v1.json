@@ -1,0 +1,120 @@
+{
+  "experiment": "terramind-tiny-eurosat-v1-regression",
+  "date": "2026-09-02",
+  "evidence_role": "regression-not-independent-confirmatory-holdout",
+  "model": "terramind_v1_tiny",
+  "dimensions": 192,
+  "checkpoint_revision": "2b5ac0a3ed7dd7e922ccfd595b56607f342df343",
+  "checkpoint_sha256": "e56ea9ebcd4451078b9ca4893d5cd8a89bbee376ae16829c3e7fbbbc76de0eba",
+  "embedding_store_sha256": "4fbf446657a20ade619593a4bc618045029a3d53a0b1f92b5a68e9fdd935b187",
+  "manifest_sha256": "bc0b10bf3e3cf29d7f7732529ce5f419b514e2ded3a5e2a5e6e88ebcdea45338",
+  "index_items": 1600,
+  "query_items": 400,
+  "alignment_with_pca_dinov2_ssl4eo": {
+    "ordered_ids": true,
+    "labels": true,
+    "splits": true,
+    "manifest_hash": true
+  },
+  "vector_norm_range": [
+    0.9999998211860657,
+    1.0000001192092896
+  ],
+  "all_vectors_finite": true,
+  "runtime": {
+    "python": "3.11.5",
+    "torch": "2.13.0+cu130",
+    "torchvision": "0.28.0+cu130",
+    "terratorch": "1.2.11",
+    "device": "cuda",
+    "gpu": "NVIDIA GeForce RTX 3050 Laptop GPU",
+    "precision": "float32",
+    "batch_size": 2,
+    "omp_threads": 4,
+    "mkl_threads": 4
+  },
+  "embedding_command_elapsed_seconds": 41.9825069,
+  "timing_caveat": "Includes process startup, imports, checkpoint/archive validation, inference, and saving; not comparable throughput evidence.",
+  "metrics": {
+    "evaluated_queries": 400,
+    "k": 10,
+    "map_at_k": 0.6868842261904762,
+    "mlflow_run_id": "6c61330ad7dd477abe166848d763d7b0",
+    "ndcg_at_k": 0.768069040604453,
+    "per_class": {
+      "AnnualCrop": {
+        "evaluated_queries": 40,
+        "map_at_k": 0.4781279761904762,
+        "ndcg_at_k": 0.6091103489433605,
+        "precision_at_k": 0.5775,
+        "recall_at_k": 0.03609375
+      },
+      "Forest": {
+        "evaluated_queries": 40,
+        "map_at_k": 0.944422619047619,
+        "ndcg_at_k": 0.9658655662774643,
+        "precision_at_k": 0.9625,
+        "recall_at_k": 0.06015625
+      },
+      "HerbaceousVegetation": {
+        "evaluated_queries": 40,
+        "map_at_k": 0.6008005952380951,
+        "ndcg_at_k": 0.7368713729126444,
+        "precision_at_k": 0.6849999999999999,
+        "recall_at_k": 0.042812499999999996
+      },
+      "Highway": {
+        "evaluated_queries": 40,
+        "map_at_k": 0.26805753968253965,
+        "ndcg_at_k": 0.39845027701579616,
+        "precision_at_k": 0.3825,
+        "recall_at_k": 0.02390625
+      },
+      "Industrial": {
+        "evaluated_queries": 40,
+        "map_at_k": 0.8916696428571427,
+        "ndcg_at_k": 0.9343846861402845,
+        "precision_at_k": 0.93,
+        "recall_at_k": 0.058125
+      },
+      "Pasture": {
+        "evaluated_queries": 40,
+        "map_at_k": 0.863984126984127,
+        "ndcg_at_k": 0.9063498127185513,
+        "precision_at_k": 0.8975,
+        "recall_at_k": 0.05609375
+      },
+      "PermanentCrop": {
+        "evaluated_queries": 40,
+        "map_at_k": 0.5151894841269842,
+        "ndcg_at_k": 0.6339438301170505,
+        "precision_at_k": 0.6050000000000001,
+        "recall_at_k": 0.037812500000000006
+      },
+      "Residential": {
+        "evaluated_queries": 40,
+        "map_at_k": 0.8123551587301587,
+        "ndcg_at_k": 0.8788028986443004,
+        "precision_at_k": 0.8625,
+        "recall_at_k": 0.05390625
+      },
+      "River": {
+        "evaluated_queries": 40,
+        "map_at_k": 0.496985119047619,
+        "ndcg_at_k": 0.6185679688614383,
+        "precision_at_k": 0.6074999999999999,
+        "recall_at_k": 0.037968749999999996
+      },
+      "SeaLake": {
+        "evaluated_queries": 40,
+        "map_at_k": 0.99725,
+        "ndcg_at_k": 0.9983436444136402,
+        "precision_at_k": 0.9974999999999999,
+        "recall_at_k": 0.062343749999999996
+      }
+    },
+    "precision_at_k": 0.75075,
+    "recall_at_k": 0.046921875,
+    "skipped_queries": 0
+  }
+}

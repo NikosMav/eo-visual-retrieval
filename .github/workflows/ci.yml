@@ -10,17 +10,21 @@ permissions:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [ubuntu-latest, windows-latest]
         python-version: ["3.11", "3.12"]
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
-          cache: pip
-      - run: python -m pip install --upgrade pip
-      - run: python -m pip install -e ".[dev,geo,search]"
-      - run: ruff check .
-      - run: pytest --cov=eo_visual_retrieval --cov-report=term-missing
+      - name: Select a short isolated environment path
+        shell: bash
+        run: echo "UV_PROJECT_ENVIRONMENT=$RUNNER_TEMP/eovr" >> "$GITHUB_ENV"
+      - run: python -m pip install uv==0.12.9
+      - run: uv sync --locked --extra dev --extra geo --extra search
+      - run: uv run --locked --no-sync python -m ruff check .
+      - run: uv run --locked --no-sync python -m pytest --cov=eo_visual_retrieval --cov-report=term-missing
+      - run: uv pip check --python "${{ env.UV_PROJECT_ENVIRONMENT }}"

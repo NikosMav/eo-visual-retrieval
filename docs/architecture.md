@@ -28,12 +28,14 @@ flowchart TD
     subgraph Benchmark[Retrieval benchmark]
         Manifest[Selected EO patches + ImageRecord JSONL] --> RGB[RGB files]
         Manifest --> MS[13-band source archive]
+        MS --> TM[Frozen TerraMind-Tiny<br/>experimental challenger]
         RGB --> PCA[PCA]
         RGB --> DINO[Frozen DINOv2]
         MS --> SSL[Frozen SSL4EO-S12]
         PCA --> Store[EmbeddingStore NPZ]
         DINO --> Store
         SSL --> Store
+        TM --> Store
         Store --> Exact[Exact cosine / Faiss Flat<br/>quality reference]
         Store --> HNSW[Faiss HNSW<br/>approximate experiment]
         Store --> Evaluator[Offline evaluator]
@@ -79,10 +81,12 @@ learning-oriented explanation.
 | PCA backend | Learn a classical index-fitted projection and produce normalized vectors | `embeddings/pca.py` |
 | DINOv2 backend | Produce normalized frozen vision-transformer features | `embeddings/dinov2.py` |
 | SSL4EO-S12 backend | Read selected 13-band archive members and produce normalized frozen EO features | `embeddings/ssl4eo.py` |
+| TerraMind-Tiny experiment | Strictly load a pinned frozen encoder and pool S2L1C patch features | `embeddings/terramind.py` |
 | Embedding store | Save vectors and retrieval metadata in a portable NPZ file | `embeddings/store.py` |
 | Exact index | Rank every index vector by cosine similarity | `retrieval.py` |
 | Faiss benchmark | Compare exact normalized inner product with HNSW at fixed scale tiers | `faiss_benchmark.py` |
 | Evaluator | Calculate label-proxy ranked-retrieval metrics | `evaluation.py` |
+| Local experiment tracker | Opt-in aggregate metrics/content hashes to local MLflow SQLite | `tracking.py` |
 | Result-grid renderer | Select per-class best/worst queries and render exact ranked results | `visualization.py` |
 | CLI | Validate arguments and connect all stages | `cli.py` |
 
@@ -197,6 +201,7 @@ The byte RGB file is the model input. It does not replace the reflectance artifa
 - The query command accepts an ID already in an embedding store, not a new uploaded image.
 - Exact search is intentionally linear in corpus size.
 - HNSW is benchmarked but is not the current default query path.
-- There is no API, database, job runner, or interactive result viewer.
+- There is no product API, serving database, job runner, or interactive retrieval viewer.
+  Optional local MLflow SQLite stores experiment metrics, not the serving corpus.
 
 These constraints define the roadmap rather than hidden production claims.

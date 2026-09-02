@@ -265,6 +265,21 @@ def _embed_ssl4eo(args: argparse.Namespace) -> None:
     print(json.dumps({"output": str(args.output), "shape": list(vectors.shape)}, indent=2))
 
 
+def _embed_terramind(args: argparse.Namespace) -> None:
+    from eo_visual_retrieval.embeddings.terramind import terramind_embeddings
+
+    records = read_jsonl(args.manifest)
+    vectors, metadata = terramind_embeddings(
+        records, archive=args.archive, checkpoint=args.checkpoint,
+        batch_size=args.batch_size, device=args.device,
+    )
+    metadata.update(_run_metadata(
+        records, args.manifest, ("numpy", "torch", "torchvision", "terratorch", "rasterio")
+    ))
+    _store(records, vectors, metadata).save(args.output)
+    print(json.dumps({"output": str(args.output), "shape": list(vectors.shape)}, indent=2))
+
+
 def _embed_pca(args: argparse.Namespace) -> None:
     from eo_visual_retrieval.embeddings.pca import pca_embeddings
 
@@ -294,8 +309,16 @@ def _embed_pca(args: argparse.Namespace) -> None:
 
 
 def _evaluate(args: argparse.Namespace) -> None:
-    summary = evaluate_store(EmbeddingStore.load(args.embeddings), k=args.k)
-    payload = json.dumps(summary.to_dict(), indent=2, sort_keys=True) + "\n"
+    store = EmbeddingStore.load(args.embeddings)
+    summary = evaluate_store(store, k=args.k)
+    result = summary.to_dict()
+    if args.tracking_dir is not None:
+        from eo_visual_retrieval.tracking import log_evaluation
+
+        result["mlflow_run_id"] = log_evaluation(
+            store, summary, embeddings_path=args.embeddings, tracking_dir=args.tracking_dir
+        )
+    payload = json.dumps(result, indent=2, sort_keys=True) + "\n"
     if args.output is not None:
         args.output.parent.mkdir(parents=True, exist_ok=True)
         temporary = args.output.with_suffix(args.output.suffix + ".tmp")
@@ -485,6 +508,17 @@ def build_parser() -> argparse.ArgumentParser:
     ssl4eo.add_argument("--device", default="auto")
     ssl4eo.set_defaults(handler=_embed_ssl4eo)
 
+    terramind = commands.add_parser(
+        "embed-terramind", help="frozen TerraMind-Tiny S2L1C EuroSAT regression experiment"
+    )
+    terramind.add_argument("--manifest", type=Path, required=True)
+    terramind.add_argument("--archive", type=Path, required=True)
+    terramind.add_argument("--checkpoint", type=Path, required=True)
+    terramind.add_argument("--output", type=Path, required=True)
+    terramind.add_argument("--batch-size", type=int, default=2)
+    terramind.add_argument("--device", choices=("auto", "cpu", "cuda"), default="auto")
+    terramind.set_defaults(handler=_embed_terramind)
+
     pca = commands.add_parser("embed-pca", help="embed images with index-fitted PCA")
     pca.add_argument("--manifest", type=Path, required=True)
     pca.add_argument("--image-root", type=Path, required=True)
@@ -498,6 +532,9 @@ def build_parser() -> argparse.ArgumentParser:
     evaluate.add_argument("--embeddings", type=Path, required=True)
     evaluate.add_argument("--k", type=int, default=10)
     evaluate.add_argument("--output", type=Path, help="optionally write the JSON result atomically")
+    evaluate.add_argument(
+        "--tracking-dir", type=Path, help="opt in to local MLflow aggregate tracking (no uploads)"
+    )
     evaluate.set_defaults(handler=_evaluate)
 
     faiss_benchmark = commands.add_parser(

@@ -23,6 +23,11 @@ docs/                    concepts, workflow, decisions, and evidence
 
 Python 3.11 is recommended for local ML work; the package supports Python 3.11 and 3.12.
 
+The canonical reproducible setup now uses `uv.lock`; follow
+[Evaluation foundations](evaluation-foundations.md) for locked CPU/CUDA environments and local
+MLflow tracking. The pip workflow below is retained for editable-install compatibility, not exact
+dependency reproduction.
+
 On Windows, create the virtual environment at a short path. Deep PyTorch package paths can exceed
 older Windows path limits when the environment lives inside an already long checkout path.
 
@@ -54,6 +59,9 @@ Optional groups add:
 - `ml`: scikit-learn PCA and PyTorch/torchvision DINOv2 execution;
 - `search`: Faiss CPU indexes and psutil process-memory observations;
 - `dev`: Ruff, Pytest, and pytest-cov.
+- `cpu` / `cuda`: mutually exclusive official PyTorch wheel selections when using uv;
+- `experiments`: local MLflow and Optuna (tuning still requires independent development data);
+- `foundation`: TerraTorch for the TerraMind model experiment.
 
 This lets lightweight CI test the deterministic core without downloading model checkpoints.
 
@@ -75,7 +83,7 @@ C:\Users\<you>\.venvs\eovr\Scripts\python -m pytest `
   --cov-report=term-missing
 ```
 
-GitHub Actions repeats Ruff and coverage-enabled tests on Python 3.11 and 3.12. Coverage is
+GitHub Actions uses the committed lockfile on Linux and Windows, Python 3.11 and 3.12. Coverage is
 reported but is not currently enforced by a percentage threshold.
 
 ## Testing strategy

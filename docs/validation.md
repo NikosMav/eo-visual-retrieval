@@ -21,9 +21,76 @@ The first three boxes record different kinds of evidence; passing one does not i
 See [Understanding the benchmarks](learning-benchmarks.md) for the evidence ladder and the exact
 training boundary.
 
-## Code health — 2026-09-02
+## Evaluation foundations — 2026-09-02
 
-Executed locally against the current checkout with Python 3.11.5:
+Executed on the isolated `codex/evaluation-foundations` branch:
+
+| Gate | Executed evidence | Status |
+|---|---|---|
+| Lockfile | `uv 0.12.9`; `uv lock --check`; 234 resolved package variants | Passed |
+| Fresh Windows Python 3.11.5 | Locked dev/geo/search environment; 42 tests; Ruff | Passed |
+| Fresh Windows Python 3.12.1 | Locked dev/geo/search environment; 42 tests | Passed |
+| Dependency consistency | `uv pip check` in both validation environments; original CPU `pip check` | Passed |
+| Coverage | 42 tests, 68% total; local tracking module 91% | Passed; no minimum enforced |
+| Local MLflow | MLflow 3.15.2, local SQLite and inspected aggregate-only artifact | Passed |
+| Tracked SSL4EO regression | Existing store, 400 queries, zero skipped, mAP@10 0.8135958333 | Reproduced |
+| Optuna availability | Optuna 4.9.0; eight seeded synthetic scalar-objective trials | Smoke only, no retrieval tuning |
+| GitHub vulnerability alerts | Enabled via API; subsequent status returned successfully | Enabled, not a clean vulnerability audit |
+| TerraMind checkpoint | Public pinned revision, 211,873,402 bytes, SHA-256 matched published LFS identity | Passed |
+
+The tracked SSL4EO store hash was
+`4a0b54291346ab9a9ec12570759c5c36365f0011b6aade09400101dcacf63b07` and local MLflow run ID was
+`73daf4bdef5f42e3b28a166b72e4ddcd`. Its artifact contained aggregate metrics and allowlisted
+content identities only: no image IDs, labels, vectors, imagery, or provider URLs.
+
+Published GPU JSON was compared exactly with its executed local report; TerraMind metrics and
+manifest/checkpoint hashes were checked against the local report/store. CI now validates the
+format of provenance hashes in every published result JSON to catch transcription errors.
+
+The original CPU environment and original embedding stores were not replaced. Remote CI run
+`33657731176` passed all four Linux/Windows, Python 3.11/3.12 jobs for commit `e1244da`.
+TerraMind's separate executed regression result is recorded below; it is not implied merely by
+passing the foundation/tooling gates.
+
+The first foundation install hit a missing Python 3.11 Windows wheel for `stringzilla 5.1.2`.
+The lock now constrains that platform to 5.1.1; no C++ build tools were installed.
+
+### CPU/CUDA correctness smoke
+
+The isolated GPU profile installed 201 compatible packages, including PyTorch `2.13.0+cu130`,
+torchvision `0.28.0+cu130`, and TerraTorch `1.2.11`. `uv pip check` passed. The GPU was an NVIDIA
+RTX 3050 Laptop with 4 GB VRAM and driver 610.74.
+
+`scripts/validate_gpu.py` processed 40 existing EuroSAT records (two per class and split) using the
+same verified SSL4EO weights on CPU and CUDA, batch size 2, four CPU threads, float32, with TF32
+disabled. The maximum absolute vector difference was `2.5779008865356445e-6`; minimum paired
+cosine was `0.9999998807907104`. All CUDA vectors were finite and unit-normalized. The declared
+`rtol=1e-4`, `atol=1e-5` parity gate passed. Full sanitized evidence is in
+[gpu-parity-v1.json](results/gpu-parity-v1.json).
+
+The measured 36.405 s CPU and 4.949 s CUDA totals include imports/model loading, archive/checkpoint
+checksum reads, and cold/warm filesystem effects. They do **not** establish a GPU throughput
+speedup. This smoke establishes numerical agreement for the sampled SSL4EO path only.
+
+### Frozen TerraMind-Tiny EuroSAT regression
+
+The pinned Tiny checkpoint generated 2,000 192-dimensional float32 vectors on CUDA. Required
+backbone keys/shapes loaded strictly, and ordered IDs, labels, splits, and manifest SHA matched
+the PCA, DINOv2, and SSL4EO stores. All vectors were finite and unit-normalized within tolerance.
+
+At k=10, all 400 queries were evaluated with zero skipped: P@10 `0.75075`, R@10 `0.046921875`,
+mAP@10 `0.6868842262`, nDCG@10 `0.7680690406`. This exceeded the existing DINOv2 result but did not
+match SSL4EO's `0.8135958333` mAP. SSL4EO remains the selected multispectral reference; TerraMind is
+a compact alternative, not a promoted default. The inspected best/worst AP@5 grids, per-class
+results, complete hashes, configuration, and timing caveats are in
+[TerraMind v1 results](results/terramind-v1.md) and its machine-readable JSON.
+
+EuroSAT v1 has already informed decisions and is a regression/development benchmark, not a fresh
+confirmatory holdout. No new cross-dataset or temporal generalization claim is made.
+
+## Previous code-health baseline — 2026-09-02
+
+Executed locally before the evaluation-foundations phase with Python 3.11.5:
 
 | Gate | Command or evidence | Status |
 |---|---|---|
@@ -190,7 +257,7 @@ B938BF1BC15CD2EC0FEACFE3A1BB553FE8EA9CA46A7E1D8D00217F29AEF60CD9
 - Temporal or seasonal leakage controls; EuroSAT does not expose acquisition timestamps.
 - Repeatable performance across other operating systems, CPUs, thread counts, and concurrent load.
 - ANN behavior on a genuinely larger EO corpus rather than deterministic synthetic expansion.
-- CUDA correctness or throughput measurements.
+- Representative GPU throughput, precision/batch-size sweeps, or cross-hardware performance.
 - API, interactive-demo, or deployment validation.
 
 ## Allowed claims
@@ -200,8 +267,10 @@ and analysis-ready Sentinel-2 chip paths have executed; that DINOv2 ViT-S/14 out
 and that the frozen 13-band SSL4EO-S12 representation outperformed both RGB baselines on the
 recorded spatially separated EuroSAT v1 class-retrieval benchmark. It may also claim that the
 recorded one-thread Windows experiment found exact search preferable at 1,600 items and measured a
-speed/recall trade-off for HNSW on a 50k synthetic DINOv2 workload.
+speed/recall trade-off for HNSW on a 50k synthetic DINOv2 workload. It may also claim that a bounded
+40-sample SSL4EO CPU/CUDA numerical-agreement gate passed on the recorded laptop/runtime, and that
+frozen TerraMind-Tiny scored between DINOv2 and SSL4EO on the recorded EuroSAT regression protocol.
 
 It must not generalize that result to temporal or seasonal transfer, the causal benefit of
 non-visible bands, other datasets, analyst utility, production readiness, ANN performance on real
-large EO corpora or other hardware, or GPU acceleration until supported by recorded validation.
+large EO corpora or other hardware, or GPU throughput until supported by recorded validation.
