@@ -15,13 +15,14 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         python-version: ["3.11", "3.12"]
-    env:
-      UV_PROJECT_ENVIRONMENT: ${{ runner.temp }}/eovr
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Select a short isolated environment path
+        shell: bash
+        run: echo "UV_PROJECT_ENVIRONMENT=$RUNNER_TEMP/eovr" >> "$GITHUB_ENV"
       - run: python -m pip install uv==0.12.9
       - run: uv sync --locked --extra dev --extra geo --extra search
       - run: uv run --locked --no-sync python -m ruff check .
