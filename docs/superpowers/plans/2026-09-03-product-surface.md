@@ -68,10 +68,18 @@ app = [
 ]
 ```
 
+FastAPI's `TestClient` needs `httpx`, which nothing currently installs. Add it to the `dev` extra
+too, since it is a testing tool rather than a serving one. In the `dev = [...]` block, immediately
+before the `"mypy>=1.11,<2",` line, add:
+
+```toml
+  "httpx>=0.27,<1",
+```
+
 Then install it locally:
 
 ```bash
-C:\Users\nikos\.venvs\eovr\Scripts\python.exe -m pip install -e ".[app]"
+C:\Users\nikos\.venvs\eovr\Scripts\python.exe -m pip install -e ".[app,dev]"
 ```
 
 - [ ] **Step 2: Write the failing test**
@@ -1003,14 +1011,31 @@ def test_undecodable_upload_is_a_bad_request(client: TestClient) -> None:
 
 
 def test_served_process_imports_no_model_framework() -> None:
-    """The deployable image stays small only if nothing pulls in a framework."""
-    import eo_visual_retrieval.app.catalog  # noqa: F401
-    import eo_visual_retrieval.app.main  # noqa: F401
-    import eo_visual_retrieval.app.thumbnails  # noqa: F401
-    import eo_visual_retrieval.app.uploads  # noqa: F401
+    """The deployable image stays small only if nothing pulls in a framework.
 
-    for forbidden in ("torch", "torchvision", "terratorch", "sklearn"):
-        assert forbidden not in sys.modules, f"the served surface must not import {forbidden}"
+    This must run in a fresh interpreter. Other tests in this suite import
+    scikit-learn and torch at module scope, so checking sys.modules in the shared
+    pytest process would measure test ordering rather than what the app imports.
+    """
+    import subprocess
+
+    probe = (
+        "import sys;"
+        "import eo_visual_retrieval.app.catalog;"
+        "import eo_visual_retrieval.app.main;"
+        "import eo_visual_retrieval.app.thumbnails;"
+        "import eo_visual_retrieval.app.uploads;"
+        "leaked=[m for m in ('torch','torchvision','terratorch','sklearn') "
+        "if m in sys.modules];"
+        "print(','.join(leaked))"
+    )
+    result = subprocess.run(
+        [sys.executable, "-c", probe], capture_output=True, text=True, check=True
+    )
+
+    assert result.stdout.strip() == "", (
+        f"the served surface imported a model framework: {result.stdout.strip()}"
+    )
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
