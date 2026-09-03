@@ -177,8 +177,9 @@ reproducible. See the [BigEarthNet guide](benchmark-bigearthnet.md).
 
 Remaining work, in order:
 
-1. Acquire and checksum-verify the two small metadata files, then inspect actual label, date,
-   and official-split coverage. The initial Zenodo requests timed out or returned HTTP 504.
+1. Inspect actual label, date, and official-split coverage in the two local metadata files.
+   Acquisition recovered after the initial Zenodo timeouts: both files are checksum-verified
+   and cached, totaling 4,326,511 bytes. See the executed recovery in [validation](validation.md).
 2. Finalize the bulk imagery byte ceiling and member-access/storage plan. The advertised S2
    source is one 63.3 GB compressed tar, and selective access has not been established.
 3. Prepare and independently audit the 4,000 index / 500 development / 500 final partitions.
