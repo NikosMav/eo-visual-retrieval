@@ -14,7 +14,11 @@ from typing import Any
 
 import numpy as np
 
-from eo_visual_retrieval.benchmarks.coverage import cell_budget, distance_tiers
+from eo_visual_retrieval.benchmarks.coverage import (
+    cell_budget,
+    distance_tiers,
+    nearest_distance_percentiles,
+)
 from eo_visual_retrieval.benchmarks.eurosat import discover_candidates
 from eo_visual_retrieval.hashing import file_sha256
 from eo_visual_retrieval.manifests import read_jsonl
@@ -47,6 +51,11 @@ def main() -> None:
         reference_lonlat=used_lonlat,
         thresholds_km=args.thresholds_km,
     )
+    nearest_km_percentiles = nearest_distance_percentiles(
+        candidates,
+        used_members=used_members,
+        reference_lonlat=used_lonlat,
+    )
     unused_lonlat_count = budget.total_patches - budget.used_patches
 
     result: dict[str, Any] = {
@@ -58,6 +67,7 @@ def main() -> None:
         "unused_patches": unused_lonlat_count,
         "cell_budget": budget.to_dict(),
         "distance_from_prepared": tiers,
+        "nearest_km_percentiles": nearest_km_percentiles,
         "notes": [
             "A cell counts as spent when any one of its patches was selected.",
             "Distance tiers are a weaker fallback than cell disjointness.",

@@ -174,3 +174,35 @@ def distance_tiers(
             "per_label": per_label,
         }
     return tiers
+
+
+def nearest_distance_percentiles(
+    candidates: Sequence[EuroSatCandidate],
+    used_members: set[str],
+    reference_lonlat: NDArray[np.float64],
+    percentiles: Sequence[float] = (5, 25, 50, 75, 95),
+) -> dict[str, float]:
+    """Summarise how far unused patches sit from an already-used reference set.
+
+    Distance tiers answer "how many survive a cutoff"; this answers "how far
+    is the typical one", which is what makes a weak fallback's weakness
+    legible: a low median means most unused patches sit right next to
+    something already used, however many clear an arbitrary threshold.
+    """
+
+    if not candidates:
+        raise ValueError("at least one candidate is required")
+    if not percentiles:
+        raise ValueError("percentiles must not be empty")
+
+    unused = [candidate for candidate in candidates if candidate.member not in used_members]
+    if not unused:
+        raise ValueError("every candidate was used; no unused patch remains to measure")
+    unused_lonlat = np.asarray(
+        [(candidate.longitude, candidate.latitude) for candidate in unused], dtype=np.float64
+    )
+    nearest_km = nearest_distances_m(unused_lonlat, reference_lonlat) / 1000
+
+    return {
+        f"p{value:g}": round(float(np.percentile(nearest_km, value)), 3) for value in percentiles
+    }

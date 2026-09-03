@@ -9,6 +9,7 @@ from eo_visual_retrieval.benchmarks.coverage import (
     EARTH_RADIUS_M,
     cell_budget,
     distance_tiers,
+    nearest_distance_percentiles,
     nearest_distances_m,
 )
 from eo_visual_retrieval.benchmarks.eurosat import EuroSatCandidate
@@ -173,4 +174,62 @@ def test_distance_tiers_reject_a_non_positive_threshold() -> None:
             used_members=set(),
             reference_lonlat=np.asarray([[0.0, 0.0]]),
             thresholds_km=[0],
+        )
+
+
+def test_nearest_distance_percentiles_returns_one_key_per_percentile() -> None:
+    percentiles = nearest_distance_percentiles(
+        _sample(),
+        used_members={"a.tif"},
+        reference_lonlat=np.asarray([[0.0, 0.0]]),
+    )
+
+    assert set(percentiles) == {"p5", "p25", "p50", "p75", "p95"}
+
+
+def test_nearest_distance_percentiles_matches_a_hand_computed_median() -> None:
+    """b/c/d/e sit at 0.1/5.0/5.1/9.0 degrees latitude from the reference.
+
+    One degree here is EARTH_RADIUS_M * radians(1) metres, so the four
+    unused distances in km are 11.119..., 555.975..., 567.094..., 1000.754...
+    and the median of four values is the mean of the middle two.
+    """
+    degree_km = EARTH_RADIUS_M * np.radians(1.0) / 1000
+    expected_p50 = round((5.0 * degree_km + 5.1 * degree_km) / 2, 3)
+
+    percentiles = nearest_distance_percentiles(
+        _sample(),
+        used_members={"a.tif"},
+        reference_lonlat=np.asarray([[0.0, 0.0]]),
+        percentiles=[50],
+    )
+
+    assert percentiles == {"p50": pytest.approx(expected_p50)}
+
+
+def test_nearest_distance_percentiles_rejects_an_empty_candidate_list() -> None:
+    with pytest.raises(ValueError, match="at least one candidate is required"):
+        nearest_distance_percentiles(
+            [], used_members=set(), reference_lonlat=np.asarray([[0.0, 0.0]])
+        )
+
+
+def test_nearest_distance_percentiles_rejects_an_empty_percentile_list() -> None:
+    with pytest.raises(ValueError, match="percentiles must not be empty"):
+        nearest_distance_percentiles(
+            _sample(),
+            used_members=set(),
+            reference_lonlat=np.asarray([[0.0, 0.0]]),
+            percentiles=[],
+        )
+
+
+def test_nearest_distance_percentiles_rejects_when_every_candidate_was_used() -> None:
+    all_members = {candidate.member for candidate in _sample()}
+
+    with pytest.raises(ValueError, match="every candidate was used; no unused patch remains"):
+        nearest_distance_percentiles(
+            _sample(),
+            used_members=all_members,
+            reference_lonlat=np.asarray([[0.0, 0.0]]),
         )
