@@ -24,6 +24,7 @@ established.
 - Ranks images with exact cosine similarity, for a stored item or a new local RGB image.
 - Benchmarks Faiss HNSW recall, latency, construction time, and storage against exact search.
 - Reports Precision@k, Recall@k, mAP@k, and nDCG@k.
+- Scores multi-label development queries with Jaccard relevance while holding final queries out.
 - Optionally records aggregate evaluations in local MLflow without uploading imagery or vectors.
 - Records the difference between executed evidence and planned work.
 
@@ -221,6 +222,7 @@ Read the guides in this order:
 13. [Validation](docs/validation.md) — what has and has not been verified.
 14. [Evaluation foundations](docs/evaluation-foundations.md) — locked environments, GPU checks, model-selection gates, and local tracking.
 15. [TerraMind experiment](docs/benchmark-terramind.md) and [results](docs/results/terramind-v1.md) — frozen-model contract, executed comparison, and retained SSL4EO decision.
+16. [BigEarthNet acquisition and evaluation](docs/benchmark-bigearthnet.md) — source inventory, SSL4EO compatibility gate, and multi-label development scoring.
 
 ## Data and privacy policy
 

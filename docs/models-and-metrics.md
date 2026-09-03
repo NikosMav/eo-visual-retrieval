@@ -203,7 +203,7 @@ memory measurements.
 
 ## Relevance definition
 
-The evaluator currently uses binary class-label relevance:
+The original single-label evaluator uses binary class-label relevance:
 
 ```text
 result label equals query label  -> relevant
@@ -212,6 +212,13 @@ result label differs             -> not relevant
 
 This is a benchmark proxy. Two images with the same broad scene class may not satisfy the same user
 intent, and two different classes may still be visually or operationally related.
+
+The separate `evaluate-multilabel` development path compares label sets using Jaccard similarity.
+Binary metrics use the pre-registered 0.5 threshold; nDCG uses raw Jaccard gain and the ideal
+ranking across the full index. Threshold sensitivity at 0.3 and 0.7 keeps the same labeled query
+population, including queries with zero binary positives. Final queries are excluded. See
+[BigEarthNet evaluation](benchmark-bigearthnet.md) for exact denominators, skip policy, provenance,
+and the remaining data/confirmatory gates. No BigEarthNet score has been produced.
 
 ## Precision@k
 

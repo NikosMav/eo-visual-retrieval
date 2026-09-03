@@ -21,6 +21,37 @@ The first three boxes record different kinds of evidence; passing one does not i
 See [Understanding the benchmarks](learning-benchmarks.md) for the evidence ladder and the exact
 training boundary.
 
+## BigEarthNet acquisition gates and development evaluator — 2026-09-03
+
+The published BigEarthNet v2 catalog was inspected, and the agreed SSL4EO-S12 sources were
+checked for a compatible 12-band L2A checkpoint. The dated, source-bounded checkpoint decision
+and acquisition inventory are recorded in [the BigEarthNet guide](benchmark-bigearthnet.md).
+Catalog sizes are publisher-advertised rounded values, not locally measured download sizes.
+
+The metadata-only downloader's default inventory command passed. Its live `--download` attempt
+timed out without leaving a dataset file; earlier catalog API requests also returned HTTP 504
+or timed out. No image archive was requested. Real metadata inspection, date and geography
+audits, partition preparation, and BigEarthNet retrieval scores remain unexecuted.
+
+Synthetic tests verified Jaccard binary relevance, raw-Jaccard graded nDCG, fixed development
+query eligibility across thresholds, input identity and split checks, and CLI provenance
+output. Changing final-query labels or replacing final vectors with NaN did not affect
+development scores. The command has no final-scoring option; a frozen configuration and a
+separate one-shot final evaluation gate are still required.
+
+| Environment | Ruff / Mypy | Pytest | Coverage |
+|---|---|---|---|
+| Full Python 3.11.5 | Passed; 55 source files type-checked | 159 passed | 81.53% |
+| Lightweight Python 3.12.1 | Passed; 55 source files type-checked | 158 passed, one expected PyTorch-dependent skip | 80.66% |
+
+The existing single-label `evaluate_store(..., k=10)` path was rerun against all four local
+EuroSAT stores. Every aggregate metric, query count, and per-class slice matched the committed
+PCA-64, DINOv2, SSL4EO-S12, and TerraMind-Tiny results exactly. TerraMind's `mlflow_run_id` was
+excluded because it is tracking metadata. Files under `docs/results/` remain unchanged.
+
+These checks establish software behavior and preserve the existing EuroSAT results. They do
+not establish BigEarthNet retrieval quality, valid real-data partitions, or generalization.
+
 ## EuroSAT geography exhaustion — 2026-09-03
 
 Executed with `scripts/eurosat_cell_budget.py` against the verified local archive and the

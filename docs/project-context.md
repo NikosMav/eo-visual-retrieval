@@ -30,6 +30,7 @@ The repository currently contains:
 - locked CPU/CUDA dependency profiles, local MLflow evaluation tracking, and a CUDA parity smoke;
 - portable compressed embedding stores;
 - exact cosine retrieval and four ranked-retrieval metrics;
+- a separate multi-label development evaluator with Jaccard relevance and held-out final queries;
 - a reproducible Faiss exact-versus-HNSW benchmark with an explicit ANN-recall contract;
 - an executed 2,000-image, spatially separated EuroSAT benchmark;
 - aggregate and per-class metrics plus qualitative best/worst grids for all three representations;
@@ -169,14 +170,23 @@ EuroSAT v1 is therefore permanently a regression benchmark. See
 [ADR 0006](decisions/0006-confirmatory-evaluation-data.md) and the measurement in
 [validation](validation.md).
 
-BigEarthNet v2 is the specified confirmatory set. In order:
+BigEarthNet v2 is the specified confirmatory set. The published acquisition inventory is recorded,
+the SSL4EO L2A gate resolved to absent in the agreed sources, and `evaluate-multilabel` now scores
+development queries with the pre-registered Jaccard policies. Published EuroSAT results remain
+reproducible. See the [BigEarthNet guide](benchmark-bigearthnet.md).
 
-1. Measure the reBEN distribution size and record its licence and DOI before downloading anything.
-2. Resolve the SSL4EO L2A checkpoint gate; the current 13-band L1C reference cannot read
-   BigEarthNet's 12-band L2A patches.
-3. Implement multi-label Jaccard relevance beside the existing single-label evaluator, leaving
-   published EuroSAT results reproducible.
-4. Prepare and audit the three partitions, then tune on development queries only.
-5. Test a Qdrant adapter against exact search, then return to the product surface.
+Remaining work, in order:
+
+1. Acquire and checksum-verify the two small metadata files, then inspect actual label, date,
+   and official-split coverage. The initial Zenodo requests timed out or returned HTTP 504.
+2. Finalize the bulk imagery byte ceiling and member-access/storage plan. The advertised S2
+   source is one 63.3 GB compressed tar, and selective access has not been established.
+3. Prepare and independently audit the 4,000 index / 500 development / 500 final partitions.
+   Verify patch footprints, temporal grouping, exclusions, and label distributions.
+4. Implement the BigEarthNet input adapters, including TerraMind's native 12-band L2A path,
+   and the frozen-configuration final-scoring gate. The current TerraMind adapter is EuroSAT L1C.
+5. Run the development comparison and threshold sensitivity; freeze settings before the single
+   final evaluation. Audit pretraining overlap before making generalization claims.
+6. Test a Qdrant adapter against exact search, then return to the product surface.
 
 Paid services, gated-model accounts, and distributed Milvus deployment remain deferred.
