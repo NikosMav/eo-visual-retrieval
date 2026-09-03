@@ -1,0 +1,81 @@
+{
+  "evaluated_queries": 400,
+  "k": 10,
+  "map_at_k": 0.7445231150793652,
+  "ndcg_at_k": 0.8154581092372303,
+  "per_class": {
+    "AnnualCrop": {
+      "evaluated_queries": 40,
+      "map_at_k": 0.6587123015873015,
+      "ndcg_at_k": 0.7680957770797437,
+      "precision_at_k": 0.7424999999999999,
+      "recall_at_k": 0.046406249999999996
+    },
+    "Forest": {
+      "evaluated_queries": 40,
+      "map_at_k": 0.8872499999999999,
+      "ndcg_at_k": 0.9012011517447597,
+      "precision_at_k": 0.8899999999999999,
+      "recall_at_k": 0.055624999999999994
+    },
+    "HerbaceousVegetation": {
+      "evaluated_queries": 40,
+      "map_at_k": 0.7707053571428572,
+      "ndcg_at_k": 0.8466724523421618,
+      "precision_at_k": 0.8375,
+      "recall_at_k": 0.05234375
+    },
+    "Highway": {
+      "evaluated_queries": 40,
+      "map_at_k": 0.5920724206349206,
+      "ndcg_at_k": 0.6942372496112134,
+      "precision_at_k": 0.675,
+      "recall_at_k": 0.0421875
+    },
+    "Industrial": {
+      "evaluated_queries": 40,
+      "map_at_k": 0.8914087301587301,
+      "ndcg_at_k": 0.9318176398972053,
+      "precision_at_k": 0.9175000000000001,
+      "recall_at_k": 0.057343750000000006
+    },
+    "Pasture": {
+      "evaluated_queries": 40,
+      "map_at_k": 0.7618263888888889,
+      "ndcg_at_k": 0.8396101974549417,
+      "precision_at_k": 0.8175000000000001,
+      "recall_at_k": 0.05109375000000001
+    },
+    "PermanentCrop": {
+      "evaluated_queries": 40,
+      "map_at_k": 0.5159345238095238,
+      "ndcg_at_k": 0.6385461472354326,
+      "precision_at_k": 0.6224999999999999,
+      "recall_at_k": 0.038906249999999996
+    },
+    "Residential": {
+      "evaluated_queries": 40,
+      "map_at_k": 0.8720327380952382,
+      "ndcg_at_k": 0.9104098524528226,
+      "precision_at_k": 0.9075,
+      "recall_at_k": 0.05671875
+    },
+    "River": {
+      "evaluated_queries": 40,
+      "map_at_k": 0.5181904761904762,
+      "ndcg_at_k": 0.6378997196850469,
+      "precision_at_k": 0.6375,
+      "recall_at_k": 0.03984375
+    },
+    "SeaLake": {
+      "evaluated_queries": 40,
+      "map_at_k": 0.9770982142857143,
+      "ndcg_at_k": 0.9860909048689745,
+      "precision_at_k": 0.9825000000000002,
+      "recall_at_k": 0.06140625000000001
+    }
+  },
+  "precision_at_k": 0.8029999999999999,
+  "recall_at_k": 0.050187499999999996,
+  "skipped_queries": 0
+}

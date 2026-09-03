@@ -220,15 +220,12 @@ def _embed_dinov2(args: argparse.Namespace) -> None:
 def _embed_ssl4eo(args: argparse.Namespace) -> None:
     from eo_visual_retrieval.benchmarks.eurosat import EUROSAT_ARCHIVE_MD5
     from eo_visual_retrieval.embeddings.ssl4eo import (
-        CHECKPOINT_FILENAME,
-        CHECKPOINT_REPOSITORY,
-        CHECKPOINT_REVISION,
-        CHECKPOINT_SHA256,
-        MODEL_NAME,
-        SSL4EO_BAND_ORDER,
+        SSL4EO_ALL,
+        SSL4EO_RGB,
         ssl4eo_embeddings,
     )
 
+    variant = SSL4EO_RGB if args.variant == "rgb" else SSL4EO_ALL
     records = read_jsonl(args.manifest)
     vectors = ssl4eo_embeddings(
         records,
@@ -236,24 +233,26 @@ def _embed_ssl4eo(args: argparse.Namespace) -> None:
         checkpoint=args.checkpoint,
         batch_size=args.batch_size,
         device=args.device,
+        variant=variant,
     )
     store = _store(
         records,
         vectors,
         {
             "backend": "ssl4eo-s12",
-            "model": MODEL_NAME,
-            "checkpoint_repository": CHECKPOINT_REPOSITORY,
-            "checkpoint_revision": CHECKPOINT_REVISION,
-            "checkpoint_filename": CHECKPOINT_FILENAME,
-            "checkpoint_sha256": CHECKPOINT_SHA256,
+            "variant": args.variant,
+            "model": variant.model_name,
+            "checkpoint_repository": variant.checkpoint_repository,
+            "checkpoint_revision": variant.checkpoint_revision,
+            "checkpoint_filename": variant.checkpoint_filename,
+            "checkpoint_sha256": variant.checkpoint_sha256,
             "archive_md5": EUROSAT_ARCHIVE_MD5,
-            "bands": list(SSL4EO_BAND_ORDER),
+            "bands": list(variant.band_order),
             "device_requested": args.device,
             "frozen": True,
             "preprocessing": (
-                "13-band L1C DN clipped to 0-10000 and divided by 10000; "
-                "resize 256, center crop 224"
+                f"{variant.channels}-band L1C DN clipped to 0-10000 and divided "
+                "by 10000; resize 256, center crop 224"
             ),
             **_run_metadata(
                 records,
@@ -577,6 +576,14 @@ def build_parser() -> argparse.ArgumentParser:
     ssl4eo.add_argument("--output", type=Path, required=True)
     ssl4eo.add_argument("--batch-size", type=int, default=16)
     ssl4eo.add_argument("--device", default="auto")
+    ssl4eo.add_argument(
+        "--variant",
+        choices=("all", "rgb"),
+        default="all",
+        help="'all' is the 13-band multispectral encoder; 'rgb' is the same "
+        "architecture and pretraining corpus restricted to B04/B03/B02, which "
+        "makes the pair a controlled band ablation",
+    )
     ssl4eo.set_defaults(handler=_embed_ssl4eo)
 
     terramind = commands.add_parser(
