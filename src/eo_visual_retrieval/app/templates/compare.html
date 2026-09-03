@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>EO visual retrieval — representation comparison</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 2rem; color: #1a1a1a; }
+    h1 { font-size: 1.25rem; }
+    .note { color: #555; font-size: 0.85rem; max-width: 46rem; }
+    .row { margin: 1.5rem 0; border-top: 1px solid #ddd; padding-top: 1rem; }
+    .tiles { display: flex; gap: 0.5rem; align-items: flex-start; }
+    .tile img { width: 96px; height: 96px; display: block; border: 3px solid #ccc; }
+    .query img { border-color: #2864dc; }
+    .hit img { border-color: #239646; }
+    .miss img { border-color: #cd3737; }
+    .unknown img { border-color: #999; }
+    .cap { font-size: 0.7rem; color: #444; }
+    .prov { font-size: 0.7rem; color: #666; font-family: ui-monospace, monospace; }
+    form { margin: 1rem 0; }
+  </style>
+</head>
+<body>
+  <h1>Representation comparison</h1>
+  <p class="note">
+    One query, ranked by each representation with exact cosine similarity over
+    precomputed embeddings. Blue marks the query, green a same-class result, red a
+    different-class result.
+  </p>
+
+  <form method="get" action="/compare">
+    <label for="item_id">Corpus query</label>
+    <select name="item_id" id="item_id">
+      {% for candidate in query_ids %}
+      <option value="{{ candidate }}" {% if candidate == item_id %}selected{% endif %}>{{ candidate }}</option>
+      {% endfor %}
+    </select>
+    <button type="submit">Rank</button>
+  </form>
+
+  {% if upload_available %}
+  <form method="post" action="/compare/upload" enctype="multipart/form-data">
+    <label for="image">Or upload an image</label>
+    <input type="file" name="image" id="image" accept="image/*" required>
+    <button type="submit">Rank upload</button>
+  </form>
+  {% else %}
+  <p class="note">Upload is disabled: start the server with <code>--projection</code> to enable it.</p>
+  {% endif %}
+
+  {% if is_upload %}
+  <p class="note">
+    This query was uploaded, so it carries <strong>no label</strong>. Results are
+    shown without relevance colouring, and no per-query metric is computed: grey
+    means unknown, not wrong. Uploads are embedded with PCA only, the one
+    representation this project fits itself.
+  </p>
+  {% endif %}
+
+  {% for ranking in rankings %}
+  <div class="row">
+    <div><strong>{{ ranking.name }}</strong> &mdash; {{ ranking.dimension }} dimensions</div>
+    <div class="prov">
+      {% for key, value in ranking.provenance.items() %}{{ key }}={{ value }} {% endfor %}
+    </div>
+    <div class="tiles">
+      {% if query_id %}
+      <div class="tile query">
+        <img src="/thumbnail?item_id={{ query_id | urlencode }}" alt="query">
+        <div class="cap">query</div>
+      </div>
+      {% endif %}
+      {% for result in ranking.results %}
+      <div class="tile {% if result.relevant is none %}unknown{% elif result.relevant %}hit{% else %}miss{% endif %}">
+        <img src="/thumbnail?item_id={{ result.item_id | urlencode }}" alt="result">
+        <div class="cap">#{{ loop.index }} {{ "%.3f"|format(result.score) }}</div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</body>
+</html>

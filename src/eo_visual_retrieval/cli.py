@@ -470,6 +470,32 @@ def _query(args: argparse.Namespace) -> None:
     )
 
 
+def _serve(args: argparse.Namespace) -> None:
+    import uvicorn
+
+    from eo_visual_retrieval.app.catalog import Catalog
+    from eo_visual_retrieval.app.main import create_app
+
+    catalog = Catalog.load(
+        manifest=args.manifest,
+        image_root=args.image_root,
+        stores=args.store,
+        projection=args.projection,
+    )
+    print(
+        json.dumps(
+            {
+                "stores": [str(path) for path in args.store],
+                "queries": len(catalog.query_ids),
+                "upload_available": catalog.upload_available,
+                "url": f"http://{args.host}:{args.port}",
+            },
+            indent=2,
+        )
+    )
+    uvicorn.run(create_app(catalog, k=args.k), host=args.host, port=args.port)
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="eovr", description="EO visual retrieval workflow")
     commands = parser.add_subparsers(dest="command", required=True)
@@ -681,6 +707,31 @@ def build_parser() -> argparse.ArgumentParser:
     query.add_argument("--device", default="auto")
     query.add_argument("--k", type=int, default=5)
     query.set_defaults(handler=_query)
+
+    serve = commands.add_parser(
+        "serve",
+        help="serve a representation-comparison view over prepared embedding stores",
+    )
+    serve.add_argument("--manifest", type=Path, required=True)
+    serve.add_argument("--image-root", type=Path, required=True)
+    serve.add_argument(
+        "--store",
+        type=Path,
+        action="append",
+        required=True,
+        help="an embedding store to compare; repeat to add representations, which "
+        "are shown in the order given",
+    )
+    serve.add_argument(
+        "--projection",
+        type=Path,
+        help="PCA basis from embed-pca --projection-output; without it the upload "
+        "path is disabled",
+    )
+    serve.add_argument("--host", default="127.0.0.1")
+    serve.add_argument("--port", type=int, default=8000)
+    serve.add_argument("--k", type=int, default=5)
+    serve.set_defaults(handler=_serve)
     return parser
 
 
