@@ -18,7 +18,7 @@
     }
   },
   "footprint_inventory_sha256": "d7384d485a519a2c630b8aed666d379a20ac44f7863e65a6ff311ba85776ca10",
-  "footprint_report_sha256": "a846d2b996dab38662edc1ca78bcdb0e73547f88773b615cc3da5d6380a9408e",
+  "footprint_report_sha256": "c35dfb65eafec2f603ab9828c237354afe91ca5c8ae66f467f5cee920a9ba802",
   "independent_geometry_readers_agree": true,
   "pairwise_separation": {
     "development/final": {
@@ -196,5 +196,5 @@
   "s2_subset_footprints_verified": false,
   "schema": "bigearthnet-selection-audit-v1",
   "selected_reference_footprints_reloaded": 5000,
-  "selection_sha256": "3a344a1dcffc15b1ae4cd77f66c7d63c85683e370632237a130f3f3a3a9fb9c9"
+  "selection_sha256": "f31d211bc52e3d1da107437aca3d4eba4c1c6ee77f953a32218d31e300ab39e1"
 }

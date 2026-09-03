@@ -141,15 +141,15 @@ def test_candidate_loader_binds_inventory_metadata_and_reference_archive(
     evidence: dict[str, Any] = {
         "inventory_sha256": file_sha256(inventory),
         "reference_archive_sha256": file_sha256(reference),
-        "metadata_sha256": {metadata.name: file_sha256(metadata)},
+        "metadata_files": {metadata.name: {"file_sha256": file_sha256(metadata)}},
     }
     report.write_text(json.dumps(evidence), encoding="utf-8")
     assert len(partitions.load_candidates(source, inventory, report)) == len(rows)
-    evidence["metadata_sha256"][metadata.name] = "wrong"
+    evidence["metadata_files"][metadata.name]["file_sha256"] = "wrong"
     report.write_text(json.dumps(evidence), encoding="utf-8")
     with pytest.raises(ValueError, match="metadata differs"):
         partitions.load_candidates(source, inventory, report)
-    evidence["metadata_sha256"][metadata.name] = file_sha256(metadata)
+    evidence["metadata_files"][metadata.name]["file_sha256"] = file_sha256(metadata)
     report.write_text(json.dumps(evidence), encoding="utf-8")
     reference.write_bytes(b"changed reference archive")
     with pytest.raises(ValueError, match="reference archive differs"):

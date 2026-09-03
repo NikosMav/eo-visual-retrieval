@@ -12,7 +12,7 @@ import pytest
 
 from eo_visual_retrieval.datasets import bigearthnet_footprints as footprints
 from eo_visual_retrieval.datasets.bigearthnet import MetadataAsset
-from eo_visual_retrieval.hashing import file_md5
+from eo_visual_retrieval.hashing import file_md5, file_sha256
 
 
 def _identity(column: int = 26) -> str:
@@ -140,6 +140,7 @@ def test_inventory_promotes_only_complete_verified_source(
     output = tmp_path / "inventory.parquet"
     report = footprints.build_inventory(source, output)
     assert report["patches"] == 1
+    assert report["metadata_files"][metadata.name]["file_sha256"] == file_sha256(metadata)
     assert report["s2_subset_footprints_verified"] is False
     assert pq.read_table(output)["patch_id"].to_pylist() == [_identity()]
     with pytest.raises(ValueError, match="already exists"):

@@ -45,10 +45,10 @@ The [selection audit](results/bigearthnet-selection-audit.json) passed the fixed
 without changing the seed, windows, sizes, label minimum, or spatial guards. All 5,000 selected
 maps were reopened with Rasterio, matched the independently generated inventory exactly, and were
 audited from their native bounds. The acquisition-selection SHA-256 is
-`3a344a1dcffc15b1ae4cd77f66c7d63c85683e370632237a130f3f3a3a9fb9c9`.
+`f31d211bc52e3d1da107437aca3d4eba4c1c6ee77f953a32218d31e300ab39e1`.
 The selection command ran twice from the same verified inputs. Both the selection JSON and the
 complete independent audit were byte-identical; audit SHA-256 is
-`43584fae5e6c4c35c708f2ad3ac8246d42608df5f815bd37fe6ea6100112155b`.
+`8915d395256834f7a6ca7aa816502048cafc277bb92dc9858d7c76eec4502608`.
 
 | Partition | Patches | 50 km cells | Observed dates | Smallest label count |
 |---|---:|---:|---|---:|

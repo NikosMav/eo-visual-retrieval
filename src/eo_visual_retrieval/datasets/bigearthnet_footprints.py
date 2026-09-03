@@ -255,8 +255,8 @@ def build_inventory(
     batch: list[dict[str, Any]] = []
     source = {
         "reference_archive_sha256": file_sha256(archive),
-        "metadata_sha256": {a.filename: file_sha256(directory / a.filename)
-                            for a in METADATA_ASSETS},
+        "metadata_files": {a.filename: {"file_sha256": file_sha256(directory / a.filename)}
+                           for a in METADATA_ASSETS},
     }
     try:
         for row in reference_footprints(

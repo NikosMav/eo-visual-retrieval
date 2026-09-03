@@ -74,7 +74,9 @@ def load_candidates(directory: Path, inventory: Path, report: Path) -> list[dict
     if evidence["reference_archive_sha256"] != file_sha256(directory / REFERENCE_ARCHIVE_FILENAME):
         raise ValueError("reference archive differs from inventory source")
     for asset in METADATA_ASSETS:
-        if evidence["metadata_sha256"][asset.filename] != file_sha256(directory / asset.filename):
+        if evidence["metadata_files"][asset.filename]["file_sha256"] != file_sha256(
+            directory / asset.filename
+        ):
             raise ValueError("metadata differs from inventory source")
     geometry = pq.read_table(inventory).to_pylist()
     by_id = {row["patch_id"]: row for row in geometry}
