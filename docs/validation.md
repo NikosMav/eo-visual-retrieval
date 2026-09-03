@@ -84,11 +84,36 @@ Zstandard 0.25.0 was added to the optional BigEarthNet dependencies; no existing
 version changed. Evaluators, representation code, embedding formats, and earlier result files
 were not modified.
 
-## BigEarthNet S2 bounded pilot attempt — 2026-09-03
+## BigEarthNet S2 two-minute throughput sample — 2026-09-03
+
+The streaming implementation path ran for exactly 120.0 seconds against the original compressed S2
+source. It received **148,504,576 bytes** through nine exact HTTP ranges with zero retries:
+**1.1802 MiB/s**. A linear projection from this single local observation is **14.20 hours** for
+the 63,251,710,377-byte archive. This is a planning projection, not an SLA; a long-lived connection
+may behave differently.
+
+The parser walked 14,573 raster members. It fully decoded 24 selected bands from two index patches,
+which again matched the frozen bounds, native affine transforms, and CRS. The deadline stopped the
+attempt; no geometry mismatch was observed, no complete archive checksum was claimed, and no
+completion marker was written. The received prefix MD5 is
+`3d76233f054d690cd97dce74a221fd4b`, and its SHA-256 is
+`0511f05aefcae5147cf49c6f5fb13e5882a3f3c9d10a9d4afb9065e7c77d13f7`. These identify only the
+148,504,576-byte prefix. The [machine-readable record](results/bigearthnet-s2-throughput-sample.json)
+contains the complete executed counters.
+
+The final design folds the early geometry signal into one real pass. It verifies every selected
+patch immediately, records the compressed offset and patch/band on the first disagreement, and
+aborts. Matching files remain staging until all 5,000 patches pass and the byte-exact complete
+archive MD5 also matches. In-process HTTP retries continue at the delivered byte offset. A process
+restart replays from byte zero to preserve both one-frame Zstandard decoding and the complete
+source digest; it reuses matching staged TIFFs and exposes the repeated prefix in its cumulative
+network ledger. No real acquisition pass has started.
+
+## BigEarthNet S2 initial 64 MiB diagnostic — 2026-09-03
 
 The [streaming downloader](bigearthnet-streaming.md) executed with the existing frozen selection,
-a 64 MiB cumulative network cap, and a 300-second attempt deadline. Its planned pilot contained
-30 existing patches: ten different spatial cells in each of index, development, and final.
+a 64 MiB cumulative network cap, and a 300-second attempt deadline. Its diagnostic set contained
+30 existing patches: ten different spatial cells in each partition.
 The [diagnostic evidence](results/bigearthnet-s2-pilot-diagnostic.json) records the exact IDs,
 per-band geometry, local file hashes, and source/input identities.
 
@@ -97,19 +122,19 @@ per-band geometry, local file hashes, and source/input identities.
 | Stop | Network byte budget exhausted; incomplete |
 | Compressed bytes received / reserved | 67,108,864 / 67,108,864; four exact HTTP 206 ranges, zero retries |
 | Attempt wall-clock | 41.234 seconds |
-| Raster members streamed | 6,531; non-pilot members discarded |
-| Complete pilot patches reached | Index 2; development 0; final 0 |
+| Raster members streamed | 6,531; members outside the diagnostic set discarded |
+| Complete diagnostic patches reached | Index 2; development 0; final 0 |
 | Geometry and decoding | All 24 retained bands decoded; exact bounds, native affine, and CRS agreement; zero observed mismatches |
 | S2 GeoTIFF bytes retained | 329,120 across 24 files |
 | Post-run acquisition file bytes | 299,270,979 including retained sources, inventory, selection, staging, state, and lock |
 | Full archive checksum verified | No |
-| Pilot passed / full acquisition started | No / no |
+| Diagnostic completed / full acquisition started | No / no |
 
 The two reached patch IDs end in `T33UUP_37_88` and `T33UUP_39_87` from
 `S2A_MSIL2A_20170613T101031_N9999_R022`. Both contain the native 12-band Level-2A set in the
 recorded order `B01 B02 B03 B04 B05 B06 B07 B08 B8A B09 B11 B12`. Their coarser bands use 20 m or
-60 m pixels within the same 1,200 m footprint. These observations are diagnostic: no published
-per-patch checksum is available, and the archive checksum has not passed.
+60 m pixels within the same 1,200 m footprint. These observations supply the early inline geometry
+signal. No published per-patch checksum is available, and the archive checksum has not passed.
 
 The received **prefix**, not the archive, has MD5 `2e00edb3cac86b17c94df8616b95bcea`
 and SHA-256 `256f2eae88c55220db21fa0a8773553a00145d270e68c995dd42b4fa59fb1ed6`.
@@ -124,9 +149,9 @@ guard still reserved every write. The implementation subsequently gained exact a
 each checkpoint's own temporary bytes, verified with offline tests. Counts describe logical file
 contents; filesystem allocation and HTTP/TLS overhead are outside these measurements.
 
-The final local gates passed Ruff and Mypy over 68 source/test/script files, and **262 tests at
-85.38% coverage** on Python 3.11.5. New checks exercise source checksum failures, geometry stops,
-exact band order, full-phase gating, restart replay, cached-file corruption, cumulative network
+The final local gates passed Ruff and Mypy over 68 source/test/script files, and **261 tests at
+85.26% coverage** on Python 3.11.5. New checks exercise source checksum failures, geometry stops,
+exact band order, completion gating, restart replay, cached-file corruption, cumulative network
 limits, malformed tar entries, frozen inputs, and atomic-write storage accounting. The protected
 `evaluation.py`, `retrieval.py`, decision documents, frozen audits, and EuroSAT result files have
 no diff from the starting commit `4684dc7`; the two protected Python files also retained their

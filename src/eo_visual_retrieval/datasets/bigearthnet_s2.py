@@ -1,8 +1,4 @@
-"""Pilot-gated acquisition of the frozen S2 selection; nothing is trusted before MD5.
-
-The published checksum covers the whole compressed archive. A bounded prefix
-can produce diagnostic observations, never a successful authenticated pilot.
-"""
+"""Single-pass staged acquisition of the frozen S2 selection."""
 
 from __future__ import annotations
 
@@ -37,7 +33,7 @@ from eo_visual_retrieval.hashing import bytes_sha256, file_sha256
 MAX_MEMBER_BYTES = 256 * 1024
 MAX_NAME_BYTES = 4096
 MAX_WINDOW_BYTES = 16 * 1024 * 1024
-PILOT_NETWORK_BYTES = 64 * 1024 * 1024
+SAMPLE_NETWORK_BYTES = 512 * 1024 * 1024
 _PATCH = re.compile(r"S2[AB]_MSIL2A_\d{8}T\d{6}_N\d{4}_R\d{3}_T\d{2}[A-Z]{3}_\d{2}_\d{2}")
 
 
@@ -79,24 +75,6 @@ def frozen_inputs(selection: Path, audit: Path, inventory: Path) -> dict[str, di
     result = {row["patch_id"]: {**row, "partition": partitions[row["patch_id"]]} for row in rows}
     if set(result) != set(partitions) or len(rows) != len(result):
         raise ValueError("frozen footprints do not exactly cover the selection")
-    return result
-
-
-def pilot_ids(footprints: dict[str, dict[str, Any]]) -> list[str]:
-    """Ten existing IDs per partition, spread across cells; never change a partition."""
-    result: list[str] = []
-    for partition in ("index", "development", "final"):
-        cells: set[str] = set()
-        # Earliest IDs reduce prefix cost where possible; no model/label input.
-        for identity in sorted(footprints):
-            row = footprints[identity]
-            if row["partition"] == partition and row["spatial_group"] not in cells:
-                result.append(identity)
-                cells.add(row["spatial_group"])
-                if len(cells) == 10:
-                    break
-        if len(cells) != 10:
-            raise ValueError("pilot needs ten frozen spatial cells in each partition")
     return result
 
 
@@ -226,15 +204,15 @@ def check_raster(payload: bytes, band: str, footprint: dict[str, Any]) -> dict[s
     }
 
 
-def require_complete(root: Path, binding: dict[str, Any], *, phase: str) -> dict[str, Any]:
+def require_complete(root: Path, binding: dict[str, Any]) -> dict[str, Any]:
     """Only this gate makes a download usable; a directory of TIFFs is insufficient."""
     marker = root / "COMPLETE.json"
     if not marker.is_file():
-        raise ValueError("verified pilot/completion marker is missing")
+        raise ValueError("verified acquisition completion marker is missing")
     report = json.loads(marker.read_text(encoding="utf-8"))
     if (
         report["binding"] != binding
-        or report["phase"] != phase
+        or report["mode"] != "acquire"
         or (
             report["status"] != "verified"
             or report["source_md5"] != S2_ARCHIVE_MD5
@@ -243,7 +221,7 @@ def require_complete(root: Path, binding: dict[str, Any], *, phase: str) -> dict
         )
     ):
         raise ValueError("completion marker provenance mismatch")
-    expected = set(binding["pilot_ids"] if phase == "pilot" else binding["selected_ids"])
+    expected = set(binding["selected_ids"])
     receipts = report["patch_receipts"]
     if set(receipts) != expected:
         raise ValueError("completion marker has partial or foreign IDs")
@@ -267,26 +245,17 @@ def acquire(
     binding: dict[str, Any],
     root: Path,
     ancillary: list[Path],
-    phase: str,
+    mode: str,
     network_budget: int,
     resume: bool = False,
     max_seconds: float = 300,
-    pilot_root: Path | None = None,
 ) -> dict[str, Any]:
-    """Run a bounded attempt. Restart resumes files by replay, never by seeking Zstd state."""
-    if phase not in ("pilot", "full") or network_budget <= 0 or max_seconds <= 0:
-        raise ValueError("invalid phase, network budget, or time limit")
-    if (
-        sorted(footprints) != binding["selected_ids"]
-        or pilot_ids(footprints) != binding["pilot_ids"]
-    ):
+    """Run one staged acquisition or a bounded sample using the same verification path."""
+    if mode not in ("sample", "acquire") or network_budget <= 0 or max_seconds <= 0:
+        raise ValueError("invalid mode, network budget, or time limit")
+    if sorted(footprints) != binding["selected_ids"]:
         raise ValueError("acquisition binding disagrees with the frozen IDs")
-    if phase == "full":
-        if pilot_root is None:
-            raise ValueError("full acquisition requires a verified pilot")
-        require_complete(pilot_root, binding, phase="pilot")
-        ancillary = [*ancillary, pilot_root]
-    wanted = set(binding["pilot_ids"] if phase == "pilot" else binding["selected_ids"])
+    wanted = set(binding["selected_ids"])
     root.mkdir(parents=True, exist_ok=True)
     StorageBudget(root, ancillary).reserve(1)  # Account for initial lock-file creation too.
     with acquisition_lock(root, resume=resume):
@@ -294,12 +263,12 @@ def acquire(
         state_path = root / "state.json"
         if state_path.exists():
             state = json.loads(state_path.read_text(encoding="utf-8"))
-            if state["binding"] != binding or state["phase"] != phase:
-                raise ValueError("resume provenance/phase mismatch")
+            if state["binding"] != binding or state["mode"] != mode:
+                raise ValueError("resume provenance/mode mismatch")
             if state["status"] in ("geometry_mismatch", "integrity_failure"):
                 raise ValueError("terminal acquisition failure requires a separate decision")
             if (root / "COMPLETE.json").exists():
-                return require_complete(root, binding, phase=phase)
+                return require_complete(root, binding)
             if not resume:
                 raise ValueError("interrupted acquisition exists; use --resume")
         else:
@@ -307,7 +276,7 @@ def acquire(
                 raise ValueError("untracked staging exists without a resumable state")
             state = {
                 "binding": binding,
-                "phase": phase,
+                "mode": mode,
                 "attempts": 0,
                 "network_reserved_bytes": 0,
                 "network_received_bytes": 0,
@@ -416,13 +385,15 @@ def acquire(
             state["complete_archive_checksum_verified"] = True
             if set(receipts) != wanted:
                 raise ValueError("source lacks selected patches or complete 12-band groups")
+            if mode == "sample":
+                raise AcquisitionLimit("throughput sample reached source end; staging not promoted")
             state["status"] = "verified"
             persist()
             result = {
                 "schema": "bigearthnet-s2-acquisition-v1",
                 "status": "verified",
                 "binding": binding,
-                "phase": phase,
+                "mode": mode,
                 "source_md5": digest["md5"],
                 "source_sha256": digest["sha256"],
                 "source_bytes": digest["bytes"],
@@ -433,6 +404,7 @@ def acquire(
                 "network_received_bytes": state["network_received_bytes"],
                 "network_reserved_bytes": state["network_reserved_bytes"],
                 "storage_peak_bytes": state["storage_peak_bytes"],
+                "single_pass": True,
             }
             # Written last, after every integrity gate, including its own atomic storage cost.
             budget.checkpoint(root / "COMPLETE.json", result)
@@ -453,6 +425,14 @@ def acquire(
                 Counter(footprints[x]["partition"] for x in receipts)
             )
             state["attempt_prefix_digest"] = source.digest.values()
+            state["failure_compressed_offset"] = source.offset
+            state["failure_offset_definition"] = (
+                "compressed bytes delivered to the application; decoder buffering may read ahead"
+            )
+            if isinstance(error, GeometryMismatch):
+                mismatch = json.loads(str(error))
+                state["geometry_mismatch_patch_id"] = mismatch["patch_id"]
+                state["geometry_mismatch_band"] = mismatch["band"]
             # A storage guard may leave no room even for an expanded error report.
             # The earlier durable in_progress state and absence of COMPLETE remain safe.
             try:

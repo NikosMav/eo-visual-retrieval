@@ -99,9 +99,8 @@ def source(monkeypatch: pytest.MonkeyPatch) -> tuple[dict[str, Any], dict[str, A
     rows = {
         identity(i): geometry(i, part) for i, part in enumerate(("index", "development", "final"))
     }
-    # Small source fixture; production pilot sizing is tested separately below.
-    monkeypatch.setattr(s2, "pilot_ids", lambda footprints: sorted(footprints))
-    binding = {"selected_ids": sorted(rows), "pilot_ids": sorted(rows)}
+    # Small source fixture; production source constants are tested elsewhere.
+    binding = {"selected_ids": sorted(rows)}
     # Reverse archive order to ensure receipt order is independent of tar order.
     entries = [(name(patch, band), raster(band)) for patch in rows for band in reversed(S2_BANDS)]
     # This non-selected member must never be decoded or written.
@@ -118,23 +117,7 @@ def pin_source(monkeypatch: pytest.MonkeyPatch, payload: bytes) -> None:
     monkeypatch.setattr(s2, "S2_ARCHIVE_MD5", digest.values()["md5"])
 
 
-def test_pilot_uses_ten_frozen_cells_per_partition_without_mutating() -> None:
-    rows = {
-        identity(i): geometry(i, part)
-        for start, part in ((0, "index"), (20, "development"), (40, "final"))
-        for i in range(start, start + 20)
-    }
-    before = json.dumps(rows)
-    chosen = s2.pilot_ids(rows)
-    assert len(chosen) == 30 and set(chosen) <= rows.keys()
-    for part in ("index", "development", "final"):
-        assert len({rows[x]["spatial_group"] for x in chosen if rows[x]["partition"] == part}) == 10
-    assert json.dumps(rows) == before
-    with pytest.raises(ValueError, match="ten frozen"):
-        s2.pilot_ids({identity(): geometry()})
-
-
-def test_complete_pilot_then_full_require_entire_checksum_and_ordered_files(
+def test_single_acquisition_requires_entire_checksum_and_ordered_files(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
     source: tuple[dict[str, Any], dict[str, Any], bytes],
@@ -143,7 +126,7 @@ def test_complete_pilot_then_full_require_entire_checksum_and_ordered_files(
     requests = serve(monkeypatch, payload)
     pilot = tmp_path / "pilot"
     report = s2.acquire(
-        rows, binding=binding, root=pilot, ancillary=[], phase="pilot", network_budget=len(payload)
+        rows, binding=binding, root=pilot, ancillary=[], mode="acquire", network_budget=len(payload)
     )
     assert report["source_bytes"] == len(payload) and len(report["patch_receipts"]) == 3
     assert report["partition_counts"] == {"index": 1, "development": 1, "final": 1}
@@ -152,58 +135,42 @@ def test_complete_pilot_then_full_require_entire_checksum_and_ordered_files(
     receipt = json.loads((pilot / "files" / identity() / "patch.json").read_text())
     assert [x["band"] for x in receipt["bands"]] == list(S2_BANDS)
     assert all(x["geometry_agrees"] and x["pixels_decoded"] for x in receipt["bands"])
-    assert s2.require_complete(pilot, binding, phase="pilot") == report
+    assert s2.require_complete(pilot, binding) == report
     assert (
         s2.acquire(
             rows,
             binding=binding,
             root=pilot,
             ancillary=[],
-            phase="pilot",
+            mode="acquire",
             network_budget=len(payload),
         )
         == report
     )
     assert len(requests) == 1  # Existing completed data is checked locally, not fetched again.
-    full = s2.acquire(
-        rows,
-        binding=binding,
-        root=tmp_path / "full",
-        ancillary=[],
-        phase="full",
-        network_budget=len(payload),
-        pilot_root=pilot,
-    )
-    assert full["status"] == "verified" and len(requests) == 2
+    assert report["mode"] == "acquire" and report["single_pass"] is True
 
 
-def test_full_gate_rejects_unverified_or_corrupted_pilot_before_network(
+def test_sample_uses_same_full_selection_path_but_never_promotes(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
     source: tuple[dict[str, Any], dict[str, Any], bytes],
 ) -> None:
     rows, binding, payload = source
-    requests = serve(monkeypatch, payload)
-    options: dict[str, Any] = dict(
-        binding=binding,
-        root=tmp_path / "full",
-        ancillary=[],
-        phase="full",
-        network_budget=len(payload),
-    )
-    with pytest.raises(ValueError, match="requires a verified pilot"):
-        s2.acquire(rows, **options)
-    with pytest.raises(ValueError, match="marker is missing"):
-        s2.acquire(rows, **options, pilot_root=tmp_path / "pilot")
-    assert requests == []
-    pilot = tmp_path / "pilot"
-    s2.acquire(
-        rows, binding=binding, root=pilot, ancillary=[], phase="pilot", network_budget=len(payload)
-    )
-    (pilot / "files" / identity() / "B01.tif").write_bytes(b"corrupt")
-    with pytest.raises(ValueError, match="band checksum"):
-        s2.acquire(rows, **options, pilot_root=pilot)
-    assert len(requests) == 1
+    serve(monkeypatch, payload)
+    with pytest.raises(aio.AcquisitionLimit, match="staging not promoted"):
+        s2.acquire(
+            rows,
+            binding=binding,
+            root=tmp_path,
+            ancillary=[],
+            mode="sample",
+            network_budget=len(payload),
+        )
+    state = json.loads((tmp_path / "state.json").read_text())
+    assert state["diagnostic_complete_patches"] == len(rows)
+    assert state["complete_archive_checksum_verified"] is True
+    assert state["status"] == "incomplete" and not (tmp_path / "COMPLETE.json").exists()
 
 
 def test_restart_replays_checksums_preserves_files_and_charges_network(
@@ -221,7 +188,7 @@ def test_restart_replays_checksums_preserves_files_and_charges_network(
         original_write(self, path, data)
 
     monkeypatch.setattr(aio.StorageBudget, "write", interrupt)
-    options: dict[str, Any] = dict(binding=binding, root=tmp_path, ancillary=[], phase="pilot")
+    options: dict[str, Any] = dict(binding=binding, root=tmp_path, ancillary=[], mode="acquire")
     with pytest.raises(KeyboardInterrupt):
         s2.acquire(rows, **options, network_budget=len(payload))
     assert not (tmp_path / "COMPLETE.json").exists()
@@ -277,13 +244,17 @@ def test_bad_source_never_promotes_and_terminal_failures_cannot_resume(
         pin_source(monkeypatch, payload)
     requests = serve(monkeypatch, payload)
     options: dict[str, Any] = dict(
-        binding=binding, root=tmp_path, ancillary=[], phase="pilot", network_budget=len(payload)
+        binding=binding, root=tmp_path, ancillary=[], mode="acquire", network_budget=len(payload)
     )
     with pytest.raises(ValueError, match=message):
         s2.acquire(rows, **options)
     assert not (tmp_path / "COMPLETE.json").exists()
     state = json.loads((tmp_path / "state.json").read_text())
     assert state["status"] == ("geometry_mismatch" if case == "geometry" else "integrity_failure")
+    if case == "geometry":
+        assert state["geometry_mismatch_patch_id"] == identity()
+        assert state["geometry_mismatch_band"] in S2_BANDS
+        assert state["failure_compressed_offset"] > 0
     assert state["complete_archive_checksum_verified"] is (case == "missing")
     with pytest.raises(ValueError, match="terminal"):
         s2.acquire(rows, **options, resume=True)
@@ -576,7 +547,7 @@ def test_corrupt_staging_and_changed_bindings_fail_without_completion(
     requests = serve(monkeypatch, payload)
     root = tmp_path / "pilot"
     s2.acquire(
-        rows, binding=binding, root=root, ancillary=[], phase="pilot", network_budget=len(payload)
+        rows, binding=binding, root=root, ancillary=[], mode="acquire", network_budget=len(payload)
     )
     # Simulate a crash after files/checksum but before writing the completion marker.
     (root / "COMPLETE.json").unlink()
@@ -587,7 +558,7 @@ def test_corrupt_staging_and_changed_bindings_fail_without_completion(
             binding={**binding, "different_audit": True},
             root=root,
             ancillary=[],
-            phase="pilot",
+            mode="acquire",
             network_budget=2 * len(payload),
             resume=True,
         )
@@ -598,7 +569,7 @@ def test_corrupt_staging_and_changed_bindings_fail_without_completion(
             binding=binding,
             root=root,
             ancillary=[],
-            phase="pilot",
+            mode="acquire",
             network_budget=2 * len(payload),
             resume=True,
         )

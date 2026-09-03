@@ -5,27 +5,26 @@ non-selected members, and retains native GeoTIFFs only for frozen IDs. It never 
 archive or a decompressed tar. This is acquisition infrastructure; it produces no embeddings,
 model inputs, relevance manifests, or retrieval scores.
 
-## Current gate
+## Single-pass gate
 
-The [executed diagnostic](results/bigearthnet-s2-pilot-diagnostic.json) reached two of the planned
-30 pilot patches within 64 MiB. Their 24 bands agreed with the frozen footprints, but neither the
-three-partition pilot nor whole-source integrity passed. Full acquisition remains blocked.
+One sequential pass computes the compressed-source MD5 while extracting all 5,000 frozen patches
+to staging. Each selected GeoTIFF is decoded and checked immediately. The first geometry mismatch
+aborts at its observed compressed-stream offset and records the patch and band. If all patches
+agree, only the exact 63,251,710,377-byte stream with Zenodo's published MD5 can create the final
+completion marker. There is no separate pilot pass.
 
-[Zenodo](https://zenodo.org/records/10891137) publishes a checksum for the complete
-63,251,710,377-byte S2 archive. No independently checksummed patch delivery has been established.
-A prefix hash cannot verify that checksum. With this source, authenticating even a 30-patch pilot
-requires consuming the complete compressed stream. Acquiring the full selection afterward needs
-another pass because the pilot discards other patches. Neither large pass has been executed.
-Proceeding with those costs needs a separate decision; the default stays at 64 MiB.
+The initial [64 MiB diagnostic](results/bigearthnet-s2-pilot-diagnostic.json) already supplied the
+early pilot signal: 24 bands from two selected patches matched. A subsequent
+[two-minute sample](results/bigearthnet-s2-throughput-sample.json) measured 1.18 MiB/s and projects
+about 14.2 hours for the source if that rate persists. Both prefixes remain untrusted staging.
 
-## Frozen inputs and pilot
+## Frozen inputs
 
 `docs/results/bigearthnet-selection-audit.json` pins the SHA-256 of the ignored local
 `acquisition-selection.json` and `footprints.parquet`. The downloader verifies both, reads only
 IDs and geometry, and checks the exact 4,000 / 500 / 500 partition membership. It does not select
-new partitions. The pilot uses ten existing IDs from distinct spatial cells in each partition,
-chosen deterministically by sorted ID without labels or model outputs. Resume state binds the
-audit, selection, inventory, pilot IDs, and all selected IDs.
+new partitions. Resume state binds the independently verified reference archive MD5, audit,
+selection, inventory, and all selected IDs.
 
 The explicit native Level-2A band order is:
 
@@ -56,16 +55,16 @@ python scripts/acquire_bigearthnet_s2.py `
   --selection data/bigearthnet-v2/acquisition-selection.json `
   --inventory data/bigearthnet-v2/footprints.parquet `
   --source-dir data/downloads/bigearthnet-v2 `
-  --root data/bigearthnet-v2/s2-acquisition/pilot
+  --root data/bigearthnet-v2/s2-acquisition/full
 ```
 
-Add `--download` to execute. Defaults are `--phase pilot`, `--network-budget 67108864`, and
-`--max-seconds 300`. The deadline is checked between members and HTTP reads; a blocking socket
-read can last up to its timeout. The command exits nonzero on an incomplete or failed attempt.
+Add `--download` to execute the single real pass. Acquisition defaults to the exact published
+source byte count as its cumulative network budget and a 24-hour attempt deadline. The deadline is
+checked between members and HTTP reads; a blocking socket read can last up to its timeout. The
+command exits nonzero on an incomplete or failed attempt.
 
-`--phase full` additionally requires `--pilot-root` pointing to a verified pilot with matching
-inputs, complete receipts, and unchanged band hashes. It fails before network access otherwise.
-The CLI never raises the network/time allowance automatically, even in full mode.
+`--mode sample` selects a 120-second diagnostic with a 512 MiB network budget. It uses the same
+stream/parser/geometry path but can never promote staging. A sample is not an acquisition gate.
 
 ## Storage, trust, and restart
 
@@ -82,16 +81,21 @@ incomplete band groups fail closed. The tar parser buffers at most one 256 KiB m
 are capped at 64 KiB, and decompression has an explicit window limit.
 
 `files/<patch>/Bxx.tif` and `patch.json` are **untrusted staging** until `COMPLETE.json` exists
-and `require_complete()` validates it. Only the complete published MD5 and byte count, a full
-stream SHA-256, every required band, and every geometry comparison can unlock that marker.
+and `require_complete()` validates it. Per-patch verification is performed first: each band must
+parse, match the independently checksum-verified reference geometry, and have a valid local hash.
+At stream end, the complete published MD5 and byte count plus a full-stream SHA-256 must also pass.
+Only all of these checks together can unlock the marker.
 The marker is written last. Local file hashes identify cached bytes; they do not independently
 authenticate a prefix against the publisher. No consumer should infer completion from TIFF counts
 or from `state.json` alone.
 
-Use `--resume` after interruption. In-process transport retries continue at the last delivered
-compressed offset, preserving decoder and digest state. A process restart must replay from byte
-zero because neither the Zstandard decoder nor hash state is saved. Matching TIFFs are reused
-without rewriting; all bytes are rehashed and geometry is rechecked. Corrupt cached data fails.
+In-process transport retries continue at the exact last delivered compressed offset, preserving
+the live decoder and digest state. After process or machine restart, use `--resume` with an
+explicit cumulative `--network-budget`. The restart replays from byte zero because the one-frame
+Zstandard decoder state is not serializable. That replay preserves a byte-exact whole-source MD5
+for the final attempt; it may retransfer the prefix consumed by the interrupted attempt. Matching
+TIFFs are reused without rewriting, while all bytes are rehashed and geometry is rechecked.
+Corrupt cached data fails.
 Stale temporary files are removed only inside the dedicated acquisition root while holding its
 lock. An incomplete run can never promote a partial selection.
 
