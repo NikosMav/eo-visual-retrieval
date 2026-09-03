@@ -16,6 +16,11 @@ BIGEARTHNET_LICENSE = "CDLA-Permissive-1.0"
 S2_ARCHIVE_FILENAME = "BigEarthNet-S2.tar.zst"
 S2_ARCHIVE_MD5 = "2245ed2d1a93f6ce637d839bc856396e"
 S2_ARCHIVE_BYTES = 63_251_710_377
+# Explicit native L2A order. B10 is absent; this is not EuroSAT's 13-band layout.
+S2_BANDS = ("B01", "B02", "B03", "B04", "B05", "B06", "B07", "B08", "B8A", "B09", "B11", "B12")
+S2_GSD = {band: (60 if band in ("B01", "B09") else 10 if band in (
+    "B02", "B03", "B04", "B08"
+) else 20) for band in S2_BANDS}
 REFERENCE_ARCHIVE_FILENAME = "Reference_Maps.tar.zst"
 REFERENCE_ARCHIVE_MD5 = "95d85a222fa983faddcac51a19f28917"
 REFERENCE_ARCHIVE_BYTES = 282_391_301

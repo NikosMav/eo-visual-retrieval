@@ -226,6 +226,7 @@ Read the guides in this order:
 14. [Evaluation foundations](docs/evaluation-foundations.md) — locked environments, GPU checks, model-selection gates, and local tracking.
 15. [TerraMind experiment](docs/benchmark-terramind.md) and [results](docs/results/terramind-v1.md) — frozen-model contract, executed comparison, and retained SSL4EO decision.
 16. [BigEarthNet acquisition and evaluation](docs/benchmark-bigearthnet.md) — source inventory, SSL4EO compatibility gate, and multi-label development scoring.
+17. [BigEarthNet S2 streaming](docs/bigearthnet-streaming.md) — bounded acquisition, pilot integrity gate, interruption recovery, and the incomplete live diagnostic.
 
 ## Data and privacy policy
 
