@@ -20,6 +20,7 @@ from eo_visual_retrieval.benchmarks.coverage import (
     nearest_distance_percentiles,
 )
 from eo_visual_retrieval.benchmarks.eurosat import discover_candidates
+from eo_visual_retrieval.datasets.eurosat import verify_archive
 from eo_visual_retrieval.hashing import file_md5, file_sha256
 from eo_visual_retrieval.manifests import read_jsonl
 
@@ -43,6 +44,11 @@ def main() -> None:
         [record.metadata["centroid_lonlat"] for record in prepared], dtype=np.float64
     )
 
+    # discover_candidates() itself skips checksum verification so it can also run
+    # against locally prepared archives, but this script's output becomes published
+    # evidence (see docs/validation.md), so it must be pinned to the published
+    # EuroSAT archive before any measurement happens.
+    verify_archive(args.archive)
     candidates = discover_candidates(args.archive, group_size_m=args.group_size_km * 1000)
     budget = cell_budget(candidates, used_members)
     tiers = distance_tiers(
