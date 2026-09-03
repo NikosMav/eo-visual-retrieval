@@ -147,6 +147,25 @@ def test_distance_tiers_report_the_smallest_label_and_label_count() -> None:
     }
 
 
+def test_distance_tiers_reports_a_label_eliminated_at_a_threshold() -> None:
+    """The finding that killed the EuroSAT holdout: a class can reach zero.
+
+    At 600 km, both Forest patches (~556 km and ~11 km away) fall below the
+    threshold, while the farther River patch (~1001 km away) survives. A
+    reader must see Forest reported as empty, not silently dropped from the
+    table.
+    """
+    reference = np.asarray([[0.0, 0.0]])
+
+    tiers = distance_tiers(
+        _sample(), used_members=set(), reference_lonlat=reference, thresholds_km=[600]
+    )
+
+    assert tiers["600km"]["per_label"]["Forest"] == {"patches": 0, "cells": 0}
+    assert tiers["600km"]["min_label_patches"] == 0
+    assert tiers["600km"]["labels_present"] == 1
+
+
 def test_distance_tiers_reject_a_non_positive_threshold() -> None:
     with pytest.raises(ValueError, match="thresholds_km must be positive"):
         distance_tiers(

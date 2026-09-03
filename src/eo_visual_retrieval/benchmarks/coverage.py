@@ -163,11 +163,11 @@ def distance_tiers(
                 cells[candidate.label].add(candidate.spatial_group)
         per_label = {
             label: {"patches": patches[label], "cells": len(cells[label])}
-            for label in sorted(patches)
+            for label in sorted({candidate.label for candidate in candidates})
         }
         tiers[f"{threshold:g}km"] = {
             "total": int(keep.sum()),
-            "labels_present": len(per_label),
+            "labels_present": sum(1 for value in per_label.values() if value["patches"] > 0),
             "min_label_patches": min(
                 (value["patches"] for value in per_label.values()), default=0
             ),
