@@ -27,6 +27,10 @@ under ignored `data/downloads/bigearthnet-v2/`. It requires local CPU and disk a
 The supplied command has no image-archive download option. Cached metadata is checksum-verified
 before reuse, and new downloads are checksum-verified before atomic promotion.
 
+Both metadata files were acquired and checksum-verified on 2026-09-03 after earlier transient
+access failures. Their exact local sizes are 3,616,349 and 710,162 bytes, totaling 4,326,511 bytes.
+The image archive has not been downloaded. See the [executed recovery](validation.md) for evidence.
+
 ```powershell
 # Inspect the pinned inventory without network access.
 python scripts/download_bigearthnet_metadata.py

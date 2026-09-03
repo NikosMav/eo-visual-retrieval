@@ -21,6 +21,34 @@ The first three boxes record different kinds of evidence; passing one does not i
 See [Understanding the benchmarks](learning-benchmarks.md) for the evidence ladder and the exact
 training boundary.
 
+## BigEarthNet metadata acquisition recovered — 2026-09-03
+
+After the earlier timeouts, both an independent curl client and the unchanged project downloader
+successfully reached the same public Zenodo endpoints. The catalog API returned HTTP 200 in
+0.40 seconds, and curl downloaded `metadata.parquet` with HTTP 200 in 3.75 seconds (first byte
+at 0.33 seconds). The project command then downloaded both metadata files in about 10 seconds:
+
+```powershell
+python scripts/download_bigearthnet_metadata.py --download
+```
+
+| Verified local file | Exact bytes | MD5 matched against the published value |
+|---|---:|---|
+| `metadata.parquet` | 3,616,349 | `55687065e77b6d0b0f1ff604a6e7b49c` |
+| `metadata_for_patches_with_snow_cloud_or_shadow.parquet` | 710,162 | `fe31856f4986d446c9468b59d6387c91` |
+
+The two files total 4,326,511 bytes and are stored under ignored
+`data/downloads/bigearthnet-v2/`. A second call with network access replaced by a failing stub
+successfully reverified and reused both cached files. Local evidence, including SHA-256 values,
+is saved in ignored `outputs/confirmatory-preflight/metadata-acquisition-verified.json`.
+
+No downloader code, timeout setting, proxy configuration, or TLS verification was changed.
+The recovery is consistent with a transient service or network failure; the exact cause of the
+earlier failures remains unconfirmed. This closes metadata acquisition only: metadata content
+inspection and spatial/temporal audits remain pending. No imagery archive was downloaded.
+Ruff and Mypy passed, and the full local test suite passed all 159 tests after this documentation
+update. The application code and committed benchmark results are unchanged.
+
 ## BigEarthNet acquisition gates and development evaluator — 2026-09-03
 
 The published BigEarthNet v2 catalog was inspected, and the agreed SSL4EO-S12 sources were
@@ -30,7 +58,8 @@ Catalog sizes are publisher-advertised rounded values, not locally measured down
 
 The metadata-only downloader's default inventory command passed. Its live `--download` attempt
 timed out without leaving a dataset file; earlier catalog API requests also returned HTTP 504
-or timed out. No image archive was requested. Real metadata inspection, date and geography
+or timed out. Metadata acquisition subsequently succeeded as recorded above. No image archive
+was requested. Real metadata inspection, date and geography
 audits, partition preparation, and BigEarthNet retrieval scores remain unexecuted.
 
 Synthetic tests verified Jaccard binary relevance, raw-Jaccard graded nDCG, fixed development
