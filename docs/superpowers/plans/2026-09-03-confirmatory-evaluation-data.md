@@ -366,10 +366,15 @@ def test_distance_tiers_report_the_smallest_label_and_label_count() -> None:
         _sample(), used_members=set(), reference_lonlat=reference, thresholds_km=[1]
     )
 
+    # a.tif sits on the reference point itself, so it falls below 1 km and is
+    # dropped; the remaining two Forest and two River patches all survive.
+    assert tiers["1km"]["total"] == 4
     assert tiers["1km"]["labels_present"] == 2
-    assert tiers["1km"]["min_label_patches"] == min(
-        tiers["1km"]["per_label"][label]["patches"] for label in tiers["1km"]["per_label"]
-    )
+    assert tiers["1km"]["min_label_patches"] == 2
+    assert tiers["1km"]["per_label"] == {
+        "Forest": {"patches": 2, "cells": 2},
+        "River": {"patches": 2, "cells": 2},
+    }
 
 
 def test_distance_tiers_reject_a_non_positive_threshold() -> None:
