@@ -34,7 +34,9 @@ assumed. It cannot.
 | Untouched remainder | 120 cells holding 778 patches | Measured |
 | Class availability | `HerbaceousVegetation` 0, `PermanentCrop` 1, `AnnualCrop` 4 | Blocking |
 | Distance fallback | 8,445 patches at 10 km, smallest class 250; 65 patches and 5 classes at 50 km | Measured |
-| Split regression | Audit still reproduces 5.066229991251209 km and manifest SHA-256 `bc0b10bf3e3cf29d7f7732529ce5f419b514e2ded3a5e2a5e6e88ebcdea45338` after the distance refactor | Passed |
+| Audit regression | After the distance refactor, auditing manifest `bc0b10bf…45338` still reproduces a 5.066229991251209 km minimum separation over its 2,000 real patches | Passed |
+| Preparation path | `select_spatial_split`'s changed call site is covered by unit tests on synthetic candidates only; the published split was not regenerated | Partial |
+| TerraMind modality registry | TerraTorch 1.2.11 registers `untok_sen2l1c@224` at 13 bands and `untok_sen2l2a@224` at 12 bands | Passed |
 
 The median unused patch lies 7.0 km from a v1 patch. A class-balanced holdout in untouched cells is
 impossible, and the 10 km fallback carries a weaker guarantee than v1's own disjoint cells and

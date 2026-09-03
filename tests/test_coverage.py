@@ -167,6 +167,16 @@ def test_distance_tiers_reports_a_label_eliminated_at_a_threshold() -> None:
     assert tiers["600km"]["labels_present"] == 1
 
 
+def test_distance_tiers_rejects_a_used_member_that_is_not_a_candidate() -> None:
+    with pytest.raises(ValueError, match="not present among the candidates"):
+        distance_tiers(
+            _sample(),
+            used_members={"absent.tif"},
+            reference_lonlat=np.asarray([[0.0, 0.0]]),
+            thresholds_km=[1],
+        )
+
+
 def test_distance_tiers_reject_a_non_positive_threshold() -> None:
     with pytest.raises(ValueError, match="thresholds_km must be positive"):
         distance_tiers(

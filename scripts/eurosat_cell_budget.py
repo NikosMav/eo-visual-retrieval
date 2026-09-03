@@ -20,7 +20,7 @@ from eo_visual_retrieval.benchmarks.coverage import (
     nearest_distance_percentiles,
 )
 from eo_visual_retrieval.benchmarks.eurosat import discover_candidates
-from eo_visual_retrieval.hashing import file_sha256
+from eo_visual_retrieval.hashing import file_md5, file_sha256
 from eo_visual_retrieval.manifests import read_jsonl
 
 DEFAULT_THRESHOLDS_KM = (5.0, 10.0, 20.0, 30.0, 50.0)
@@ -56,15 +56,17 @@ def main() -> None:
         used_members=used_members,
         reference_lonlat=used_lonlat,
     )
-    unused_lonlat_count = budget.total_patches - budget.used_patches
+    unused_patches = budget.total_patches - budget.used_patches
 
     result: dict[str, Any] = {
         "measurement": "eurosat-cell-budget-and-distance-tiers",
         "group_size_km": args.group_size_km,
+        "archive": str(args.archive),
+        "archive_md5": file_md5(args.archive),
         "manifest": str(args.manifest),
         "manifest_sha256": file_sha256(args.manifest),
         "prepared_patches": len(prepared),
-        "unused_patches": unused_lonlat_count,
+        "unused_patches": unused_patches,
         "cell_budget": budget.to_dict(),
         "distance_from_prepared": tiers,
         "nearest_km_percentiles": nearest_km_percentiles,

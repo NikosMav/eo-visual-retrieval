@@ -126,6 +126,32 @@ def cell_budget(
     )
 
 
+def _unused_nearest_m(
+    candidates: Sequence[EuroSatCandidate],
+    used_members: set[str],
+    reference_lonlat: NDArray[np.float64],
+) -> tuple[list[EuroSatCandidate], NDArray[np.float64]]:
+    """Return unused candidates and each one's nearest distance to ``reference_lonlat``.
+
+    Shared by :func:`distance_tiers` and :func:`nearest_distance_percentiles` so the
+    unused-member filter, the coordinate array, and the nearest-distance pass are
+    computed once rather than twice.
+    """
+
+    members = {candidate.member for candidate in candidates}
+    unknown = sorted(used_members - members)
+    if unknown:
+        raise ValueError(f"used member is not present among the candidates: {unknown[0]}")
+
+    unused = [candidate for candidate in candidates if candidate.member not in used_members]
+    if not unused:
+        raise ValueError("every candidate was used; no unused patch remains to measure")
+    unused_lonlat = np.asarray(
+        [(candidate.longitude, candidate.latitude) for candidate in unused], dtype=np.float64
+    )
+    return unused, nearest_distances_m(unused_lonlat, reference_lonlat)
+
+
 def distance_tiers(
     candidates: Sequence[EuroSatCandidate],
     used_members: set[str],
@@ -144,13 +170,7 @@ def distance_tiers(
     if not thresholds_km or any(value <= 0 for value in thresholds_km):
         raise ValueError("thresholds_km must be positive")
 
-    unused = [candidate for candidate in candidates if candidate.member not in used_members]
-    if not unused:
-        raise ValueError("every candidate was used; no unused patch remains to measure")
-    unused_lonlat = np.asarray(
-        [(candidate.longitude, candidate.latitude) for candidate in unused], dtype=np.float64
-    )
-    nearest = nearest_distances_m(unused_lonlat, reference_lonlat)
+    unused, nearest = _unused_nearest_m(candidates, used_members, reference_lonlat)
 
     tiers: dict[str, Any] = {}
     for threshold in thresholds_km:
@@ -168,9 +188,7 @@ def distance_tiers(
         tiers[f"{threshold:g}km"] = {
             "total": int(keep.sum()),
             "labels_present": sum(1 for value in per_label.values() if value["patches"] > 0),
-            "min_label_patches": min(
-                (value["patches"] for value in per_label.values()), default=0
-            ),
+            "min_label_patches": min(value["patches"] for value in per_label.values()),
             "per_label": per_label,
         }
     return tiers
@@ -195,13 +213,8 @@ def nearest_distance_percentiles(
     if not percentiles:
         raise ValueError("percentiles must not be empty")
 
-    unused = [candidate for candidate in candidates if candidate.member not in used_members]
-    if not unused:
-        raise ValueError("every candidate was used; no unused patch remains to measure")
-    unused_lonlat = np.asarray(
-        [(candidate.longitude, candidate.latitude) for candidate in unused], dtype=np.float64
-    )
-    nearest_km = nearest_distances_m(unused_lonlat, reference_lonlat) / 1000
+    _unused, nearest = _unused_nearest_m(candidates, used_members, reference_lonlat)
+    nearest_km = nearest / 1000
 
     return {
         f"p{value:g}": round(float(np.percentile(nearest_km, value)), 3) for value in percentiles

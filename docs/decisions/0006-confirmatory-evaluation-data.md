@@ -32,7 +32,7 @@ choice for v1 and is not a defect.
 
 Relaxing cell disjointness to a distance rule does not rescue the plan.
 
-| Minimum distance from every v1 patch | Patches | Classes present | Smallest class |
+| Minimum distance from every v1 patch | Patches | Classes present | Smallest class (of all 10) |
 |---|---:|---:|---:|
 | 5 km | 16,024 | 10 | 1,094 |
 | 10 km | 8,445 | 10 | 250 |
@@ -95,8 +95,9 @@ published EuroSAT numbers.
 
 ## Consequences
 
-- The project gains its first control for season and acquisition date. EuroSAT exposes no
-  timestamps, a limitation recorded in `docs/validation.md`.
+- The project may gain its first control for season and acquisition date, once reBEN's
+  acquisition metadata is confirmed to be present and usable. EuroSAT exposes no timestamps, a
+  limitation recorded in `docs/validation.md`.
 - Multi-label relevance is new machinery with a judgement in it. `tau = 0.5` is not derived from
   anything; it is pre-registered so it cannot be chosen after seeing scores.
 - If the SSL4EO gate resolves to absent, the confirmatory comparison weakens to TerraMind against
@@ -109,6 +110,7 @@ published EuroSAT numbers.
 
 - [ ] Measure the reBEN distribution size and whether shard-level download is possible; record
       size, licence, and DOI before downloading.
+- [ ] Confirm reBEN exposes usable acquisition dates before relying on temporal separation.
 - [ ] Resolve the SSL4EO L2A checkpoint gate to present-with-SHA or absent.
 - [ ] Implement multi-label relevance as a separate path beside the single-label evaluator.
 - [ ] Prepare and audit the three partitions; publish the achieved label distribution.
