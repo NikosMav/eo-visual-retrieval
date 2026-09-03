@@ -8,6 +8,7 @@ computed offline.
 
 from __future__ import annotations
 
+import hashlib
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -38,7 +39,6 @@ class ModelRanking:
     """What one representation returned, and what produced it."""
 
     name: str
-    backend: str
     dimension: int
     provenance: dict[str, str] = field(default_factory=dict)
     results: tuple[RankedResult, ...] = ()
@@ -63,18 +63,34 @@ class Catalog:
             raise ValueError("at least one embedding store is required")
         self._require_one_corpus(stores)
 
-        self._records = tuple(records)
         self._stores = tuple(stores)
-        self._image_root = image_root
         self._projection = projection
-        self._path_by_id = {record.item_id: image_root / record.path for record in records}
+        path_by_id = {record.item_id: image_root / record.path for record in records}
 
         reference = stores[0]
+        missing = set(reference.ids) - set(path_by_id)
+        if missing:
+            raise ValueError(
+                f"manifest is missing {len(missing)} item(s) referenced by the "
+                f"embedding stores, for example {sorted(missing)[0]!r}: a manifest "
+                "missing corpus rows would degrade into silent 404s per tile "
+                "instead of failing at startup"
+            )
+        self._path_by_id = path_by_id
+
+        if projection is not None:
+            self._validate_projection_matches_pca_store(projection)
+
         self._index_positions = [
             position for position, split in enumerate(reference.splits) if split == "index"
         ]
         if not self._index_positions:
             raise ValueError("embedding stores contain no index rows to search")
+        if not any(split == "query" for split in reference.splits):
+            raise ValueError(
+                "embedding stores contain no query rows: the home page needs at "
+                "least one query item to show by default"
+            )
         self._index_ids = [reference.ids[position] for position in self._index_positions]
         self._label_by_id = {
             reference.ids[position]: reference.labels[position]
@@ -120,6 +136,32 @@ class Catalog:
                     "meaningless"
                 )
 
+    def _validate_projection_matches_pca_store(self, projection: PcaProjection) -> None:
+        """Refuse a projection that was not fitted for the loaded PCA store.
+
+        ``embeddings/encode.py`` runs these same two checks before embedding a
+        query image on the CLI path. The served path must run them too: a
+        projection whose component count happens to match the store's dimension
+        would otherwise be accepted, and every upload would be projected through
+        the wrong basis and ranked against vectors it was never fitted to compare.
+        """
+
+        position = self._pca_position()
+        if position is None:
+            return
+        store = self._stores[position]
+        recorded_size = store.metadata.get("image_size")
+        if recorded_size is not None and int(recorded_size) != projection.image_size:
+            raise ValueError(
+                f"projection image_size {projection.image_size} does not match the "
+                f"pca store's recorded image_size {int(recorded_size)}"
+            )
+        if projection.dimension != store.vectors.shape[1]:
+            raise ValueError(
+                f"projection produces {projection.dimension} dimensions but the pca "
+                f"store holds {store.vectors.shape[1]}"
+            )
+
     @classmethod
     def load(
         cls,
@@ -136,6 +178,17 @@ class Catalog:
                     "see docs/benchmark-eurosat.md"
                 )
         loaded = [EmbeddingStore.load(path) for path in stores]
+        cls._require_one_corpus(loaded)
+        manifest_digest = hashlib.sha256(manifest.read_bytes()).hexdigest()
+        stores_digest = loaded[0].metadata.get("manifest_sha256")
+        if manifest_digest != stores_digest:
+            raise ValueError(
+                f"--manifest {manifest} does not match the manifest the supplied "
+                f"stores were built from (manifest hash {manifest_digest}, stores "
+                f"record {stores_digest}): a mismatched manifest would render the "
+                "wrong images beside correct scores under a provenance line that "
+                "does not describe what is shown"
+            )
         basis = None
         if projection is not None:
             if not projection.is_file():
@@ -161,6 +214,10 @@ class Catalog:
     @property
     def image_size(self) -> int:
         return self._projection.image_size if self._projection is not None else 0
+
+    @property
+    def index_size(self) -> int:
+        return len(self._index_ids)
 
     def image_path(self, item_id: str) -> Path:
         try:
@@ -212,7 +269,6 @@ class Catalog:
         )
         return ModelRanking(
             name=_display_name(store),
-            backend=str(store.metadata.get("backend", "unknown")),
             dimension=int(store.vectors.shape[1]),
             provenance=self._provenance(store),
             results=results,

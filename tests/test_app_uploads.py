@@ -69,10 +69,11 @@ def _png_with_declared_size(width: int, height: int) -> bytes:
 
 
 def test_declared_pixel_bomb_is_refused() -> None:
-    # A tiny file that declares a canvas comfortably over MAX_UPLOAD_PIXELS,
-    # but still under Pillow's own default decompression-bomb ceiling, so
-    # this trips *our* check rather than Pillow's "broken PNG" path.
-    width = height = 9_000
+    # A tiny file that declares a canvas comfortably over the lowered
+    # MAX_UPLOAD_PIXELS (4096x4096), but still under Pillow's own default
+    # decompression-bomb ceiling, so this trips *our* check rather than
+    # Pillow's "broken PNG" path.
+    width = height = 4_500
     assert width * height > MAX_UPLOAD_PIXELS
 
     payload = _png_with_declared_size(width, height)

@@ -35,8 +35,9 @@ Executed against the local EuroSAT v1 corpus with four representations loaded.
 | No model framework | Test asserts torch, torchvision, terratorch, and sklearn stay unimported by the served modules | Passed |
 
 This is an execution smoke on one machine. It establishes that the surface serves the recorded
-corpus and refuses malformed input; it measures no latency under load, has not been deployed, and
-produces no retrieval evidence. All rankings come from previously published embedding stores.
+corpus and returns 404 for an unknown item ID; it measures no latency under load, has not been
+deployed, was never exercised against `/compare/upload`, and produces no retrieval evidence. All
+rankings come from previously published embedding stores.
 
 ## SSL4EO-S12 band ablation on EuroSAT v1 — 2026-09-03
 

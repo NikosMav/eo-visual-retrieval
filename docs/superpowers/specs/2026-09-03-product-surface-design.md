@@ -111,7 +111,10 @@ The absence of colour on an upload means "unknown", not "wrong".
 
 The surface is intended to be publicly reachable eventually, so uploads are treated as hostile:
 
-- Bytes are capped **before** decode, and never written to disk.
+- Bytes are capped **before** decode. The decode itself works entirely in memory,
+  but the ASGI framework may still spool a large multipart file part to an
+  on-disk temporary file before the handler runs, which is why a request-size
+  guard runs ahead of form parsing rather than relying on the decode path alone.
 - `Image.MAX_IMAGE_PIXELS` bounds decompression bombs.
 - Type is established by decoding, not by trusting a declared content type.
 - No user-supplied string reaches a filesystem path.

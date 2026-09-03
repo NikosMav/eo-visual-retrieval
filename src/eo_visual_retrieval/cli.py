@@ -471,10 +471,14 @@ def _query(args: argparse.Namespace) -> None:
 
 
 def _serve(args: argparse.Namespace) -> None:
-    import uvicorn
+    try:
+        import uvicorn
 
-    from eo_visual_retrieval.app.catalog import Catalog
-    from eo_visual_retrieval.app.main import create_app
+        from eo_visual_retrieval.app.catalog import Catalog
+        from eo_visual_retrieval.app.main import create_app
+    except ImportError as error:
+        message = 'the serve command is optional; install with pip install -e ".[app]"'
+        raise RuntimeError(message) from error
 
     catalog = Catalog.load(
         manifest=args.manifest,
