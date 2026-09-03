@@ -21,54 +21,6 @@ The first three boxes record different kinds of evidence; passing one does not i
 See [Understanding the benchmarks](learning-benchmarks.md) for the evidence ladder and the exact
 training boundary.
 
-## BigEarthNet S2 bounded pilot attempt — 2026-09-03
-
-The [streaming downloader](bigearthnet-streaming.md) executed with the existing frozen selection,
-a 64 MiB cumulative network cap, and a 300-second attempt deadline. Its planned pilot contained
-30 existing patches: ten different spatial cells in each of index, development, and final.
-The [diagnostic evidence](results/bigearthnet-s2-pilot-diagnostic.json) records the exact IDs,
-per-band geometry, local file hashes, and source/input identities.
-
-| Executed observation | Result |
-|---|---|
-| Stop | Network byte budget exhausted; incomplete |
-| Compressed bytes received / reserved | 67,108,864 / 67,108,864; four exact HTTP 206 ranges, zero retries |
-| Attempt wall-clock | 41.234 seconds |
-| Raster members streamed | 6,531; non-pilot members discarded |
-| Complete pilot patches reached | Index 2; development 0; final 0 |
-| Geometry and decoding | All 24 retained bands decoded; exact bounds, native affine, and CRS agreement; zero observed mismatches |
-| S2 GeoTIFF bytes retained | 329,120 across 24 files |
-| Post-run acquisition file bytes | 299,270,979 including retained sources, inventory, selection, staging, state, and lock |
-| Full archive checksum verified | No |
-| Pilot passed / full acquisition started | No / no |
-
-The two reached patch IDs end in `T33UUP_37_88` and `T33UUP_39_87` from
-`S2A_MSIL2A_20170613T101031_N9999_R022`. Both contain the native 12-band Level-2A set in the
-recorded order `B01 B02 B03 B04 B05 B06 B07 B08 B8A B09 B11 B12`. Their coarser bands use 20 m or
-60 m pixels within the same 1,200 m footprint. These observations are diagnostic: no published
-per-patch checksum is available, and the archive checksum has not passed.
-
-The received **prefix**, not the archive, has MD5 `2e00edb3cac86b17c94df8616b95bcea`
-and SHA-256 `256f2eae88c55220db21fa0a8773553a00145d270e68c995dd42b4fa59fb1ed6`.
-The publisher's checksum is MD5 `2245ed2d1a93f6ce637d839bc856396e` for all
-63,251,710,377 compressed bytes. No `COMPLETE.json` was produced. The frozen footprint report's
-`s2_subset_footprints_verified: false` remains unchanged. No partition, embedding, or retrieval
-metric was generated or modified.
-
-The run's checkpoint recorded a 299,573,440-byte storage peak before its final state write; that
-number excludes the final checkpoint temporary and is not a complete peak measurement. The hard
-guard still reserved every write. The implementation subsequently gained exact accounting for
-each checkpoint's own temporary bytes, verified with offline tests. Counts describe logical file
-contents; filesystem allocation and HTTP/TLS overhead are outside these measurements.
-
-The final local gates passed Ruff and Mypy over 68 source/test/script files, and **262 tests at
-85.38% coverage** on Python 3.11.5. New checks exercise source checksum failures, geometry stops,
-exact band order, full-phase gating, restart replay, cached-file corruption, cumulative network
-limits, malformed tar entries, frozen inputs, and atomic-write storage accounting. The protected
-`evaluation.py`, `retrieval.py`, decision documents, frozen audits, and EuroSAT result files have
-no diff from the starting commit `4684dc7`; the two protected Python files also retained their
-pre-change filesystem SHA-256 values. All acquisition artifacts remain ignored under `data/`.
-
 ## BigEarthNet source footprints and frozen acquisition IDs — 2026-09-03
 
 The complete reference-map archive was downloaded once (282,391,301 bytes) and its published MD5
@@ -131,6 +83,54 @@ deterministic selection, and independent rejection of spatial/temporal/label vio
 Zstandard 0.25.0 was added to the optional BigEarthNet dependencies; no existing locked package
 version changed. Evaluators, representation code, embedding formats, and earlier result files
 were not modified.
+
+## BigEarthNet S2 bounded pilot attempt — 2026-09-03
+
+The [streaming downloader](bigearthnet-streaming.md) executed with the existing frozen selection,
+a 64 MiB cumulative network cap, and a 300-second attempt deadline. Its planned pilot contained
+30 existing patches: ten different spatial cells in each of index, development, and final.
+The [diagnostic evidence](results/bigearthnet-s2-pilot-diagnostic.json) records the exact IDs,
+per-band geometry, local file hashes, and source/input identities.
+
+| Executed observation | Result |
+|---|---|
+| Stop | Network byte budget exhausted; incomplete |
+| Compressed bytes received / reserved | 67,108,864 / 67,108,864; four exact HTTP 206 ranges, zero retries |
+| Attempt wall-clock | 41.234 seconds |
+| Raster members streamed | 6,531; non-pilot members discarded |
+| Complete pilot patches reached | Index 2; development 0; final 0 |
+| Geometry and decoding | All 24 retained bands decoded; exact bounds, native affine, and CRS agreement; zero observed mismatches |
+| S2 GeoTIFF bytes retained | 329,120 across 24 files |
+| Post-run acquisition file bytes | 299,270,979 including retained sources, inventory, selection, staging, state, and lock |
+| Full archive checksum verified | No |
+| Pilot passed / full acquisition started | No / no |
+
+The two reached patch IDs end in `T33UUP_37_88` and `T33UUP_39_87` from
+`S2A_MSIL2A_20170613T101031_N9999_R022`. Both contain the native 12-band Level-2A set in the
+recorded order `B01 B02 B03 B04 B05 B06 B07 B08 B8A B09 B11 B12`. Their coarser bands use 20 m or
+60 m pixels within the same 1,200 m footprint. These observations are diagnostic: no published
+per-patch checksum is available, and the archive checksum has not passed.
+
+The received **prefix**, not the archive, has MD5 `2e00edb3cac86b17c94df8616b95bcea`
+and SHA-256 `256f2eae88c55220db21fa0a8773553a00145d270e68c995dd42b4fa59fb1ed6`.
+The publisher's checksum is MD5 `2245ed2d1a93f6ce637d839bc856396e` for all
+63,251,710,377 compressed bytes. No `COMPLETE.json` was produced. The frozen footprint report's
+`s2_subset_footprints_verified: false` remains unchanged. No partition, embedding, or retrieval
+metric was generated or modified.
+
+The run's checkpoint recorded a 299,573,440-byte storage peak before its final state write; that
+number excludes the final checkpoint temporary and is not a complete peak measurement. The hard
+guard still reserved every write. The implementation subsequently gained exact accounting for
+each checkpoint's own temporary bytes, verified with offline tests. Counts describe logical file
+contents; filesystem allocation and HTTP/TLS overhead are outside these measurements.
+
+The final local gates passed Ruff and Mypy over 68 source/test/script files, and **262 tests at
+85.38% coverage** on Python 3.11.5. New checks exercise source checksum failures, geometry stops,
+exact band order, full-phase gating, restart replay, cached-file corruption, cumulative network
+limits, malformed tar entries, frozen inputs, and atomic-write storage accounting. The protected
+`evaluation.py`, `retrieval.py`, decision documents, frozen audits, and EuroSAT result files have
+no diff from the starting commit `4684dc7`; the two protected Python files also retained their
+pre-change filesystem SHA-256 values. All acquisition artifacts remain ignored under `data/`.
 
 ## BigEarthNet metadata inventory and bounded streaming probe — 2026-09-03
 
