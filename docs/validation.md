@@ -21,6 +21,30 @@ The first three boxes record different kinds of evidence; passing one does not i
 See [Understanding the benchmarks](learning-benchmarks.md) for the evidence ladder and the exact
 training boundary.
 
+## EuroSAT geography exhaustion — 2026-09-03
+
+Executed with `scripts/eurosat_cell_budget.py` against the verified local archive and the
+published v1 manifest, to test whether EuroSAT could supply the untouched holdout ADR 0005
+assumed. It cannot.
+
+| Gate | Executed evidence | Status |
+|---|---|---|
+| Source discovery | 27,000 georeferenced patches across 845 distinct 50 km EPSG:6933 cells | Passed |
+| Cells consumed by v1 | 725 of 845, 86% | Measured |
+| Untouched remainder | 120 cells holding 778 patches | Measured |
+| Class availability | `HerbaceousVegetation` 0, `PermanentCrop` 1, `AnnualCrop` 4 | Blocking |
+| Distance fallback | 8,445 patches at 10 km, smallest class 250; 65 patches and 5 classes at 50 km | Measured |
+| Split regression | Audit still reproduces 5.066229991251209 km and manifest SHA-256 `bc0b10bf3e3cf29d7f7732529ce5f419b514e2ded3a5e2a5e6e88ebcdea45338` after the distance refactor | Passed |
+
+The median unused patch lies 7.0 km from a v1 patch. A class-balanced holdout in untouched cells is
+impossible, and the 10 km fallback carries a weaker guarantee than v1's own disjoint cells and
+5 km guard band.
+
+**Consequence:** EuroSAT v1 is permanently a regression and development benchmark. This measurement
+supports no claim about BigEarthNet, model quality, or generalization; it establishes only that one
+planned source of confirmatory data does not exist. See
+[ADR 0006](decisions/0006-confirmatory-evaluation-data.md).
+
 ## Dependency vulnerability review — 2026-09-03
 
 Three Dependabot alerts were open against `uv.lock`. Each was checked for an available upgrade
@@ -380,6 +404,8 @@ B938BF1BC15CD2EC0FEACFE3A1BB553FE8EA9CA46A7E1D8D00217F29AEF60CD9
 - Repeatable performance across other operating systems, CPUs, thread counts, and concurrent load.
 - Retrieval quality for genuinely unseen query images; the new-image path is verified for
   numerical agreement only.
+- Any confirmatory result. No untouched evaluation partition exists yet; ADR 0006 specifies how
+  one will be built, and nothing has been acquired or prepared.
 - ANN behavior on a genuinely larger EO corpus rather than deterministic synthetic expansion.
 - Representative GPU throughput, precision/batch-size sweeps, or cross-hardware performance.
 - API, interactive-demo, or deployment validation.

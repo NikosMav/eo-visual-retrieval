@@ -162,15 +162,21 @@ The project is portfolio-ready when:
 
 ## Next task
 
-The first [evaluation-foundations gates](evaluation-foundations.md) are complete: locked local and
-remote CI environments, CPU/CUDA parity, local tracking, and the frozen TerraMind comparison.
-SSL4EO remains the reference after TerraMind scored 0.68688 versus 0.81360 mAP@10. Next:
+The evaluation-foundations gates are complete. The next phase was blocked on new held-out data,
+and measurement has now settled where that data can come from: not EuroSAT. Preparing v1 consumed
+725 of the dataset's 845 fifty-kilometre cells, leaving one class with no untouched patches at all.
+EuroSAT v1 is therefore permanently a regression benchmark. See
+[ADR 0006](decisions/0006-confirmatory-evaluation-data.md) and the measurement in
+[validation](validation.md).
 
-1. Specify new geographically separated development/final data; already-inspected EuroSAT queries
-   cannot become an untouched holdout by splitting them again.
-2. Define multi-label relevance and a bounded acquisition plan before downloading BigEarthNet.
-3. Tune on development queries only, then test a Qdrant adapter against exact search.
-4. Select the product backend from evidence and return to the narrow interface milestone.
+BigEarthNet v2 is the specified confirmatory set. In order:
 
-Paid services, gated-model accounts, bulk dataset downloads, and distributed Milvus deployment
-remain deferred. The choices and consequences are recorded in ADR 0005.
+1. Measure the reBEN distribution size and record its licence and DOI before downloading anything.
+2. Resolve the SSL4EO L2A checkpoint gate; the current 13-band L1C reference cannot read
+   BigEarthNet's 12-band L2A patches.
+3. Implement multi-label Jaccard relevance beside the existing single-label evaluator, leaving
+   published EuroSAT results reproducible.
+4. Prepare and audit the three partitions, then tune on development queries only.
+5. Test a Qdrant adapter against exact search, then return to the product surface.
+
+Paid services, gated-model accounts, and distributed Milvus deployment remain deferred.
