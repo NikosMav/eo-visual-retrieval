@@ -21,6 +21,22 @@ The first three boxes record different kinds of evidence; passing one does not i
 See [Understanding the benchmarks](learning-benchmarks.md) for the evidence ladder and the exact
 training boundary.
 
+## Confirmatory model roster checkpoint identity — 2026-09-03
+
+[ADR 0009](decisions/0009-confirmatory-model-roster.md) adds SSL4EO-S12 RGB MoCo to the
+confirmatory roster after the L2A gate resolved absent. The checkpoint's published identity was
+read from the provider API at the revision the gate evidence already records.
+
+| Gate | Executed evidence | Status |
+|---|---|---|
+| Repository revision | `torchgeo/resnet50_sentinel2_rgb_moco` at `e6704867d1bf7f77c403d8078f41ccf5b2ffaa6c` | Resolved |
+| Published file identity | `resnet50_sentinel2_rgb_moco-2b57ba8b.pth`, 94,361,669 bytes, SHA-256 `2b57ba8b9964dbe1c409aac1bb79b4d97c19c874ffe7934799b7c8ad94ff85f0` | Recorded |
+| Naming convention | Filename prefix matches the digest, as for `resnet50_sentinel2_all_moco-df8b932e.pth` | Consistent |
+
+This is the **published** identity, not a local verification: the file has not been downloaded, and
+nothing here asserts that a local copy matched. Verification against this digest happens at first
+use, exactly as for the 13-band checkpoint. No model was run and no score was produced.
+
 ## BigEarthNet source footprints and frozen acquisition IDs — 2026-09-03
 
 The complete reference-map archive was downloaded once (282,391,301 bytes) and its published MD5

@@ -175,8 +175,17 @@ the SSL4EO L2A gate resolved to absent in the agreed sources, and `evaluate-mult
 development queries with the pre-registered Jaccard policies. Published EuroSAT results remain
 reproducible. See the [BigEarthNet guide](benchmark-bigearthnet.md).
 
+The confirmatory roster is now frozen at four representations by
+[ADR 0009](decisions/0009-confirmatory-model-roster.md): PCA-64, DINOv2, SSL4EO-S12 RGB MoCo, and
+TerraMind-Tiny. SSL4EO's 13-band reference cannot read BigEarthNet's 12-band Level-2A patches, so
+the RGB variant of the same pretraining corpus enters instead. That does not test the 13-band
+representation, and no report of the confirmatory result may imply otherwise.
+
 Remaining work, in order:
 
+0. Add the 3-band SSL4EO adapter path with the ADR 0009 checkpoint, leaving the 13-band contract
+   intact, and run it on EuroSAT v1 as the controlled band ablation ADR 0003 recorded as missing.
+   This is regression evidence, not confirmatory, and is independent of the acquisition below.
 1. Implement the [bounded acquisition proposal](decisions/0007-bounded-bigearthnet-acquisition.md).
    The prerequisite footprint inventory and 4,000 index / 500 development / 500 final acquisition
    IDs are complete under [ADR 0008](decisions/0008-bigearthnet-selection-protocol.md). The
