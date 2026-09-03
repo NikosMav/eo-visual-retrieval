@@ -92,13 +92,28 @@ class Catalog:
         """Refuse to compare models that did not rank the same corpus.
 
         A page built from mismatched stores would be meaningless and would look
-        entirely correct, so this is a hard failure rather than a warning.
+        entirely correct, so this is a hard failure rather than a warning. A store
+        with no recorded manifest hash is not comparable at all: without that, a
+        missing hash on two stores would compare equal by omission and let a
+        mismatched pair slip through.
         """
 
+        for store in stores:
+            digest = store.metadata.get("manifest_sha256")
+            if not isinstance(digest, str):
+                raise ValueError(
+                    "supplied store has no recorded manifest hash: a store without a "
+                    "recorded corpus identity cannot be shown to describe the same "
+                    "corpus as the others"
+                )
+
         reference = stores[0]
-        digest = reference.metadata.get("manifest_sha256")
+        reference_digest = reference.metadata.get("manifest_sha256")
         for store in stores[1:]:
-            if store.metadata.get("manifest_sha256") != digest or store.ids != reference.ids:
+            if (
+                store.metadata.get("manifest_sha256") != reference_digest
+                or store.ids != reference.ids
+            ):
                 raise ValueError(
                     "supplied stores did not rank the same corpus: their manifest hashes "
                     "or item orderings differ, so a side-by-side comparison would be "

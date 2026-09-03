@@ -8,6 +8,7 @@ import numpy as np
 import pytest
 
 from eo_visual_retrieval.app.catalog import Catalog
+from eo_visual_retrieval.embeddings.projection import PcaProjection
 from eo_visual_retrieval.embeddings.store import EmbeddingStore
 from eo_visual_retrieval.manifests import write_jsonl
 from eo_visual_retrieval.models import ImageRecord, Split
@@ -144,6 +145,69 @@ def test_catalog_refuses_stores_whose_ids_disagree(tmp_path: Path) -> None:
         Catalog.load(
             manifest=manifest, image_root=tmp_path, stores=[first, second], projection=None
         )
+
+
+def test_catalog_refuses_a_store_with_no_recorded_corpus_identity(tmp_path: Path) -> None:
+    """A store that never recorded a manifest hash can't be shown to match another."""
+    records = _records()
+    manifest = _write(tmp_path, records)
+    first = tmp_path / "first.npz"
+    _store(records, "pca", None).save(first)
+
+    no_identity = _store(records, "dinov2", "dinov2_vits14")
+    metadata = dict(no_identity.metadata)
+    del metadata["manifest_sha256"]
+    second = tmp_path / "second.npz"
+    EmbeddingStore(
+        ids=no_identity.ids,
+        vectors=no_identity.vectors,
+        labels=no_identity.labels,
+        splits=no_identity.splits,
+        metadata=metadata,
+    ).save(second)
+
+    with pytest.raises(ValueError, match="no recorded manifest hash"):
+        Catalog.load(
+            manifest=manifest, image_root=tmp_path, stores=[first, second], projection=None
+        )
+
+
+def test_rank_uploaded_ranks_through_the_projection_without_relevance(tmp_path: Path) -> None:
+    """An uploaded image carries no label, so every result must read relevant=None."""
+    records = _records()
+    manifest = _write(tmp_path, records)
+    paths = []
+    for backend, model in (("pca", None), ("dinov2", "dinov2_vits14")):
+        path = tmp_path / f"{backend}.npz"
+        _store(records, backend, model).save(path)
+        paths.append(path)
+
+    features = IMAGE_SIZE * IMAGE_SIZE * 3
+    components = np.zeros((2, features), dtype=np.float32)
+    components[0, 0] = 1.0
+    components[1, 1] = 1.0
+    projection = PcaProjection(
+        mean=np.zeros(features, dtype=np.float32),
+        components=components,
+        image_size=IMAGE_SIZE,
+        seed=0,
+    )
+    projection_path = tmp_path / "projection.npz"
+    projection.save(projection_path)
+
+    catalog = Catalog.load(
+        manifest=manifest, image_root=tmp_path, stores=paths, projection=projection_path
+    )
+
+    pixels = np.zeros((1, features), dtype=np.float32)
+    pixels[0, 0] = 1.0
+    pixels[0, 1] = 0.5
+
+    ranking = catalog.rank_uploaded(pixels, k=2)
+
+    assert ranking.name == "pca"
+    assert len(ranking.results) == 2
+    assert all(result.relevant is None for result in ranking.results)
 
 
 def test_upload_is_unavailable_without_a_projection(tmp_path: Path) -> None:
