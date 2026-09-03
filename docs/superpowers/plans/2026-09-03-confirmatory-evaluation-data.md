@@ -1,5 +1,11 @@
 # Confirmatory Evaluation Data Implementation Plan
 
+**Status:** all five tasks implemented and validated on 2026-09-03. The original task instructions
+and checklists below are retained as the planning record; the final implementation and
+[ADR 0006](../../decisions/0006-confirmatory-evaluation-data.md) are authoritative. The
+[validation record](../../validation.md) includes the full preparation replay that closed the
+remaining regression gap during final review.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Publish ADR 0006 naming BigEarthNet v2 as the confirmatory evaluation set, backed by a committed, re-runnable measurement proving EuroSAT can no longer supply one.

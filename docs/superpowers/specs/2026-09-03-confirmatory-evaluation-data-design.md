@@ -1,8 +1,12 @@
 # Confirmatory evaluation data: design
 
 - Date: 2026-09-03
-- Status: approved, not yet implemented
+- Status: implemented and validated, 2026-09-03
 - Deliverable: ADR 0006 plus the reproducible evidence behind it
+
+All deliverables below are complete. The final decision is recorded in
+[ADR 0006](../../decisions/0006-confirmatory-evaluation-data.md), with executed checks in
+[Validation](../../validation.md). BigEarthNet acquisition and evaluation remain subsequent work.
 
 ## Why this work exists
 

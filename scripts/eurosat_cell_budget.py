@@ -20,7 +20,7 @@ from eo_visual_retrieval.benchmarks.coverage import (
     nearest_distance_percentiles,
 )
 from eo_visual_retrieval.benchmarks.eurosat import discover_candidates
-from eo_visual_retrieval.datasets.eurosat import verify_archive
+from eo_visual_retrieval.datasets.eurosat import archive_members, verify_archive
 from eo_visual_retrieval.hashing import file_md5, file_sha256
 from eo_visual_retrieval.manifests import read_jsonl
 
@@ -39,10 +39,7 @@ def main() -> None:
     args = parser.parse_args()
 
     prepared = read_jsonl(args.manifest)
-    used_members = {str(record.metadata["archive_member"]) for record in prepared}
-    used_lonlat = np.asarray(
-        [record.metadata["centroid_lonlat"] for record in prepared], dtype=np.float64
-    )
+    used_members = set(archive_members(prepared))
 
     # discover_candidates() itself skips checksum verification so it can also run
     # against locally prepared archives, but this script's output becomes published
@@ -51,6 +48,12 @@ def main() -> None:
     verify_archive(args.archive)
     candidates = discover_candidates(args.archive, group_size_m=args.group_size_km * 1000)
     budget = cell_budget(candidates, used_members)
+    # Reference coordinates come from the verified source, just like unused
+    # coordinates; edited or stale manifest metadata must not move the reference.
+    used_lonlat = np.asarray(
+        [(item.longitude, item.latitude) for item in candidates if item.member in used_members],
+        dtype=np.float64,
+    )
     tiers = distance_tiers(
         candidates,
         used_members=used_members,

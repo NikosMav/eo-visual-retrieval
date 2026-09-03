@@ -44,7 +44,19 @@ A 10 km set is constructible before internal partition separation is subtracted,
 is far weaker than v1's disjoint 50 km cells plus 5 km guard band, and it still cannot answer
 whether SSL4EO's advantage is specific to EuroSAT.
 
-Reproduce with `scripts/eurosat_cell_budget.py`.
+Reproduce from the repository root with the `geo` dependency group installed and the existing
+EuroSAT archive and v1 manifest:
+
+```powershell
+python scripts/eurosat_cell_budget.py `
+  --archive data/downloads/EuroSAT_MS.zip `
+  --manifest data/eurosat-v1/manifest.jsonl `
+  --output outputs/eurosat-cell-budget.json
+```
+
+The script verifies the published archive checksum and measures coordinates from that archive.
+It records the archive MD5 and manifest SHA-256 alongside the tables and distance percentiles.
+The JSON stays in the ignored `outputs/` directory.
 
 ## Decision
 

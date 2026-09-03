@@ -35,7 +35,8 @@ assumed. It cannot.
 | Class availability | `HerbaceousVegetation` 0, `PermanentCrop` 1, `AnnualCrop` 4 | Blocking |
 | Distance fallback | 8,445 patches at 10 km, smallest class 250; 65 patches and 5 classes at 50 km | Measured |
 | Audit regression | After the distance refactor, auditing manifest `bc0b10bf…45338` still reproduces a 5.066229991251209 km minimum separation over its 2,000 real patches | Passed |
-| Preparation path | `select_spatial_split`'s changed call site is covered by unit tests on synthetic candidates only; the published split was not regenerated | Partial |
+| Preparation regression | Full preparation replay over all 27,000 source patches regenerated the byte-identical v1 manifest and all 2,000 RGB image hashes; 197 candidates excluded by the guard band | Passed |
+| Retrieval regression | PCA-64, DINOv2, SSL4EO-S12, and TerraMind-Tiny aggregate and per-class metrics recomputed from the existing stores match the published k=10 values exactly | Passed |
 | TerraMind modality registry | TerraTorch 1.2.11 registers `untok_sen2l1c@224` at 13 bands and `untok_sen2l2a@224` at 12 bands | Passed |
 
 The median unused patch lies 7.0 km from a v1 patch. A class-balanced holdout in untouched cells is
@@ -46,6 +47,40 @@ impossible, and the 10 km fallback carries a weaker guarantee than v1's own disj
 supports no claim about BigEarthNet, model quality, or generalization; it establishes only that one
 planned source of confirmatory data does not exist. See
 [ADR 0006](decisions/0006-confirmatory-evaluation-data.md).
+
+### Preparation replay and final checks
+
+The final review closed the earlier synthetic-only preparation check by running the complete
+builder into a separate ignored directory:
+
+```powershell
+python -m eo_visual_retrieval.cli benchmark-eurosat-prepare `
+  --archive data/downloads/EuroSAT_MS.zip `
+  --output-dir outputs/eurosat-finish/images `
+  --manifest outputs/eurosat-finish/manifest.jsonl `
+  --queries-per-class 40 --index-per-class 160 `
+  --group-size-km 50 --minimum-separation-km 5 --seed 42
+```
+
+The regenerated and original manifests matched byte for byte, with SHA-256
+`bc0b10bf3e3cf29d7f7732529ce5f419b514e2ded3a5e2a5e6e88ebcdea45338`.
+`audit_eurosat_manifest` verified every RGB file in both directories and returned identical
+audits, including the 5.066229991251209 km minimum separation. The original data and all files
+under `docs/results/` remain unchanged.
+
+`evaluate_store(..., k=10)` reproduced every aggregate metric, query count, and per-class slice
+for the four existing stores exactly. TerraMind's recorded `mlflow_run_id` was excluded from the
+comparison because it is tracking metadata, not an evaluation result.
+
+The measurement entry point now uses the shared archive-member validator to reject foreign or
+duplicate references, and reads reference coordinates from the verified archive. Focused tests
+exercise these boundaries, checksum failure before discovery, and the complete JSON report.
+Re-running the measurement against the official local archive reproduced every report field
+exactly after this change, including the 7.015 km median and every distance-tier count.
+
+Ruff and Mypy passed on Python 3.11.5 and 3.12.1 (49 checked source files). The full 3.11
+environment passed 129 tests with 79.94% coverage; the lightweight 3.12 environment passed 128
+with one expected PyTorch-dependent skip and 78.96% coverage. Both exceed the 75% floor.
 
 ## Dependency vulnerability review — 2026-09-03
 
