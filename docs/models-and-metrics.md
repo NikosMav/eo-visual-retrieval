@@ -159,6 +159,12 @@ Changing both the selected dataset and model at once prevents a useful interpret
 for PCA/DINOv2 and 13 bands for SSL4EO-S12 is intentional, but means the multispectral comparison
 is not a controlled band ablation.
 
+[ADR 0009](decisions/0009-confirmatory-model-roster.md) supplies the missing control. The
+SSL4EO-S12 RGB MoCo ResNet-50 checkpoint shares the 13-band model's architecture and pretraining
+corpus, so running it on the same EuroSAT v1 patches, split, relevance, and ranker isolates the
+input bands as the only difference. Until that run is executed and published, the caveat above
+still governs every reported multispectral result.
+
 ## Exact cosine retrieval
 
 Cosine similarity measures the angle between two vectors:
