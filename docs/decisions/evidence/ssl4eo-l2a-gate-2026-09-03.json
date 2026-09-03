@@ -1,0 +1,240 @@
+{
+  "torchgeo_commit": "39711baadcd4a02b88dc7e83cffc29f841123d3e",
+  "ssl4eo_commit": "2156913c5d8e5a2c572a5b000f0d5eaed6fc3192",
+  "registry_entries": [
+    {
+      "entry": "SENTINEL1_ALL_DECUR",
+      "dataset": "SSL4EO-S12",
+      "in_chans": 2,
+      "model": "resnet50",
+      "publication": "https://arxiv.org/abs/2309.05300",
+      "repo": "https://github.com/zhu-xlab/DeCUR",
+      "ssl_method": "decur"
+    },
+    {
+      "entry": "SENTINEL1_ALL_MOCO",
+      "dataset": "SSL4EO-S12",
+      "in_chans": 2,
+      "model": "resnet50",
+      "publication": "https://arxiv.org/abs/2211.07044",
+      "repo": "https://github.com/zhu-xlab/SSL4EO-S12",
+      "ssl_method": "moco"
+    },
+    {
+      "entry": "SENTINEL1_GRD_SOFTCON",
+      "dataset": "SSL4EO-S12",
+      "in_chans": 2,
+      "model": "resnet50",
+      "publication": "https://arxiv.org/abs/2405.20462",
+      "repo": "https://github.com/zhu-xlab/softcon",
+      "ssl_method": "softcon"
+    },
+    {
+      "entry": "SENTINEL2_ALL_DECUR",
+      "dataset": "SSL4EO-S12",
+      "in_chans": 13,
+      "model": "resnet50",
+      "publication": "https://arxiv.org/abs/2309.05300",
+      "repo": "https://github.com/zhu-xlab/DeCUR",
+      "ssl_method": "decur"
+    },
+    {
+      "entry": "SENTINEL2_ALL_DINO",
+      "dataset": "SSL4EO-S12",
+      "in_chans": 13,
+      "model": "resnet50",
+      "publication": "https://arxiv.org/abs/2211.07044",
+      "repo": "https://github.com/zhu-xlab/SSL4EO-S12",
+      "ssl_method": "dino"
+    },
+    {
+      "entry": "SENTINEL2_ALL_MOCO",
+      "dataset": "SSL4EO-S12",
+      "in_chans": 13,
+      "model": "resnet50",
+      "publication": "https://arxiv.org/abs/2211.07044",
+      "repo": "https://github.com/zhu-xlab/SSL4EO-S12",
+      "ssl_method": "moco"
+    },
+    {
+      "entry": "SENTINEL2_ALL_SOFTCON",
+      "dataset": "SSL4EO-S12",
+      "in_chans": 13,
+      "model": "resnet50",
+      "publication": "https://arxiv.org/abs/2405.20462",
+      "repo": "https://github.com/zhu-xlab/softcon",
+      "ssl_method": "softcon"
+    },
+    {
+      "entry": "SENTINEL2_RGB_MOCO",
+      "dataset": "SSL4EO-S12",
+      "in_chans": 3,
+      "model": "resnet50",
+      "publication": "https://arxiv.org/abs/2211.07044",
+      "repo": "https://github.com/zhu-xlab/SSL4EO-S12",
+      "ssl_method": "moco"
+    }
+  ],
+  "hf_catalog": [
+    {
+      "id": "torchgeo/resnet18_sentinel2_all_moco",
+      "sha": "5b5a13d01ad97789e9393024e6f57a7777f14384"
+    },
+    {
+      "id": "torchgeo/resnet18_sentinel2_rgb_moco",
+      "sha": "512f3d7365551b1f2ead7a369f19fefdef45b595"
+    },
+    {
+      "id": "torchgeo/resnet50_sentinel1_all_moco",
+      "sha": "80ad27b9b1e631dd3ad66666ee0f185d3ec474b0"
+    },
+    {
+      "id": "torchgeo/resnet50_sentinel2_all_dino",
+      "sha": "a903ecb68b77bcb8ea931602eeadfacae274ce1f"
+    },
+    {
+      "id": "torchgeo/resnet50_sentinel2_all_moco",
+      "sha": "b0142e8bcd4d8002df2f03762b292003d2b77d88"
+    },
+    {
+      "id": "torchgeo/resnet50_sentinel2_rgb_moco",
+      "sha": "e6704867d1bf7f77c403d8078f41ccf5b2ffaa6c"
+    },
+    {
+      "id": "torchgeo/vit_small_patch16_224_sentinel2_all_dino",
+      "sha": "87c087df8e435debd19c5da4a852bd11a2c4caa9"
+    },
+    {
+      "id": "torchgeo/vit_small_patch16_224_sentinel2_all_moco",
+      "sha": "255b5e7e225f85919aa89fe3f7fa18a73306f8f9"
+    },
+    {
+      "id": "torchgeo/resnet18_sentinel2_rgb_seco",
+      "sha": "a59dab52a6c198f3520c76364743dec8b32aeba7"
+    },
+    {
+      "id": "torchgeo/resnet50_sentinel2_rgb_seco",
+      "sha": "7ceae1af99075d6c8725250be60097a3d5c6ba79"
+    },
+    {
+      "id": "torchgeo/resnet50_fmow_rgb_gassl",
+      "sha": "4504b3377b5fdc2b8146178538e4b3af17b952ec"
+    },
+    {
+      "id": "torchgeo/resnet50_landsat7_l2_all_moco",
+      "sha": "03e4309f96179eb073447f60a20c044298715dcf"
+    },
+    {
+      "id": "torchgeo/swin_v2_b_sentinel2_rgb_satlas",
+      "sha": "a854614d1573959a1aca0a1b89512033ca075965"
+    },
+    {
+      "id": "torchgeo/swin_v2_b_naip_rgb_satlas",
+      "sha": "b57ebe2e3dd1b179f7aab29802ef2fcc78abc8f7"
+    },
+    {
+      "id": "torchgeo/ssl4eo_landsat",
+      "sha": "6894529fc68a37be4b11c736ce3cbc78d6e0f397"
+    },
+    {
+      "id": "torchgeo/dofa",
+      "sha": "e6c9fbd1412b738cec80be7d1817e9372178e12a"
+    },
+    {
+      "id": "torchgeo/decur",
+      "sha": "2a6f9505725687a19974ed24f9c1df9ac83130de"
+    },
+    {
+      "id": "torchgeo/satlas",
+      "sha": "781d95e23eb0b50fab0a0850ba8abcf118e63947"
+    },
+    {
+      "id": "torchgeo/fields-of-the-world",
+      "sha": "ae66b65af560948315bd71f6421f8a14098a9443"
+    },
+    {
+      "id": "torchgeo/croma",
+      "sha": "44d11cba8a4447112626b65a841fb7ad186a9e29"
+    },
+    {
+      "id": "torchgeo/copernicus-fm",
+      "sha": "bb95291d383b125ff763c09e87fb400140b789f9"
+    },
+    {
+      "id": "torchgeo/ftw",
+      "sha": "71f0b677a3ac8fd00bc08f61106fe8d8f70ce158"
+    },
+    {
+      "id": "torchgeo/ai4g_flood",
+      "sha": "672bfb53b61a91114941ac9e4338ebc96dff6ec7"
+    },
+    {
+      "id": "torchgeo/earthloc",
+      "sha": "5a47f9ba5f0ef5ce23dae5b48a6177cd9b400a21"
+    },
+    {
+      "id": "torchgeo/seco-eco-ndvi",
+      "sha": "134eb071d078874edf4c70cb6c4ea62dbe924190"
+    },
+    {
+      "id": "torchgeo/delineate-anything",
+      "sha": "60bea7b2f81568d16d5c75e4b5b06289e1d7efaf"
+    },
+    {
+      "id": "torchgeo/delineate-anything-s",
+      "sha": "69cd440b0c5bd450ced145e68294aa9393ddae05"
+    },
+    {
+      "id": "torchgeo/seco-eco",
+      "sha": "3ede08c40f70534eb1132057ee338b99e54319f0"
+    },
+    {
+      "id": "torchgeo/yolo11s_marine_vessel_detection",
+      "sha": "ffd4f6fd2c955b14dcdc85097252ef0e958e660c"
+    },
+    {
+      "id": "torchgeo/umbra_gec_unet_effb4_openearthmap_sar",
+      "sha": "738e0216fa5d41d14f535cc28430052683704142"
+    },
+    {
+      "id": "torchgeo/vit_base_patch32_224_skyclip_50pct",
+      "sha": "4aabd8ad4c87f21651698e6022f24d794689ea7b"
+    },
+    {
+      "id": "torchgeo/vit_large_patch14_224_clip_laionrs",
+      "sha": "246ac6fc067f083e43dbd8ea77aa15aa27dc12f9"
+    },
+    {
+      "id": "torchgeo/vit_large_patch14_224_skyclip_50pct",
+      "sha": "6533fae7603c827db90f146167969046b9c196e9"
+    },
+    {
+      "id": "torchgeo/vit_large_patch14_224_skyclip_30pct",
+      "sha": "18f7cdd4899ceaaca74d0403ebc7ca0a10833cbf"
+    },
+    {
+      "id": "torchgeo/presto",
+      "sha": "43f8d500a930772d226b309a06ec32be6dc077dd"
+    },
+    {
+      "id": "torchgeo/gfm",
+      "sha": "a341e1b57de88d6f980c589ee586395100d09d01"
+    }
+  ],
+  "date": "2026-09-03",
+  "decision": "absent-in-agreed-sources",
+  "qualifying_checkpoint": null,
+  "source_scope": [
+    "zhu-xlab/SSL4EO-S12 official model list",
+    "microsoft/torchgeo ResNet50 weight registry",
+    "all 36 public torchgeo Hugging Face model entries; no next page"
+  ],
+  "torchgeo_resnet_source_sha256": "4fc0bf29db75674031295febbea5f7ddb24e4ba8ce10810ac034d6e2f65393f9",
+  "ssl4eo_readme_sha256": "a58f86b21b8925f0322806943d8719b2ab8ef65881acb1221a66042b3f2958a5",
+  "excluded_alternative": {
+    "model": "SENTINEL2_ALL_SECO_ECO",
+    "channels": 12,
+    "pretraining_dataset": "SSL4Eco Dataset",
+    "reason": "not the pre-registered SSL4EO-S12 dataset"
+  }
+}

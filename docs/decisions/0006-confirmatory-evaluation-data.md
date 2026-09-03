@@ -120,12 +120,21 @@ published EuroSAT numbers.
 
 ## Action items
 
-- [ ] Measure the reBEN distribution size and whether shard-level download is possible; record
-      size, licence, and DOI before downloading.
+- [x] Record reBEN's published sizes, checksums, licence, and DOI; inspect shard availability.
+      The official S2 listing is one 63.3 GB compressed tar, with no advertised shards or member
+      index. Exact local byte counts and selective access remain unverified. See the
+      [acquisition and evaluation guide](../benchmark-bigearthnet.md).
 - [ ] Confirm reBEN exposes usable acquisition dates before relying on temporal separation.
-- [ ] Resolve the SSL4EO L2A checkpoint gate to present-with-SHA or absent.
-- [ ] Implement multi-label relevance as a separate path beside the single-label evaluator.
+- [x] Resolve the SSL4EO L2A checkpoint gate: absent in the agreed sources inspected on
+      2026-09-03. Pinned source revisions and the distinct SeCo-Eco alternative are documented
+      in the guide; no substitute checkpoint was selected.
+- [x] Implement multi-label development relevance beside the single-label evaluator. Binary
+      metrics use Jaccard at the registered threshold; nDCG uses raw Jaccard gain. Labeled
+      queries without binary positives stay in the mean with zero binary metrics, and their
+      graded nDCG is computed independently. This policy was fixed before any BigEarthNet score.
 - [ ] Prepare and audit the three partitions; publish the achieved label distribution.
+- [ ] Add the frozen-configuration, one-shot final-scoring gate; the development command
+      currently cannot score final queries.
 - [ ] Only then run the development comparison, freeze configuration, and score the final set once.
 
 ## Primary references

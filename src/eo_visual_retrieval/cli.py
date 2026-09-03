@@ -12,6 +12,7 @@ from typing import Any
 
 from eo_visual_retrieval.embeddings.store import EmbeddingStore
 from eo_visual_retrieval.evaluation import evaluate_store
+from eo_visual_retrieval.evaluation_multilabel import DEFAULT_THRESHOLD, DEVELOPMENT_THRESHOLDS
 from eo_visual_retrieval.manifests import build_image_manifest, read_jsonl, write_jsonl
 from eo_visual_retrieval.retrieval import ExactCosineIndex
 from eo_visual_retrieval.stac import (
@@ -340,6 +341,33 @@ def _evaluate(args: argparse.Namespace) -> None:
     print(payload, end="")
 
 
+def _evaluate_multilabel(args: argparse.Namespace) -> None:
+    from eo_visual_retrieval.evaluation_multilabel import evaluate_multilabel_development
+    from eo_visual_retrieval.hashing import file_sha256
+    from eo_visual_retrieval.relevance import RelevanceManifest
+
+    if args.output.resolve() in {args.embeddings.resolve(), args.relevance.resolve()}:
+        raise ValueError("evaluation output must not overwrite an input")
+    store = EmbeddingStore.load(args.embeddings)
+    relevance = RelevanceManifest.load(args.relevance)
+    result = evaluate_multilabel_development(
+        store, relevance, k=args.k, threshold=args.threshold
+    ).to_dict()
+    result.update(
+        dataset=relevance.dataset,
+        evidence_role="development-only",
+        image_manifest_sha256=relevance.image_manifest_sha256,
+        embedding_store_sha256=file_sha256(args.embeddings),
+        relevance_manifest_sha256=file_sha256(args.relevance),
+    )
+    payload = json.dumps(result, indent=2, sort_keys=True) + "\n"
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    temporary = args.output.with_suffix(args.output.suffix + ".tmp")
+    temporary.write_text(payload, encoding="utf-8", newline="\n")
+    temporary.replace(args.output)
+    print(payload, end="")
+
+
 def _benchmark_faiss(args: argparse.Namespace) -> None:
     from eo_visual_retrieval.faiss_benchmark import benchmark_faiss, file_sha256
 
@@ -584,6 +612,18 @@ def build_parser() -> argparse.ArgumentParser:
         "--tracking-dir", type=Path, help="opt in to local MLflow aggregate tracking (no uploads)"
     )
     evaluate.set_defaults(handler=_evaluate)
+
+    multilabel = commands.add_parser(
+        "evaluate-multilabel", help="evaluate development queries with Jaccard relevance"
+    )
+    multilabel.add_argument("--embeddings", type=Path, required=True)
+    multilabel.add_argument("--relevance", type=Path, required=True)
+    multilabel.add_argument("--output", type=Path, required=True)
+    multilabel.add_argument("--k", type=int, default=10)
+    multilabel.add_argument(
+        "--threshold", type=float, choices=DEVELOPMENT_THRESHOLDS, default=DEFAULT_THRESHOLD
+    )
+    multilabel.set_defaults(handler=_evaluate_multilabel)
 
     faiss_benchmark = commands.add_parser(
         "benchmark-faiss",

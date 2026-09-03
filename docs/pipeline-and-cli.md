@@ -300,7 +300,24 @@ the same metrics and evaluated-query count for each label.
 
 See [Models and metrics](models-and-metrics.md) before interpreting the output.
 
-## Inspect qualitative results
+## Evaluate multi-label development queries
+
+For multi-label data, use the separate development evaluator:
+
+```powershell
+eovr evaluate-multilabel `
+  --embeddings artifacts/bigearthnet-development.npz `
+  --relevance data/bigearthnet-v2/relevance.json `
+  --k 10 --threshold 0.5 `
+  --output outputs/bigearthnet-development-k10.json
+```
+
+This requires a store with `None` single-label entries and a relevance manifest bound to the
+same image-manifest SHA-256. It reports binary Jaccard metrics and raw-Jaccard nDCG, scores only
+development queries, and records input hashes. No final-scoring option exists. The example inputs
+must first be prepared; see [BigEarthNet acquisition and evaluation](benchmark-bigearthnet.md).
+
+## Inspect single-label qualitative results
 
 ```powershell
 eovr result-grid `

@@ -76,6 +76,7 @@ learning-oriented explanation.
 | Content digests | Produce one streaming SHA-256/MD5 identity for every artifact | `hashing.py` |
 | Vector preparation | Enforce finite, unit-length rows before any cosine comparison | `vectors.py` |
 | EuroSAT dataset identity | Hold the archive checksum, band order, and member access | `datasets/eurosat.py` |
+| BigEarthNet dataset identity | Pin source/checksums and bound metadata-only acquisition | `datasets/bigearthnet.py` |
 | STAC search | Validate a bounded query and collect safe item metadata | `stac.py` |
 | Preview materializer | Resolve an item, optionally sign in memory, and download a bounded image | `stac.py` |
 | Sentinel-2 chip builder | Align band windows, scale reflectance, apply SCL masks, and write georeferenced artifacts | `chips.py` |
@@ -91,6 +92,8 @@ learning-oriented explanation.
 | Exact index | Rank every index vector by cosine similarity | `retrieval.py` |
 | Faiss benchmark | Compare exact normalized inner product with HNSW at fixed scale tiers | `faiss_benchmark.py` |
 | Evaluator | Calculate label-proxy ranked-retrieval metrics | `evaluation.py` |
+| Multi-label relevance manifest | Bind label sets and index/development/final partitions to an image-manifest hash | `relevance.py` |
+| Multi-label development evaluator | Score binary and graded Jaccard relevance while excluding final queries | `evaluation_multilabel.py` |
 | Local experiment tracker | Opt-in aggregate metrics/content hashes to local MLflow SQLite | `tracking.py` |
 | Result-grid renderer | Select per-class best/worst queries and render exact ranked results | `visualization.py` |
 | CLI | Validate arguments and connect all stages | `cli.py` |
@@ -148,6 +151,12 @@ The compressed NPZ format is portable and sufficient for offline experiments. It
 as a scalable online index format.
 
 ## Required invariants
+
+Multi-label judgments live in a separate relevance manifest rather than changing the existing
+embedding-store format. Its IDs cover the store exactly and its source image-manifest hash must
+match the store's provenance. `development` and `final` both map to the store's `query` split,
+but the multi-label evaluator selects only `development`. Final vectors are not normalized or
+scored in this path. See [the BigEarthNet guide](benchmark-bigearthnet.md) for the contract.
 
 The system depends on the following rules:
 
