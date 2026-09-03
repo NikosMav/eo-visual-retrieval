@@ -21,6 +21,45 @@ The first three boxes record different kinds of evidence; passing one does not i
 See [Understanding the benchmarks](learning-benchmarks.md) for the evidence ladder and the exact
 training boundary.
 
+## SSL4EO-S12 band ablation on EuroSAT v1 — 2026-09-03
+
+Executed to resolve the caveat ADR 0003 recorded and ADR 0009 pre-registered: the 13-band result
+changed pretraining, architecture, and bands at once, so none of its advantage could be attributed.
+
+| Gate | Executed evidence | Status |
+|---|---|---|
+| Checkpoint verification | `resnet50_sentinel2_rgb_moco-2b57ba8b.pth` downloaded, 94,361,669 bytes, SHA-256 matched the ADR 0009 pin | Passed |
+| Shared preprocessing | Both variants call one `prepare_bands`; only the band selection differs | Passed |
+| Input alignment | Same manifest `bc0b10bf…45338`, same 2,000 patches, split, relevance, and exact ranker | Passed |
+| Embedding | 2,000 x 2,048 float32 on CPU in 105.6 s; norms 0.99999982 to 1.00000012 | Passed |
+| Evaluation | 400 queries, zero skipped; mAP@10 `0.7445231150793652` | Passed |
+| Store identity | SHA-256 `773dcaf1290e84b36511306a497e2d1b7dd58264d9ec249a86dd2398d349078e` | Recorded |
+
+At k=10 the 13-band encoder scored mAP `0.81360` against the RGB variant's `0.74452`. The extra ten
+bands therefore account for `+0.06907`, **34%** of the `+0.20596` advantage the 13-band model holds
+over DINOv2. The remaining 66% belongs to the RGB representation, a comparison that confounds
+EO-domain pretraining with a ResNet-50 versus ViT-S/14 architecture change and **is not isolated
+here**. Bands helped `River` most (`+0.2038`) and hurt `SeaLake` slightly (`−0.0216`).
+
+Only the band attribution is controlled. This is EuroSAT v1 development evidence, not confirmatory,
+and it establishes nothing about other datasets, tasks, or label schemes. Full result:
+[band ablation](results/eurosat-v1-ssl4eo-band-ablation.md).
+
+### Preprocessing deviation, measured
+
+torchgeo's registered transform for these weights, read at pinned commit
+`39711baadcd4a02b88dc7e83cffc29f841123d3e`, is `Resize(256)` then `CenterCrop(224)` then
+`Normalize(mean=[0], std=[10000])`. It does **not** clip; the string `clip` does not occur in that
+source file. This project additionally clips to 0–10000, and the previous docstring wrongly
+attributed that clip to the registered transform. The docstring is corrected.
+
+The deviation was measured rather than assumed. Across 80 sampled EuroSAT patches, **one
+pixel-band value in 4,259,840 exceeded 10000**, with a maximum observed digital number of 12046, so
+the clip is very nearly inert on this dataset and cannot account for any reported difference. Both
+SSL4EO variants share it, so the ablation is unaffected. No published result was regenerated. The
+deviation may behave differently on BigEarthNet Level-2A data, where the value distribution
+differs; that remains unmeasured.
+
 ## Confirmatory model roster checkpoint identity — 2026-09-03
 
 [ADR 0009](decisions/0009-confirmatory-model-roster.md) adds SSL4EO-S12 RGB MoCo to the
