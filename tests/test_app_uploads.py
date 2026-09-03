@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import io
+import zlib
 
 import numpy as np
 import pytest
@@ -10,6 +11,7 @@ from PIL import Image
 
 from eo_visual_retrieval.app.uploads import (
     MAX_UPLOAD_BYTES,
+    MAX_UPLOAD_PIXELS,
     decode_upload,
 )
 
@@ -47,16 +49,36 @@ def test_undecodable_bytes_are_refused() -> None:
         decode_upload(b"this is not an image at all", image_size=IMAGE_SIZE)
 
 
-def test_declared_pixel_bomb_is_refused() -> None:
-    # A tiny file that declares enormous dimensions is the classic bomb shape.
+def _png_with_declared_size(width: int, height: int) -> bytes:
+    """Build a tiny PNG whose IHDR *declares* width/height without containing
+
+    that many pixels: the classic decompression-bomb shape. The IHDR chunk's
+    CRC is recomputed over the patched chunk so Pillow accepts the header
+    (a stale CRC would make Pillow reject the file as unreadable instead of
+    reaching the pixel-count check this is meant to exercise).
+    """
     header = io.BytesIO()
     Image.new("RGB", (2, 2)).save(header, format="PNG")
     payload = bytearray(header.getvalue())
-    # Corrupt the IHDR width/height to advertise a huge canvas.
-    payload[16:24] = (60000).to_bytes(4, "big") + (60000).to_bytes(4, "big")
+    # IHDR data (width, height, ...) starts right after the 8-byte PNG
+    # signature, the 4-byte chunk length, and the 4-byte "IHDR" chunk type.
+    payload[16:24] = width.to_bytes(4, "big") + height.to_bytes(4, "big")
+    ihdr_chunk = bytes(payload[12:29])  # b"IHDR" + the 13 IHDR data bytes
+    payload[29:33] = zlib.crc32(ihdr_chunk).to_bytes(4, "big")
+    return bytes(payload)
 
-    with pytest.raises(ValueError):
-        decode_upload(bytes(payload), image_size=IMAGE_SIZE)
+
+def test_declared_pixel_bomb_is_refused() -> None:
+    # A tiny file that declares a canvas comfortably over MAX_UPLOAD_PIXELS,
+    # but still under Pillow's own default decompression-bomb ceiling, so
+    # this trips *our* check rather than Pillow's "broken PNG" path.
+    width = height = 9_000
+    assert width * height > MAX_UPLOAD_PIXELS
+
+    payload = _png_with_declared_size(width, height)
+
+    with pytest.raises(ValueError, match=f"{MAX_UPLOAD_PIXELS}-pixel limit"):
+        decode_upload(payload, image_size=IMAGE_SIZE)
 
 
 def test_image_size_must_be_positive() -> None:

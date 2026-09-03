@@ -16,6 +16,7 @@ from PIL import Image
 
 MAX_UPLOAD_BYTES = 8 * 1024 * 1024
 MAX_UPLOAD_PIXELS = 64_000_000
+MAX_IMAGE_SIZE = 1024
 
 
 def decode_upload(data: bytes, *, image_size: int) -> NDArray[np.float32]:
@@ -23,24 +24,25 @@ def decode_upload(data: bytes, *, image_size: int) -> NDArray[np.float32]:
 
     if image_size < 1:
         raise ValueError("image_size must be positive")
+    if image_size > MAX_IMAGE_SIZE:
+        raise ValueError(f"image_size exceeds the {MAX_IMAGE_SIZE} limit")
     if not data:
         raise ValueError("uploaded file is empty")
     if len(data) > MAX_UPLOAD_BYTES:
         raise ValueError(f"uploaded file exceeds the {MAX_UPLOAD_BYTES}-byte limit")
 
-    previous = Image.MAX_IMAGE_PIXELS
-    Image.MAX_IMAGE_PIXELS = MAX_UPLOAD_PIXELS
     try:
         with Image.open(io.BytesIO(data)) as source:
             source.verify()
         with Image.open(io.BytesIO(data)) as source:
+            width, height = source.size
+            if width * height > MAX_UPLOAD_PIXELS:
+                raise ValueError(f"uploaded image exceeds the {MAX_UPLOAD_PIXELS}-pixel limit")
             resized = source.convert("RGB").resize((image_size, image_size))
             pixels = np.asarray(resized, dtype=np.float32) / 255.0
     except ValueError:
         raise
     except Exception as error:
         raise ValueError("uploaded file is not a readable image") from error
-    finally:
-        Image.MAX_IMAGE_PIXELS = previous
 
     return pixels.reshape(1, -1)
