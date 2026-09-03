@@ -215,6 +215,7 @@ def require_complete(root: Path, binding: dict[str, Any]) -> dict[str, Any]:
         or report["mode"] != "acquire"
         or (
             report["status"] != "verified"
+            or report["complete_archive_checksum_verified"] is not True
             or report["source_md5"] != S2_ARCHIVE_MD5
             or report["source_bytes"] != S2_ARCHIVE_BYTES
             or report["band_order"] != list(S2_BANDS)
@@ -397,6 +398,8 @@ def acquire(
                 "source_md5": digest["md5"],
                 "source_sha256": digest["sha256"],
                 "source_bytes": digest["bytes"],
+                "complete_archive_checksum_verified": True,
+                "all_selected_patch_geometry_verified": True,
                 "band_order": list(S2_BANDS),
                 "patch_receipts": receipts,
                 "partition_counts": dict(Counter(footprints[x]["partition"] for x in wanted)),
