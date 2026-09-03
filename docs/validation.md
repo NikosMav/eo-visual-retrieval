@@ -21,6 +21,69 @@ The first three boxes record different kinds of evidence; passing one does not i
 See [Understanding the benchmarks](learning-benchmarks.md) for the evidence ladder and the exact
 training boundary.
 
+## BigEarthNet source footprints and frozen acquisition IDs — 2026-09-03
+
+The complete reference-map archive was downloaded once (282,391,301 bytes) and its published MD5
+matched. Its SHA-256 is `d87bda4759d6b209fad71cd8e95968abedd7eda8b63838d2b5a6462bdc788756`.
+The [inventory report](results/bigearthnet-footprints.json) binds both metadata files and the
+archive to the generated geometry.
+
+Every one of **549,488 reference maps** passed the strict header checks and matched exactly one
+metadata ID. All have 120 x 120 uint16 pixels, a north-up 10 m grid, and a 1,200 m square footprint.
+Seven northern UTM zones are represented. The local Parquet inventory is **11,606,074 bytes**,
+SHA-256 `d7384d485a519a2c630b8aed666d379a20ac44f7863e65a6ff311ba85776ca10`.
+No individual TIFFs or decompressed tar were materialized, and pixel arrays were never read.
+
+The first 1,000 source maps produced identical native geometry through Pillow's GeoTIFF tags and
+Rasterio. The inventory uses the former; the selected-ID audit uses the latter independently.
+Two slower inventory runs were deliberately stopped during implementation and their staging files
+removed. The completed run used the faster tag reader, with no further archive download. The
+previous S2 probe's first patch and its reference map share the same CRS and bounds; agreement
+across all selected S2 bands remains pending acquisition.
+
+The [selection audit](results/bigearthnet-selection-audit.json) passed the fixed ADR 0008 policy
+without changing the seed, windows, sizes, label minimum, or spatial guards. All 5,000 selected
+maps were reopened with Rasterio, matched the independently generated inventory exactly, and were
+audited from their native bounds. The acquisition-selection SHA-256 is
+`3a344a1dcffc15b1ae4cd77f66c7d63c85683e370632237a130f3f3a3a9fb9c9`.
+The selection command ran twice from the same verified inputs. Both the selection JSON and the
+complete independent audit were byte-identical; audit SHA-256 is
+`43584fae5e6c4c35c708f2ad3ac8246d42608df5f815bd37fe6ea6100112155b`.
+
+| Partition | Patches | 50 km cells | Observed dates | Smallest label count |
+|---|---:|---:|---|---:|
+| Index / official train | 4,000 | 162 | 2017-06-13 through 2017-09-30 | 8 |
+| Development / official validation | 500 | 20 | 2017-11-01 through 2018-02-28 | 5 |
+| Final / official test | 500 | 20 | 2018-04-13 through 2018-05-29 | 5 |
+
+Every partition contains all 19 labels and unique tile/row/column identities. No excluded metadata
+ID or previously inspected probe ID enters the final selection. The report publishes overlapping
+multi-label and country counts; five examples are a coverage floor, not a precise per-label study.
+
+| Partition pair | Shared cells | Minimum centre distance | Conservative footprint separation estimate | Date gap |
+|---|---:|---:|---:|---:|
+| Index / development | 0 | 7.283 km | 5.569 km | 32 days |
+| Index / final | 0 | 12.229 km | 10.514 km | 195 days |
+| Development / final | 0 | 7.176 km | 5.462 km | 44 days |
+
+The distance model uses spherical great-circle distances and the largest corner radius in each
+partition, inflated by 1%. It is not an exact ellipsoidal polygon-distance measurement. The
+chronological windows also introduce a seasonal shift; later scores cannot isolate geography
+from season. Overlap with historical EuroSAT geography and encoder pretraining is not established
+by these internal BigEarthNet checks.
+
+The five retained dataset files (two metadata files, compressed reference archive, inventory, and
+selection) total **298,625,249 bytes, or 284.79 MiB**. No S2 image archive, image/relevance manifest,
+embedding, or BigEarthNet retrieval score has been produced. The 2 GiB full-acquisition ceiling
+still needs its S2 streaming implementation and tests.
+
+Ruff and Mypy passed (64 source files). Python 3.11.5 passed **212 tests at 84.03% coverage**.
+Checks cover source identity, byte limits, failure cleanup, malformed archive members, geometry,
+deterministic selection, and independent rejection of spatial/temporal/label violations.
+Zstandard 0.25.0 was added to the optional BigEarthNet dependencies; no existing locked package
+version changed. Evaluators, representation code, embedding formats, and earlier result files
+were not modified.
+
 ## BigEarthNet metadata inventory and bounded streaming probe — 2026-09-03
 
 `scripts/audit_bigearthnet_metadata.py` ran twice against both checksum-verified local Parquet
@@ -536,12 +599,12 @@ B938BF1BC15CD2EC0FEACFE3A1BB553FE8EA9CA46A7E1D8D00217F29AEF60CD9
 
 ## Evidence not yet available
 
-- Temporal or seasonal leakage controls; EuroSAT does not expose acquisition timestamps.
+- Temporal or seasonal transfer quality; EuroSAT does not expose acquisition timestamps.
 - Repeatable performance across other operating systems, CPUs, thread counts, and concurrent load.
 - Retrieval quality for genuinely unseen query images; the new-image path is verified for
   numerical agreement only.
-- Any confirmatory result. No untouched evaluation partition exists yet; ADR 0006 specifies how
-  one will be built, and nothing has been acquired or prepared.
+- Any confirmatory result. BigEarthNet metadata and reference geometry have been acquired;
+  usable S2 image partitions, frozen model settings, and final evaluation remain pending.
 - ANN behavior on a genuinely larger EO corpus rather than deterministic synthetic expansion.
 - Representative GPU throughput, precision/batch-size sweeps, or cross-hardware performance.
 - API, interactive-demo, or deployment validation.

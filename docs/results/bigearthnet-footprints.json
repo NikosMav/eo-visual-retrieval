@@ -1,0 +1,26 @@
+{
+  "crs_counts": {
+    "32629": 141560,
+    "32631": 14937,
+    "32632": 4888,
+    "32633": 45891,
+    "32634": 171185,
+    "32635": 169767,
+    "32636": 1260
+  },
+  "geometry": "120 x 120 pixels, 10 m, north-up UTM, 1200 m square",
+  "inventory_bytes": 11606074,
+  "inventory_reader": "Pillow GeoTIFF tags; selected maps independently read by Rasterio",
+  "inventory_sha256": "d7384d485a519a2c630b8aed666d379a20ac44f7863e65a6ff311ba85776ca10",
+  "metadata_sha256": {
+    "metadata.parquet": "408911df2da7092da9ecc72071972a808ec486ba09f6cb048f7716793d14ded6",
+    "metadata_for_patches_with_snow_cloud_or_shadow.parquet": "b6842b35359dfb5281dd92c674211fd4882f7865f0b442ebfec92daea6371c4e"
+  },
+  "patches": 549488,
+  "reference_archive_bytes": 282391301,
+  "reference_archive_md5": "95d85a222fa983faddcac51a19f28917",
+  "reference_archive_sha256": "d87bda4759d6b209fad71cd8e95968abedd7eda8b63838d2b5a6462bdc788756",
+  "reference_pixels_read": false,
+  "s2_subset_footprints_verified": false,
+  "schema": "bigearthnet-footprints-v1"
+}

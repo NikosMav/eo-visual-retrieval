@@ -177,19 +177,20 @@ reproducible. See the [BigEarthNet guide](benchmark-bigearthnet.md).
 
 Remaining work, in order:
 
-1. Resolve the spatial and temporal partition rules using source footprints. The executed metadata
-   audit found 480,038 recommended patches with all 19 labels and valid dates, but the official
-   splits share dates. See the [aggregate report](results/bigearthnet-metadata-audit.json).
-2. Implement the [bounded acquisition proposal](decisions/0007-bounded-bigearthnet-acquisition.md).
-   A small sample proved sequential decoding; the proposed full transfer is 63,251,710,377 bytes
-   with at most 2 GiB retained on disk. Full acquisition has not started. The required footprint
-   inventory and frozen selection must precede the expensive imagery pass.
-3. Prepare and independently audit the 4,000 index / 500 development / 500 final partitions.
-   Verify patch footprints, temporal grouping, exclusions, and label distributions.
-4. Implement the BigEarthNet input adapters, including TerraMind's native 12-band L2A path,
+1. Implement the [bounded acquisition proposal](decisions/0007-bounded-bigearthnet-acquisition.md).
+   The prerequisite footprint inventory and 4,000 index / 500 development / 500 final acquisition
+   IDs are complete under [ADR 0008](decisions/0008-bigearthnet-selection-protocol.md). The
+   [audit](results/bigearthnet-selection-audit.json) confirms all 19 labels, disjoint 50 km cells,
+   at least 7 km between centres, and chronological windows with at least 30 days between them.
+   Implement complete-stream integrity, safe staging, cleanup, and the 2 GiB disk ceiling before
+   beginning the 63,251,710,377-byte S2 transfer. Full S2 acquisition has not started.
+2. Acquire only the frozen IDs' 12 native bands, verify every band against the reference footprint,
+   and prepare image/relevance manifests. The acquisition-selection JSON is not yet model input.
+3. Implement the BigEarthNet input adapters, including TerraMind's native 12-band L2A path,
    and the frozen-configuration final-scoring gate. The current TerraMind adapter is EuroSAT L1C.
-5. Run the development comparison and threshold sensitivity; freeze settings before the single
-   final evaluation. Audit pretraining overlap before making generalization claims.
-6. Test a Qdrant adapter against exact search, then return to the product surface.
+4. Run the development comparison and threshold sensitivity; freeze settings before the single
+   final evaluation. Audit pretraining and historical EuroSAT geography overlap before making
+   generalization claims.
+5. Test a Qdrant adapter against exact search, then return to the product surface.
 
 Paid services, gated-model accounts, and distributed Milvus deployment remain deferred.

@@ -26,6 +26,8 @@ established.
 - Reports Precision@k, Recall@k, mAP@k, and nDCG@k.
 - Scores multi-label development queries with Jaccard relevance while holding final queries out.
 - Audits verified BigEarthNet metadata for label, date, and official-split coverage.
+- Freezes a 5,000-patch BigEarthNet acquisition selection with independently audited reference
+  footprints, spatial guards, and chronological windows; S2 imagery acquisition remains pending.
 - Optionally records aggregate evaluations in local MLflow without uploading imagery or vectors.
 - Records the difference between executed evidence and planned work.
 

@@ -2,7 +2,7 @@
 
 This phase supplies the dataset acquisition plan and multi-label evaluation machinery specified
 by [ADR 0006](decisions/0006-confirmatory-evaluation-data.md). It has produced no BigEarthNet
-retrieval score. Preparing and auditing real partitions remains a separate gate.
+retrieval score. Acquisition selection and usable image partitions are distinct stages.
 
 ## Source and acquisition budget — checked 2026-09-03
 
@@ -79,7 +79,54 @@ train/test and validation/test share 72. The official splits do not establish te
 Among recommended patches, 233,966 distinct tile/row/column keys include 139,499 keys observed on
 multiple dates. No identical key crosses the official splits. These keys do not reveal metric
 distances or footprints shared by neighboring tiles. Full source-georeferencing checks, independent
-cell/guard-band audits, and a frozen temporal rule remain required before partition preparation.
+cell/guard-band audits, and a frozen temporal rule are supplied by the following stage.
+
+## Footprints and acquisition selection
+
+[ADR 0008](decisions/0008-bigearthnet-selection-protocol.md) fixes the temporal windows, spatial
+guards, label minimums, seed, and allocation algorithm. It preserves 4,000 index / 500 development /
+500 final IDs inside the respective official splits.
+
+Use the small reference-map archive for geometry. Its exact compressed size is 282,391,301 bytes,
+with MD5 `95d85a222fa983faddcac51a19f28917`. The downloader makes one bounded attempt, validates the
+complete file, and reuses a verified cache. The reader streams TIFF headers into a compact Parquet
+inventory without extracting maps or reading their pixel values. It requires exact coverage of both
+metadata files and rejects unexpected members, duplicate IDs, oversized maps, and invalid geometry.
+
+```powershell
+python scripts/prepare_bigearthnet_footprints.py --download-reference `
+  --inventory data/bigearthnet-v2/footprints.parquet `
+  --report outputs/bigearthnet-footprints.json
+
+python scripts/prepare_bigearthnet_selection.py `
+  --inventory data/bigearthnet-v2/footprints.parquet `
+  --inventory-report outputs/bigearthnet-footprints.json `
+  --selection data/bigearthnet-v2/acquisition-selection.json `
+  --report outputs/bigearthnet-selection-audit.json
+```
+
+Omit `--download-reference` to operate entirely offline. Inventory/selection outputs must be new
+paths; rerun to separate paths for reproducibility checks. Both source archives and generated
+geometry/ID files remain local. Commit aggregate reports only. The optional `bigearthnet` and `geo`
+groups provide PyArrow, Zstandard, and Rasterio; use the locked installation above.
+
+The second command verifies source/inventory identities, selects the IDs, then reloads their TIFF
+headers from the original reference archive. Inventory reading uses Pillow's TIFF tags; the audit
+uses Rasterio and requires identical native geometry, then recomputes cells and distances from
+bounds rather than trusting stored centres. Final allocation occurs before development/index;
+neither retrieval outputs nor reference-map pixel values enter selection. The later comparison
+will measure combined geography and season shifts under this protocol.
+
+The acquisition-selection JSON is **not** an image or relevance manifest. S2 imagery has not yet
+been acquired, and its 12 bands must be checked against these footprints before use. Source hashes
+and aggregate outcomes are recorded in the [footprint report](results/bigearthnet-footprints.json)
+and [selection audit](results/bigearthnet-selection-audit.json). Pretraining overlap and overlap
+with historical EuroSAT geography remain separate, unresolved audits.
+
+The executed selection contains 4,000 / 500 / 500 patches across 162 / 20 / 20 disjoint cells,
+with all 19 labels in every partition. The smallest achieved centre separation is 7.176 km;
+adjacent temporal gaps are 32 and 44 days. The five retained dataset files occupy 284.79 MiB.
+See [validation](validation.md) for the full scope and limitations of these checks.
 
 ## SSL4EO L2A gate — absent in the agreed sources
 
