@@ -384,6 +384,33 @@ evaluation path. Without this option, MLflow is not imported or required. Tracki
 aggregate metrics and allowlisted content identities; full per-class reports remain in the
 requested local JSON. See [Evaluation foundations](evaluation-foundations.md).
 
+## Serve the comparison surface
+
+```powershell
+eovr serve `
+  --manifest data/eurosat-v1/manifest.jsonl `
+  --image-root data/eurosat-v1/images `
+  --store artifacts/eurosat-v1-pca-64.npz `
+  --store artifacts/eurosat-v1-dinov2-vits14.npz `
+  --store artifacts/eurosat-v1-ssl4eo-s12-rgb-moco-resnet50.npz `
+  --store artifacts/eurosat-v1-ssl4eo-s12-moco-resnet50.npz `
+  --projection artifacts/eurosat-v1-pca-64-projection.npz
+```
+
+`--store` is repeatable, and representations appear in the order given. Placing the SSL4EO 13-band
+store beside its RGB variant shows the band ablation as rankings rather than as a table.
+
+The server loads only precomputed vectors, so it imports no model framework. Ranking is a
+matrix-vector product; an uploaded image is embedded with the persisted PCA basis, the one
+representation this project fits itself. Without `--projection` the upload path is disabled and the
+page says so.
+
+The catalog refuses to start when the supplied stores disagree on their manifest hash or item
+ordering, because a comparison across different corpora would be meaningless while looking correct.
+
+Uploads carry no label, so their results are shown without relevance colouring and without a
+per-query metric. Grey means unknown, not wrong.
+
 ## Reproducibility checklist
 
 For a benchmark run, record:

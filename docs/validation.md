@@ -21,6 +21,23 @@ The first three boxes record different kinds of evidence; passing one does not i
 See [Understanding the benchmarks](learning-benchmarks.md) for the evidence ladder and the exact
 training boundary.
 
+## Comparison surface smoke — 2026-09-03
+
+Executed against the local EuroSAT v1 corpus with four representations loaded.
+
+| Gate | Executed evidence | Status |
+|---|---|---|
+| PCA basis | Regenerated deterministically; ordered IDs matched the published store and the maximum absolute vector difference was 9.641e-06 | Passed |
+| Startup | 400 query items loaded, upload available, four stores accepted | Passed |
+| Comparison route | HTTP 200 for a corpus query across all four representations | Passed |
+| Thumbnail route | HTTP 200, JPEG, 1015 bytes | Passed |
+| Unknown item | HTTP 404 | Passed |
+| No model framework | Test asserts torch, torchvision, terratorch, and sklearn stay unimported by the served modules | Passed |
+
+This is an execution smoke on one machine. It establishes that the surface serves the recorded
+corpus and refuses malformed input; it measures no latency under load, has not been deployed, and
+produces no retrieval evidence. All rankings come from previously published embedding stores.
+
 ## SSL4EO-S12 band ablation on EuroSAT v1 — 2026-09-03
 
 Executed to resolve the caveat ADR 0003 recorded and ADR 0009 pre-registered: the 13-band result
