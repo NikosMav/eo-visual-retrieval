@@ -127,10 +127,11 @@ chronological windows also introduce a seasonal shift; later scores cannot isola
 from season. Overlap with historical EuroSAT geography and encoder pretraining is not established
 by these internal BigEarthNet checks.
 
-The five retained dataset files (two metadata files, compressed reference archive, inventory, and
+At the end of this footprint-only run, the five retained dataset files (two metadata files,
+compressed reference archive, inventory, and
 selection) total **298,625,249 bytes, or 284.79 MiB**. No S2 image archive, image/relevance manifest,
 embedding, or BigEarthNet retrieval score has been produced. The 2 GiB full-acquisition ceiling
-still needs its S2 streaming implementation and tests.
+still needed its S2 streaming implementation and tests; those are recorded in the later sections.
 
 Ruff and Mypy passed (64 source files). Python 3.11.5 passed **212 tests at 84.03% coverage**.
 Checks cover source identity, byte limits, failure cleanup, malformed archive members, geometry,
@@ -163,6 +164,11 @@ archive MD5 also matches. In-process HTTP retries continue at the delivered byte
 restart replays from byte zero to preserve both one-frame Zstandard decoding and the complete
 source digest; it reuses matching staged TIFFs and exposes the repeated prefix in its cumulative
 network ledger. No real acquisition pass has started.
+
+This sample is diagnostic evidence, not an acquisition gate. **Full S2 acquisition has not run.**
+The only retained S2 imagery belongs to the same two frozen index patches reached by the pilot
+diagnostics; no other patch imagery is retained. No BigEarthNet embedding or retrieval score
+exists.
 
 ## BigEarthNet S2 initial 64 MiB diagnostic — 2026-09-03
 

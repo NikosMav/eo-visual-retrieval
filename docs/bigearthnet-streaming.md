@@ -99,6 +99,17 @@ Corrupt cached data fails.
 Stale temporary files are removed only inside the dedicated acquisition root while holding its
 lock. An incomplete run can never promote a partial selection.
 
+A process-restart mode that starts the compressed source at offset `N` and promotes from
+per-patch checks alone is deliberately unavailable. The source's first frame declares the entire
+102,406,983,680-byte decompressed tar, and the source has no seek table. The
+[Zstandard format](https://github.com/facebook/zstd/blob/dev/doc/zstd_compression_format.md)
+does not provide random access; blocks can depend on prior decoded data, offsets, Huffman trees,
+and FSE tables. The installed decoder exposes
+no serializable state. Starting a fresh decoder at `N` therefore cannot decode or verify later tar
+members. Labeling that behavior as resume would create partial data that could appear complete.
+Supporting such a mode requires an independently seekable source, publisher-supplied per-patch
+objects, or a retained/repacked archive outside the 2 GiB ceiling.
+
 The cumulative network ledger reserves each complete range response **before** opening it. Failed
 or interrupted reservations remain charged, including across process restarts. Thus a retry may
 need an explicit larger cumulative `--network-budget`; the tool never resets that ledger.
