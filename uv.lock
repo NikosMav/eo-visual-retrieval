@@ -696,6 +696,9 @@ dependencies = [
 ]
 
 [package.optional-dependencies]
+bigearthnet = [
+    { name = "pyarrow" },
+]
 cpu = [
     { name = "torch", version = "2.13.0", source = { registry = "https://pypi.org/simple" }, marker = "(sys_platform == 'darwin' and extra == 'extra-19-eo-visual-retrieval-cpu') or (extra == 'extra-19-eo-visual-retrieval-cpu' and extra == 'extra-19-eo-visual-retrieval-cuda')" },
     { name = "torch", version = "2.13.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform != 'darwin' and extra == 'extra-19-eo-visual-retrieval-cpu') or (extra == 'extra-19-eo-visual-retrieval-cpu' and extra == 'extra-19-eo-visual-retrieval-cuda')" },
@@ -758,6 +761,7 @@ requires-dist = [
     { name = "pillow", specifier = ">=10,<13" },
     { name = "planetary-computer", marker = "extra == 'stac'", specifier = ">=1.0,<2" },
     { name = "psutil", marker = "extra == 'search'", specifier = ">=7,<8" },
+    { name = "pyarrow", marker = "extra == 'bigearthnet'", specifier = ">=25.0.1,<26" },
     { name = "pystac-client", marker = "extra == 'stac'", specifier = ">=0.8,<1" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=9.0.3,<10" },
     { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=7,<8" },
@@ -778,7 +782,7 @@ requires-dist = [
     { name = "torchvision", marker = "sys_platform != 'darwin' and extra == 'cuda'", specifier = ">=0.28,<0.29", index = "https://download.pytorch.org/whl/cu130", conflict = { package = "eo-visual-retrieval", extra = "cuda" } },
     { name = "torchvision", marker = "extra == 'ml'", specifier = ">=0.28,<0.29" },
 ]
-provides-extras = ["stac", "geo", "pca", "ml", "cpu", "cuda", "experiments", "foundation", "search", "dev"]
+provides-extras = ["stac", "geo", "bigearthnet", "pca", "ml", "cpu", "cuda", "experiments", "foundation", "search", "dev"]
 
 [[package]]
 name = "faiss-cpu"

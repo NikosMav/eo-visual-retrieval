@@ -122,9 +122,12 @@ published EuroSAT numbers.
 
 - [x] Record reBEN's published sizes, checksums, licence, and DOI; inspect shard availability.
       The official S2 listing is one 63.3 GB compressed tar, with no advertised shards or member
-      index. Exact local byte counts and selective access remain unverified. See the
+      index. The API gives 63,251,710,377 compressed bytes; local full-archive integrity and
+      selective patch access remain unverified. See the
       [acquisition and evaluation guide](../benchmark-bigearthnet.md).
-- [ ] Confirm reBEN exposes usable acquisition dates before relying on temporal separation.
+- [x] Confirm acquisition dates are present and parseable in both verified metadata files.
+      Recommended patches span 2017-06-13 through 2018-05-29. The official splits share dates,
+      so a temporal separation rule and its feasibility audit remain pending.
 - [x] Resolve the SSL4EO L2A checkpoint gate: absent in the agreed sources inspected on
       2026-09-03. Pinned source revisions and the distinct SeCo-Eco alternative are documented
       in the guide; no substitute checkpoint was selected.

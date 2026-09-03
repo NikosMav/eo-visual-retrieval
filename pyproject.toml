@@ -33,6 +33,7 @@ stac = [
 geo = [
   "rasterio>=1.4,<2",
 ]
+bigearthnet = ["pyarrow>=25.0.1,<26"]
 pca = ["scikit-learn>=1.4,<2"]
 ml = [
   "scikit-learn>=1.4,<2",
@@ -121,6 +122,7 @@ module = [
   "planetary_computer.*",
   "psutil.*",
   "pystac_client.*",
+  "pyarrow.*",
   "rasterio.*",
   "requests.*",
   "sklearn.*",
