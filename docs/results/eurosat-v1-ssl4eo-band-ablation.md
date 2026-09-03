@@ -63,6 +63,22 @@ close to trivially separable in RGB, at 0.9771; the additional channels appear t
 without adding discriminative signal. This is reported because it is what the run produced, not
 because it is convenient.
 
+## Qualitative inspection
+
+Green borders mark same-class results, red borders mark different-class results, and blue marks the
+query. Each grid selects one query per class by AP@5; these are distribution endpoints, not extra
+aggregate evidence.
+
+![SSL4EO-S12 RGB best query per class](../assets/eurosat-v1-ssl4eo-rgb-best.png)
+
+![SSL4EO-S12 RGB worst query per class](../assets/eurosat-v1-ssl4eo-rgb-worst.png)
+
+The worst cases are the informative ones. The RGB variant's `River` query returns built-up scenes
+at AP@5 0.000: in visible light a river reads as a dark linear feature much like a road or a
+shadowed street. That is the confusion the near- and short-wave infrared bands resolve, and `River`
+is exactly where the 13-band model gains most (+0.2038). Compare the
+[13-band grids](eurosat-v1.md#ssl4eo-s12-best-cases) on the same split.
+
 ## Evidence boundary
 
 - EuroSAT v1 is a **regression and development benchmark**. It has already informed project
