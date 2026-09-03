@@ -1,0 +1,959 @@
+{
+  "attempt_wall_limit_seconds": 300,
+  "attempt_wall_seconds": 41.23399999999674,
+  "attempts": 1,
+  "band_ground_sample_distance_m": {
+    "B01": 60,
+    "B02": 10,
+    "B03": 10,
+    "B04": 10,
+    "B05": 20,
+    "B06": 20,
+    "B07": 20,
+    "B08": 10,
+    "B09": 60,
+    "B11": 20,
+    "B12": 20,
+    "B8A": 20
+  },
+  "band_order": [
+    "B01",
+    "B02",
+    "B03",
+    "B04",
+    "B05",
+    "B06",
+    "B07",
+    "B08",
+    "B8A",
+    "B09",
+    "B11",
+    "B12"
+  ],
+  "base_commit": "4684dc72814e2c8a9aff32083746cec7341e9d2e",
+  "checkpoint_reported_storage_peak_bytes": 299573440,
+  "complete_archive_checksum_verified": false,
+  "date": "2026-09-03",
+  "execution": "uncommitted downloader implementation based on base_commit",
+  "first_frame_declared_content_bytes": 102406983680,
+  "first_frame_window_bytes": 2097152,
+  "footprint_inventory_sha256": "d7384d485a519a2c630b8aed666d379a20ac44f7863e65a6ff311ba85776ca10",
+  "frozen_partition_counts": {
+    "development": 500,
+    "final": 500,
+    "index": 4000
+  },
+  "full_acquisition_started": false,
+  "http_requests": 4,
+  "last_patch_seen": "S2A_MSIL2A_20170613T101031_N9999_R022_T33UUP_46_71",
+  "local_state_sha256": "37205902f9172fbe9123c64fc5e2a3bccaf60dd086a71564fcbe1c870f32c7b8",
+  "network_budget_bytes": 67108864,
+  "network_received_bytes": 67108864,
+  "network_reserved_bytes": 67108864,
+  "no_retrieval_or_embedding_run": true,
+  "observation_trust": "diagnostic only; archive checksum has not been verified",
+  "observed_complete_partition_counts": {
+    "development": 0,
+    "final": 0,
+    "index": 2
+  },
+  "observed_geometry_agreement_bands": 24,
+  "observed_geometry_agreement_patches": 2,
+  "observed_geometry_disagreements": 0,
+  "observed_patches": [
+    {
+      "bands": [
+        {
+          "band": "B01",
+          "bounds": [
+            344400.0,
+            5293200.0,
+            345600.0,
+            5294400.0
+          ],
+          "dtypes": [
+            "uint16"
+          ],
+          "epsg": 32633,
+          "file_bytes": 1172,
+          "file_sha256": "8dd4e480fd9cdbd6614ced2099bd7e449a278e54d4742407145aad7bfd40550b",
+          "geometry_agrees": true,
+          "pixels_decoded": true,
+          "shape": [
+            20,
+            20
+          ],
+          "transform": [
+            60.0,
+            0.0,
+            344400.0,
+            0.0,
+            -60.0,
+            5294400.0
+          ]
+        },
+        {
+          "band": "B02",
+          "bounds": [
+            344400.0,
+            5293200.0,
+            345600.0,
+            5294400.0
+          ],
+          "dtypes": [
+            "uint16"
+          ],
+          "epsg": 32633,
+          "file_bytes": 29196,
+          "file_sha256": "4ef01a1e6c7430aec1ce42978c24f49f5a8bad9030683b9bcf50328eb8848139",
+          "geometry_agrees": true,
+          "pixels_decoded": true,
+          "shape": [
+            120,
+            120
+          ],
+          "transform": [
+            10.0,
+            0.0,
+            344400.0,
+            0.0,
+            -10.0,
+            5294400.0
+          ]
+        },
+        {
+          "band": "B03",
+          "bounds": [
+            344400.0,
+            5293200.0,
+            345600.0,
+            5294400.0
+          ],
+          "dtypes": [
+            "uint16"
+          ],
+          "epsg": 32633,
+          "file_bytes": 29196,
+          "file_sha256": "01600423f4bd4239a10bedaf82430435602400cc8ef72732bba9e68f5a87c15d",
+          "geometry_agrees": true,
+          "pixels_decoded": true,
+          "shape": [
+            120,
+            120
+          ],
+          "transform": [
+            10.0,
+            0.0,
+            344400.0,
+            0.0,
+            -10.0,
+            5294400.0
+          ]
+        },
+        {
+          "band": "B04",
+          "bounds": [
+            344400.0,
+            5293200.0,
+            345600.0,
+            5294400.0
+          ],
+          "dtypes": [
+            "uint16"
+          ],
+          "epsg": 32633,
+          "file_bytes": 29196,
+          "file_sha256": "a51a1bac675e5949a5ddde07fe5692944a58386feb5870bc4764d3f7255dfb60",
+          "geometry_agrees": true,
+          "pixels_decoded": true,
+          "shape": [
+            120,
+            120
+          ],
+          "transform": [
+            10.0,
+            0.0,
+            344400.0,
+            0.0,
+            -10.0,
+            5294400.0
+          ]
+        },
+        {
+          "band": "B05",
+          "bounds": [
+            344400.0,
+            5293200.0,
+            345600.0,
+            5294400.0
+          ],
+          "dtypes": [
+            "uint16"
+          ],
+          "epsg": 32633,
+          "file_bytes": 7572,
+          "file_sha256": "063d60ff89ebc07660d9eb48ca3449f734c2fa9177cc89ab8e65d426f663824b",
+          "geometry_agrees": true,
+          "pixels_decoded": true,
+          "shape": [
+            60,
+            60
+          ],
+          "transform": [
+            20.0,
+            0.0,
+            344400.0,
+            0.0,
+            -20.0,
+            5294400.0
+          ]
+        },
+        {
+          "band": "B06",
+          "bounds": [
+            344400.0,
+            5293200.0,
+            345600.0,
+            5294400.0
+          ],
+          "dtypes": [
+            "uint16"
+          ],
+          "epsg": 32633,
+          "file_bytes": 7572,
+          "file_sha256": "9ec2fe64083620217f1565a235e5de3f4543ba457c1c6e20868a426c7ae4e4dc",
+          "geometry_agrees": true,
+          "pixels_decoded": true,
+          "shape": [
+            60,
+            60
+          ],
+          "transform": [
+            20.0,
+            0.0,
+            344400.0,
+            0.0,
+            -20.0,
+            5294400.0
+          ]
+        },
+        {
+          "band": "B07",
+          "bounds": [
+            344400.0,
+            5293200.0,
+            345600.0,
+            5294400.0
+          ],
+          "dtypes": [
+            "uint16"
+          ],
+          "epsg": 32633,
+          "file_bytes": 7572,
+          "file_sha256": "e89890811b48aa7e81acedcda80ea48a4e416e328a942b8c92958e2e3a4e969f",
+          "geometry_agrees": true,
+          "pixels_decoded": true,
+          "shape": [
+            60,
+            60
+          ],
+          "transform": [
+            20.0,
+            0.0,
+            344400.0,
+            0.0,
+            -20.0,
+            5294400.0
+          ]
+        },
+        {
+          "band": "B08",
+          "bounds": [
+            344400.0,
+            5293200.0,
+            345600.0,
+            5294400.0
+          ],
+          "dtypes": [
+            "uint16"
+          ],
+          "epsg": 32633,
+          "file_bytes": 29196,
+          "file_sha256": "eefc322f0c909c8e769d578dd30dee05084b52a7209db2c3722cf7ca100380c0",
+          "geometry_agrees": true,
+          "pixels_decoded": true,
+          "shape": [
+            120,
+            120
+          ],
+          "transform": [
+            10.0,
+            0.0,
+            344400.0,
+            0.0,
+            -10.0,
+            5294400.0
+          ]
+        },
+        {
+          "band": "B8A",
+          "bounds": [
+            344400.0,
+            5293200.0,
+            345600.0,
+            5294400.0
+          ],
+          "dtypes": [
+            "uint16"
+          ],
+          "epsg": 32633,
+          "file_bytes": 7572,
+          "file_sha256": "91c57527db2815196c616ee994bbeaedfdfb0a0631b778f5a89d6e4a502f3958",
+          "geometry_agrees": true,
+          "pixels_decoded": true,
+          "shape": [
+            60,
+            60
+          ],
+          "transform": [
+            20.0,
+            0.0,
+            344400.0,
+            0.0,
+            -20.0,
+            5294400.0
+          ]
+        },
+        {
+          "band": "B09",
+          "bounds": [
+            344400.0,
+            5293200.0,
+            345600.0,
+            5294400.0
+          ],
+          "dtypes": [
+            "uint16"
+          ],
+          "epsg": 32633,
+          "file_bytes": 1172,
+          "file_sha256": "3580d9aa2da43023e592d43be7e816df9fbabfeb7798b3935714ff4d0fd25894",
+          "geometry_agrees": true,
+          "pixels_decoded": true,
+          "shape": [
+            20,
+            20
+          ],
+          "transform": [
+            60.0,
+            0.0,
+            344400.0,
+            0.0,
+            -60.0,
+            5294400.0
+          ]
+        },
+        {
+          "band": "B11",
+          "bounds": [
+            344400.0,
+            5293200.0,
+            345600.0,
+            5294400.0
+          ],
+          "dtypes": [
+            "uint16"
+          ],
+          "epsg": 32633,
+          "file_bytes": 7572,
+          "file_sha256": "866f9a10117015886af951992d0c84507f12d0922323e32f5ea7a30db4ccc955",
+          "geometry_agrees": true,
+          "pixels_decoded": true,
+          "shape": [
+            60,
+            60
+          ],
+          "transform": [
+            20.0,
+            0.0,
+            344400.0,
+            0.0,
+            -20.0,
+            5294400.0
+          ]
+        },
+        {
+          "band": "B12",
+          "bounds": [
+            344400.0,
+            5293200.0,
+            345600.0,
+            5294400.0
+          ],
+          "dtypes": [
+            "uint16"
+          ],
+          "epsg": 32633,
+          "file_bytes": 7572,
+          "file_sha256": "eac779e9f47990d311ebd08494c0e8e8024874703e2e923fb3443c43bceb7607",
+          "geometry_agrees": true,
+          "pixels_decoded": true,
+          "shape": [
+            60,
+            60
+          ],
+          "transform": [
+            20.0,
+            0.0,
+            344400.0,
+            0.0,
+            -20.0,
+            5294400.0
+          ]
+        }
+      ],
+      "partition": "index",
+      "patch_id": "S2A_MSIL2A_20170613T101031_N9999_R022_T33UUP_37_88",
+      "receipt_sha256": "8157fb68388dc4e27a46484e5d584ff1dbc98e721627fad1eb0f03bd9f5a6c8f"
+    },
+    {
+      "bands": [
+        {
+          "band": "B01",
+          "bounds": [
+            346800.0,
+            5294400.0,
+            348000.0,
+            5295600.0
+          ],
+          "dtypes": [
+            "uint16"
+          ],
+          "epsg": 32633,
+          "file_bytes": 1172,
+          "file_sha256": "f172fb325963856414aa6f94bcdd942b353196f67643961e7f88fd2a385249fc",
+          "geometry_agrees": true,
+          "pixels_decoded": true,
+          "shape": [
+            20,
+            20
+          ],
+          "transform": [
+            60.0,
+            0.0,
+            346800.0,
+            0.0,
+            -60.0,
+            5295600.0
+          ]
+        },
+        {
+          "band": "B02",
+          "bounds": [
+            346800.0,
+            5294400.0,
+            348000.0,
+            5295600.0
+          ],
+          "dtypes": [
+            "uint16"
+          ],
+          "epsg": 32633,
+          "file_bytes": 29196,
+          "file_sha256": "74187b380461616628cddfa9015a9c5dab3d65c11cc5b8bd19bc52b16fc3d0f0",
+          "geometry_agrees": true,
+          "pixels_decoded": true,
+          "shape": [
+            120,
+            120
+          ],
+          "transform": [
+            10.0,
+            0.0,
+            346800.0,
+            0.0,
+            -10.0,
+            5295600.0
+          ]
+        },
+        {
+          "band": "B03",
+          "bounds": [
+            346800.0,
+            5294400.0,
+            348000.0,
+            5295600.0
+          ],
+          "dtypes": [
+            "uint16"
+          ],
+          "epsg": 32633,
+          "file_bytes": 29196,
+          "file_sha256": "36b62ecd39f1442f6202d93687094f4c2cfa93639c5643d425853d560ef74702",
+          "geometry_agrees": true,
+          "pixels_decoded": true,
+          "shape": [
+            120,
+            120
+          ],
+          "transform": [
+            10.0,
+            0.0,
+            346800.0,
+            0.0,
+            -10.0,
+            5295600.0
+          ]
+        },
+        {
+          "band": "B04",
+          "bounds": [
+            346800.0,
+            5294400.0,
+            348000.0,
+            5295600.0
+          ],
+          "dtypes": [
+            "uint16"
+          ],
+          "epsg": 32633,
+          "file_bytes": 29196,
+          "file_sha256": "f2e47e3eef6c587fdf0b22a3b06cbeec751c2d943c67cba1b67e9032cf2b48cd",
+          "geometry_agrees": true,
+          "pixels_decoded": true,
+          "shape": [
+            120,
+            120
+          ],
+          "transform": [
+            10.0,
+            0.0,
+            346800.0,
+            0.0,
+            -10.0,
+            5295600.0
+          ]
+        },
+        {
+          "band": "B05",
+          "bounds": [
+            346800.0,
+            5294400.0,
+            348000.0,
+            5295600.0
+          ],
+          "dtypes": [
+            "uint16"
+          ],
+          "epsg": 32633,
+          "file_bytes": 7572,
+          "file_sha256": "4b5f4bcb66bebaa92dd8371318068b9224d25606feceb158766d5af684e98ab6",
+          "geometry_agrees": true,
+          "pixels_decoded": true,
+          "shape": [
+            60,
+            60
+          ],
+          "transform": [
+            20.0,
+            0.0,
+            346800.0,
+            0.0,
+            -20.0,
+            5295600.0
+          ]
+        },
+        {
+          "band": "B06",
+          "bounds": [
+            346800.0,
+            5294400.0,
+            348000.0,
+            5295600.0
+          ],
+          "dtypes": [
+            "uint16"
+          ],
+          "epsg": 32633,
+          "file_bytes": 7572,
+          "file_sha256": "c517dbda95e146a3de5486f2224c7baf3dddfa6de5ca924297c93be078bd7a79",
+          "geometry_agrees": true,
+          "pixels_decoded": true,
+          "shape": [
+            60,
+            60
+          ],
+          "transform": [
+            20.0,
+            0.0,
+            346800.0,
+            0.0,
+            -20.0,
+            5295600.0
+          ]
+        },
+        {
+          "band": "B07",
+          "bounds": [
+            346800.0,
+            5294400.0,
+            348000.0,
+            5295600.0
+          ],
+          "dtypes": [
+            "uint16"
+          ],
+          "epsg": 32633,
+          "file_bytes": 7572,
+          "file_sha256": "5f6342524e40b38fcc0705bb9e3dab95164520e4297129e38c5e491dfa6e88ab",
+          "geometry_agrees": true,
+          "pixels_decoded": true,
+          "shape": [
+            60,
+            60
+          ],
+          "transform": [
+            20.0,
+            0.0,
+            346800.0,
+            0.0,
+            -20.0,
+            5295600.0
+          ]
+        },
+        {
+          "band": "B08",
+          "bounds": [
+            346800.0,
+            5294400.0,
+            348000.0,
+            5295600.0
+          ],
+          "dtypes": [
+            "uint16"
+          ],
+          "epsg": 32633,
+          "file_bytes": 29196,
+          "file_sha256": "ff4a93a994498330678347452c9baa775bcf24c225704e3d42debc522b8c48e2",
+          "geometry_agrees": true,
+          "pixels_decoded": true,
+          "shape": [
+            120,
+            120
+          ],
+          "transform": [
+            10.0,
+            0.0,
+            346800.0,
+            0.0,
+            -10.0,
+            5295600.0
+          ]
+        },
+        {
+          "band": "B8A",
+          "bounds": [
+            346800.0,
+            5294400.0,
+            348000.0,
+            5295600.0
+          ],
+          "dtypes": [
+            "uint16"
+          ],
+          "epsg": 32633,
+          "file_bytes": 7572,
+          "file_sha256": "474cdaebbe5b3ee85ff84f8a9916b55e718121770785e2cbbe977c8899e1d270",
+          "geometry_agrees": true,
+          "pixels_decoded": true,
+          "shape": [
+            60,
+            60
+          ],
+          "transform": [
+            20.0,
+            0.0,
+            346800.0,
+            0.0,
+            -20.0,
+            5295600.0
+          ]
+        },
+        {
+          "band": "B09",
+          "bounds": [
+            346800.0,
+            5294400.0,
+            348000.0,
+            5295600.0
+          ],
+          "dtypes": [
+            "uint16"
+          ],
+          "epsg": 32633,
+          "file_bytes": 1172,
+          "file_sha256": "aee13c74925a2d7e9268d2a28a584924cfcf74557655dc78a33c98c1236a5077",
+          "geometry_agrees": true,
+          "pixels_decoded": true,
+          "shape": [
+            20,
+            20
+          ],
+          "transform": [
+            60.0,
+            0.0,
+            346800.0,
+            0.0,
+            -60.0,
+            5295600.0
+          ]
+        },
+        {
+          "band": "B11",
+          "bounds": [
+            346800.0,
+            5294400.0,
+            348000.0,
+            5295600.0
+          ],
+          "dtypes": [
+            "uint16"
+          ],
+          "epsg": 32633,
+          "file_bytes": 7572,
+          "file_sha256": "7704851cf4e69f3321db4847b91f3c26de7deb2177edb5d8774b3e89b7eac4bc",
+          "geometry_agrees": true,
+          "pixels_decoded": true,
+          "shape": [
+            60,
+            60
+          ],
+          "transform": [
+            20.0,
+            0.0,
+            346800.0,
+            0.0,
+            -20.0,
+            5295600.0
+          ]
+        },
+        {
+          "band": "B12",
+          "bounds": [
+            346800.0,
+            5294400.0,
+            348000.0,
+            5295600.0
+          ],
+          "dtypes": [
+            "uint16"
+          ],
+          "epsg": 32633,
+          "file_bytes": 7572,
+          "file_sha256": "3360c4718d084a812e0b00e9f77ad35d674279987ae00e5672f46a8eac52ce8f",
+          "geometry_agrees": true,
+          "pixels_decoded": true,
+          "shape": [
+            60,
+            60
+          ],
+          "transform": [
+            20.0,
+            0.0,
+            346800.0,
+            0.0,
+            -20.0,
+            5295600.0
+          ]
+        }
+      ],
+      "partition": "index",
+      "patch_id": "S2A_MSIL2A_20170613T101031_N9999_R022_T33UUP_39_87",
+      "receipt_sha256": "ffe285af584e6bc6f5f99b059e5513cd431240dc7b0dffaa3b0d62c794dcc52e"
+    }
+  ],
+  "pilot_passed": false,
+  "planned_pilot": [
+    {
+      "partition": "index",
+      "patch_id": "S2A_MSIL2A_20170613T101031_N9999_R022_T33UUP_37_88",
+      "spatial_group": "epsg6933:24:108"
+    },
+    {
+      "partition": "index",
+      "patch_id": "S2A_MSIL2A_20170613T101031_N9999_R022_T33UUP_39_87",
+      "spatial_group": "epsg6933:25:108"
+    },
+    {
+      "partition": "index",
+      "patch_id": "S2A_MSIL2A_20170613T101031_N9999_R022_T33UUP_72_78",
+      "spatial_group": "epsg6933:26:108"
+    },
+    {
+      "partition": "index",
+      "patch_id": "S2A_MSIL2A_20170613T101031_N9999_R022_T33UUP_78_25",
+      "spatial_group": "epsg6933:26:109"
+    },
+    {
+      "partition": "index",
+      "patch_id": "S2A_MSIL2A_20170613T101031_N9999_R022_T34VER_00_51",
+      "spatial_group": "epsg6933:40:131"
+    },
+    {
+      "partition": "index",
+      "patch_id": "S2A_MSIL2A_20170613T101031_N9999_R022_T34VER_00_76",
+      "spatial_group": "epsg6933:40:130"
+    },
+    {
+      "partition": "index",
+      "patch_id": "S2A_MSIL2A_20170613T101031_N9999_R022_T34VER_10_39",
+      "spatial_group": "epsg6933:41:131"
+    },
+    {
+      "partition": "index",
+      "patch_id": "S2A_MSIL2A_20170613T101031_N9999_R022_T34VER_10_83",
+      "spatial_group": "epsg6933:41:130"
+    },
+    {
+      "partition": "index",
+      "patch_id": "S2A_MSIL2A_20170613T101031_N9999_R022_T34VER_32_88",
+      "spatial_group": "epsg6933:42:130"
+    },
+    {
+      "partition": "index",
+      "patch_id": "S2A_MSIL2A_20170613T101031_N9999_R022_T34VER_47_11",
+      "spatial_group": "epsg6933:42:131"
+    },
+    {
+      "partition": "development",
+      "patch_id": "S2A_MSIL2A_20171101T094131_N9999_R036_T35VNK_20_16",
+      "spatial_group": "epsg6933:53:130"
+    },
+    {
+      "partition": "development",
+      "patch_id": "S2A_MSIL2A_20171121T112351_N9999_R037_T29SND_13_14",
+      "spatial_group": "epsg6933:-18:93"
+    },
+    {
+      "partition": "development",
+      "patch_id": "S2A_MSIL2A_20171121T112351_N9999_R037_T29SND_13_38",
+      "spatial_group": "epsg6933:-18:92"
+    },
+    {
+      "partition": "development",
+      "patch_id": "S2A_MSIL2A_20171201T112431_N9999_R037_T29SNB_13_13",
+      "spatial_group": "epsg6933:-18:89"
+    },
+    {
+      "partition": "development",
+      "patch_id": "S2A_MSIL2A_20171208T093351_N9999_R136_T34TEN_13_43",
+      "spatial_group": "epsg6933:40:99"
+    },
+    {
+      "partition": "development",
+      "patch_id": "S2A_MSIL2A_20171208T093351_N9999_R136_T34TEN_52_77",
+      "spatial_group": "epsg6933:42:98"
+    },
+    {
+      "partition": "development",
+      "patch_id": "S2A_MSIL2A_20171208T093351_N9999_R136_T34TEN_53_13",
+      "spatial_group": "epsg6933:42:100"
+    },
+    {
+      "partition": "development",
+      "patch_id": "S2A_MSIL2A_20180219T094031_N9999_R036_T35WPP_13_26",
+      "spatial_group": "epsg6933:57:134"
+    },
+    {
+      "partition": "development",
+      "patch_id": "S2A_MSIL2A_20180219T094031_N9999_R036_T35WPP_18_77",
+      "spatial_group": "epsg6933:57:133"
+    },
+    {
+      "partition": "development",
+      "patch_id": "S2A_MSIL2A_20180225T114351_N9999_R123_T29UPU_13_14",
+      "spatial_group": "epsg6933:-15:117"
+    },
+    {
+      "partition": "final",
+      "patch_id": "S2A_MSIL2A_20180413T095031_N9999_R079_T34UEG_23_66",
+      "spatial_group": "epsg6933:41:120"
+    },
+    {
+      "partition": "final",
+      "patch_id": "S2A_MSIL2A_20180413T095031_N9999_R079_T35VLG_23_48",
+      "spatial_group": "epsg6933:46:126"
+    },
+    {
+      "partition": "final",
+      "patch_id": "S2A_MSIL2A_20180413T095031_N9999_R079_T35VLG_44_29",
+      "spatial_group": "epsg6933:47:127"
+    },
+    {
+      "partition": "final",
+      "patch_id": "S2A_MSIL2A_20180413T095031_N9999_R079_T35VLG_68_41",
+      "spatial_group": "epsg6933:48:126"
+    },
+    {
+      "partition": "final",
+      "patch_id": "S2A_MSIL2A_20180506T100031_N9999_R122_T33UWP_66_64",
+      "spatial_group": "epsg6933:31:108"
+    },
+    {
+      "partition": "final",
+      "patch_id": "S2A_MSIL2A_20180510T094031_N9999_R036_T35VLC_26_47",
+      "spatial_group": "epsg6933:46:122"
+    },
+    {
+      "partition": "final",
+      "patch_id": "S2A_MSIL2A_20180510T094031_N9999_R036_T35VLC_57_36",
+      "spatial_group": "epsg6933:48:122"
+    },
+    {
+      "partition": "final",
+      "patch_id": "S2A_MSIL2A_20180526T100031_N9999_R122_T34WFU_61_33",
+      "spatial_group": "epsg6933:48:134"
+    },
+    {
+      "partition": "final",
+      "patch_id": "S2A_MSIL2A_20180526T100031_N9999_R122_T34WFU_63_67",
+      "spatial_group": "epsg6933:48:133"
+    },
+    {
+      "partition": "final",
+      "patch_id": "S2A_MSIL2A_20180529T115401_N9999_R023_T29UNB_38_49",
+      "spatial_group": "epsg6933:-16:120"
+    }
+  ],
+  "planned_pilot_partition_counts": {
+    "development": 10,
+    "final": 10,
+    "index": 10
+  },
+  "post_run_acquisition_file_bytes": 299270979,
+  "prefix_bytes": 67108864,
+  "prefix_md5": "2e00edb3cac86b17c94df8616b95bcea",
+  "prefix_sha256": "256f2eae88c55220db21fa0a8773553a00145d270e68c995dd42b4fa59fb1ed6",
+  "python": "3.11.5",
+  "rasterio": "1.4.4",
+  "received_bytes_definition": "compressed bytes delivered to the application; excludes HTTP/TLS overhead",
+  "retained_s2_payload_bytes": 329120,
+  "s2_subset_footprints_verified": false,
+  "scanned_raster_members": 6531,
+  "schema": "bigearthnet-s2-pilot-diagnostic-v1",
+  "selection_audit_sha256": "8915d395256834f7a6ca7aa816502048cafc277bb92dc9858d7c76eec4502608",
+  "selection_sha256": "f31d211bc52e3d1da107437aca3d4eba4c1c6ee77f953a32218d31e300ab39e1",
+  "source": {
+    "checksum_scope": "entire compressed archive; not a prefix or a patch",
+    "published_archive_bytes": 63251710377,
+    "published_archive_md5": "2245ed2d1a93f6ce637d839bc856396e",
+    "url": "https://zenodo.org/records/10891137/files/BigEarthNet-S2.tar.zst?download=1"
+  },
+  "status": "incomplete",
+  "stop_reason": "cumulative network byte budget exhausted; source unverified",
+  "storage_accounting": "logical file bytes, including retained metadata, reference archive, footprint inventory, selection, S2 bands and acquisition state; excludes filesystem allocation overhead",
+  "storage_ceiling_bytes": 2147483648,
+  "storage_peak_note": "This run recorded the peak before its last state write; the final checkpoint temporary is not included. Subsequent code accounts for checkpoint bytes in the checkpoint itself.",
+  "transport_retries": 0,
+  "zstandard": "0.25.0"
+}
