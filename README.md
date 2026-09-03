@@ -233,10 +233,13 @@ Read the guides in this order:
 ## Roadmap
 
 The locked-environment, local-tracking, GPU-parity, and frozen TerraMind regression gates have now
-executed. New held-out data is the next priority before confirmatory model selection and the product
-surface. Exact search remains the default; Qdrant is the first future product-store experiment,
-and Milvus is deferred until scale evidence justifies it. See
-[ADR 0005](docs/decisions/0005-evaluation-foundations-before-product.md).
+executed. Measurement then established that EuroSAT cannot supply a confirmatory holdout: preparing
+v1 consumed 725 of its 845 fifty-kilometre cells, leaving one class with no untouched patches.
+EuroSAT v1 is permanently a regression benchmark, and BigEarthNet v2 is the specified confirmatory
+set. Exact search remains the default; Qdrant is the first future product-store experiment, and
+Milvus is deferred until scale evidence justifies it. See
+[ADR 0005](docs/decisions/0005-evaluation-foundations-before-product.md) and
+[ADR 0006](docs/decisions/0006-confirmatory-evaluation-data.md).
 
 ## License
 

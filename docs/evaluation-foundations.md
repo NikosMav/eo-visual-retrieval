@@ -16,7 +16,7 @@ that a model, optimizer, or database improves retrieval.
 | Optimization | Optuna selected for development-only searches | A tuned or superior search configuration |
 | Product vector store | Qdrant first future adapter experiment | Qdrant is deployed or faster than Faiss |
 | Scale alternative | Milvus after real workload evidence | Distributed infrastructure is currently necessary |
-| Evaluation | EuroSAT v1 regression; new data for final confirmation | An untouched holdout can be created from already-inspected queries |
+| Evaluation | EuroSAT v1 regression; new data for final confirmation | A class-balanced holdout across all 10 classes in untouched EuroSAT cells; ADR 0006 measured that this is impossible |
 
 ## 1. Install the package manager in a separate environment
 

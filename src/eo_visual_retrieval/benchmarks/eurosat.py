@@ -12,6 +12,7 @@ from pathlib import Path
 
 import numpy as np
 
+from eo_visual_retrieval.benchmarks.coverage import nearest_distances_m
 from eo_visual_retrieval.datasets.eurosat import (
     EUROSAT_ARCHIVE,
     EUROSAT_ARCHIVE_MD5,
@@ -41,8 +42,6 @@ __all__ = [
     "prepare_eurosat_benchmark",
     "select_spatial_split",
 ]
-
-EARTH_RADIUS_M = 6_371_008.8
 
 
 @dataclass(frozen=True)
@@ -216,17 +215,8 @@ def _spread_sample(
     return selected
 
 
-def _distances_m(candidate: EuroSatCandidate, right_lonlat: np.ndarray) -> np.ndarray:
-    candidate_lon = math.radians(candidate.longitude)
-    candidate_lat = math.radians(candidate.latitude)
-    right_lon = np.radians(right_lonlat[:, 0])
-    right_lat = np.radians(right_lonlat[:, 1])
-    delta_lon = right_lon - candidate_lon
-    delta_lat = right_lat - candidate_lat
-    haversine = np.sin(delta_lat / 2) ** 2 + (
-        math.cos(candidate_lat) * np.cos(right_lat) * np.sin(delta_lon / 2) ** 2
-    )
-    return 2 * EARTH_RADIUS_M * np.arcsin(np.sqrt(np.clip(haversine, 0, 1)))
+def _lonlat(candidates: list[EuroSatCandidate]) -> np.ndarray:
+    return np.asarray([(item.longitude, item.latitude) for item in candidates], dtype=np.float64)
 
 
 def _minimum_distance(
@@ -234,11 +224,7 @@ def _minimum_distance(
 ) -> float:
     if not left or not right:
         return math.inf
-    right_lonlat = np.asarray([(item.longitude, item.latitude) for item in right])
-    minimum = math.inf
-    for item in left:
-        minimum = min(minimum, float(np.min(_distances_m(item, right_lonlat))))
-    return minimum
+    return float(np.min(nearest_distances_m(_lonlat(left), _lonlat(right))))
 
 
 def select_spatial_split(
@@ -327,7 +313,8 @@ def select_spatial_split(
     for candidate in candidates:
         if candidate.label not in labels or candidate.spatial_group in query_groups:
             continue
-        if float(np.min(_distances_m(candidate, query_lonlat))) < minimum_separation_m:
+        candidate_lonlat = np.asarray([(candidate.longitude, candidate.latitude)], dtype=np.float64)
+        if float(nearest_distances_m(candidate_lonlat, query_lonlat)[0]) < minimum_separation_m:
             excluded_near_query += 1
             continue
         eligible_by_label[candidate.label].append(candidate)

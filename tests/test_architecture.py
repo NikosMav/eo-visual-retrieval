@@ -65,10 +65,15 @@ def test_dataset_identity_module_depends_only_on_leaves() -> None:
     assert imported <= allowed, f"unexpected dependencies: {sorted(imported - allowed)}"
 
 
-def test_digest_and_normalization_have_exactly_one_implementation() -> None:
-    """Provenance and normalization drift silently when they are re-implemented."""
+def test_digest_normalization_and_distance_have_exactly_one_implementation() -> None:
+    """Provenance, normalization, and great-circle distance drift silently when re-implemented."""
 
-    definitions: dict[str, list[str]] = {"file_sha256": [], "file_md5": [], "l2_normalize": []}
+    definitions: dict[str, list[str]] = {
+        "file_sha256": [],
+        "file_md5": [],
+        "l2_normalize": [],
+        "nearest_distances_m": [],
+    }
     for module in _package_modules("."):
         tree = ast.parse(module.read_text(encoding="utf-8"), filename=str(module))
         for node in tree.body:
@@ -78,3 +83,4 @@ def test_digest_and_normalization_have_exactly_one_implementation() -> None:
     assert definitions["file_sha256"] == ["hashing.py"]
     assert definitions["file_md5"] == ["hashing.py"]
     assert definitions["l2_normalize"] == ["vectors.py"]
+    assert definitions["nearest_distances_m"] == ["benchmarks/coverage.py"]
