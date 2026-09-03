@@ -7,11 +7,16 @@ spatially separated EuroSAT v1 split. It exceeded frozen RGB DINOv2 in every agg
 in per-class mAP@10 for all 10 classes. DINOv2 still substantially outperformed flattened-pixel
 PCA, preserving the original classical-versus-modern RGB finding.
 
-| Model | P@10 | R@10 | mAP@10 | nDCG@10 | Queries | Skipped |
-|---|---:|---:|---:|---:|---:|---:|
-| PCA-64 | 0.3015 | 0.01884 | 0.19698 | 0.31013 | 400 | 0 |
-| DINOv2 ViT-S/14 | 0.69475 | 0.04342 | 0.60763 | 0.70545 | 400 | 0 |
-| SSL4EO-S12 MoCo ResNet-50 | **0.8530** | **0.05331** | **0.81360** | **0.86472** | 400 | 0 |
+A fourth model was added later under [ADR 0009](../decisions/0009-confirmatory-model-roster.md):
+the same SSL4EO-S12 encoder restricted to RGB. It exists to attribute the 13-band model's
+advantage, not to compete for the top row.
+
+| Model | Input | P@10 | R@10 | mAP@10 | nDCG@10 | Queries | Skipped |
+|---|---|---:|---:|---:|---:|---:|---:|
+| PCA-64 | RGB | 0.3015 | 0.01884 | 0.19698 | 0.31013 | 400 | 0 |
+| DINOv2 ViT-S/14 | RGB | 0.69475 | 0.04342 | 0.60763 | 0.70545 | 400 | 0 |
+| SSL4EO-S12 MoCo ResNet-50 | RGB | 0.80300 | 0.05019 | 0.74452 | 0.81546 | 400 | 0 |
+| SSL4EO-S12 MoCo ResNet-50 | 13-band | **0.8530** | **0.05331** | **0.81360** | **0.86472** | 400 | 0 |
 
 Recall looks numerically small because every query has 160 relevant index images while only 10
 results can be returned. The maximum possible R@10 is therefore `10 / 160 = 0.0625`. SSL4EO-S12's
@@ -22,7 +27,21 @@ Machine-readable results:
 
 - [PCA-64 metrics](eurosat-v1-pca-64-k10.json)
 - [DINOv2 ViT-S/14 metrics](eurosat-v1-dinov2-vits14-k10.json)
-- [SSL4EO-S12 metrics](eurosat-v1-ssl4eo-s12-moco-resnet50-k10.json)
+- [SSL4EO-S12 13-band metrics](eurosat-v1-ssl4eo-s12-moco-resnet50-k10.json)
+- [SSL4EO-S12 RGB metrics](eurosat-v1-ssl4eo-s12-rgb-moco-resnet50-k10.json)
+
+## What the extra bands actually contributed
+
+The RGB variant shares the 13-band model's architecture and pretraining corpus, so the pair is a
+controlled band comparison. The extra ten bands account for `+0.06907` mAP@10 — **34%** of the
+`+0.20596` advantage the 13-band model holds over DINOv2. The remaining two thirds belongs to the
+RGB representation, and that comparison still confounds EO-domain pretraining with a ResNet-50
+versus ViT-S/14 architecture change.
+
+Read [the band ablation](eurosat-v1-ssl4eo-band-ablation.md) before attributing this benchmark's
+multispectral result to spectral information. The bands help `River` (+0.2038) and `PermanentCrop`
+(+0.1828) substantially, barely move `Highway` (+0.0026), and are slightly harmful on `SeaLake`
+(−0.0216).
 
 ## Per-class comparison
 
@@ -49,6 +68,17 @@ and vegetation, although this benchmark cannot attribute the gain to particular 
 Green borders mark same-class results, red borders mark different-class results, and blue marks
 the query. Each grid selects one query per class by AP@5; these are distribution endpoints, not
 additional aggregate evidence.
+
+### SSL4EO-S12 RGB variant
+
+![SSL4EO-S12 RGB worst query per class](../assets/eurosat-v1-ssl4eo-rgb-worst.png)
+
+The RGB variant's failures show what the extra bands buy. Its worst `River` query returns built-up
+scenes at AP@5 0.000: in visible light a river reads as a dark linear feature much like a road or
+a shadowed street, and the near- and short-wave infrared bands that separate water from asphalt are
+absent. `Pasture` and `PermanentCrop` fail into other vegetated and agricultural classes for the
+same reason. Its best cases are in
+[the ablation results](eurosat-v1-ssl4eo-band-ablation.md).
 
 ### SSL4EO-S12 best cases
 

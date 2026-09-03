@@ -77,8 +77,10 @@ def write_result_grid(
     height = top_margin + len(selected) * cell_height + 8
     canvas = Image.new("RGB", (width, height), "white")
     draw = ImageDraw.Draw(canvas)
-    backend = str(store.metadata.get("backend", "unknown"))
-    draw.text((8, 8), f"{backend} | {mode} query per class | exact cosine top-{k}", fill="black")
+    # Two variants of one backend produce visually similar grids, so the title
+    # carries the specific model when the store records one.
+    label = str(store.metadata.get("model") or store.metadata.get("backend") or "unknown")
+    draw.text((8, 8), f"{label} | {mode} query per class | exact cosine top-{k}", fill="black")
     draw.text((8, 24), "blue=query  green=relevant  red=not relevant", fill=(70, 70, 70))
 
     for row, evaluation in enumerate(selected):
