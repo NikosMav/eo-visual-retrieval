@@ -1,0 +1,280 @@
+{
+  "checked_on": "2026-09-03",
+  "expected_seek_table_final_four_bytes_hex": "b1ea928f",
+  "full_acquisition_executed": false,
+  "probe_network_bytes": 2097216,
+  "probe_network_note": "Two 1 MiB prefix requests (first decoder attempt failed) plus two 32-byte range requests; response bodies only.",
+  "proposed_acquisition_disk_ceiling_bytes": 2147483648,
+  "proposed_s2_stream_bytes": 63251710377,
+  "range_probes": [
+    {
+      "bytes_read": 32,
+      "content_length": "32",
+      "content_range": "bytes 0-31/63251710377",
+      "requested": "0-31",
+      "seconds": 0.937,
+      "status": 206,
+      "zstandard_magic_hex": "28b52ffd"
+    },
+    {
+      "bytes_read": 32,
+      "content_length": "32",
+      "content_range": "bytes 63251710345-63251710376/63251710377",
+      "observed_final_four_bytes_hex": "ea0c0a20",
+      "requested": "63251710345-63251710376",
+      "seconds": 0.375,
+      "status": 206
+    }
+  ],
+  "retained_imagery_bytes": 0,
+  "s2_archive_published_bytes": 63251710377,
+  "s2_archive_published_md5": "2245ed2d1a93f6ce637d839bc856396e",
+  "source_catalog_revisions": {
+    "BIFOLD-BigEarthNetv2-0/BigEarthNet.txt": {
+      "files": [
+        ".gitattributes",
+        "BigEarthNet.txt.parquet",
+        "README.md",
+        "ben_txt_datamodule.py",
+        "example_data_loading.py",
+        "pyproject.toml",
+        "static/images/dataset.svg",
+        "static/images/logos/BIFOLD_Logo_farbig.svg",
+        "static/images/logos/RSiM_Logo.png",
+        "static/images/logos/tu-berlin-logo-long-red.svg"
+      ],
+      "revision": "72d865f2146f0a85b720f7f3ca1cdbaeafc3d316"
+    },
+    "hackelle/BigEarthNetV2-LMDB": {
+      "files": [
+        ".gitattributes",
+        "BENv2.lmdb/data.mdb",
+        "BENv2.lmdb/lock.mdb",
+        "README.md",
+        "metadata.parquet"
+      ],
+      "revision": "118d1b6285c080ba8e4078414e1b8a243b18c9bd"
+    },
+    "torchgeo/bigearthnet": {
+      "files": [
+        ".gitattributes",
+        "README.md",
+        "V2/BigEarthNet-S1.tar.gzaa",
+        "V2/BigEarthNet-S1.tar.gzab",
+        "V2/BigEarthNet-S2.tar.gzaa",
+        "V2/BigEarthNet-S2.tar.gzab",
+        "V2/Reference_Maps.tar.gzaa",
+        "V2/metadata.parquet"
+      ],
+      "revision": "3cf3a5910a5302d449fdb8e570e5b78de24fe07f"
+    }
+  },
+  "standard_zstandard_seek_table_footer_present": false,
+  "stream_probe": {
+    "complete_archive_checksum_verified": false,
+    "compressed_probe_bytes": 1048576,
+    "estimated_5000_patch_bytes_at_sample_size": 822800000,
+    "first_frame_content_size": 102406983680,
+    "first_frame_window_size": 2097152,
+    "native_patch_bytes": 164560,
+    "patches": {
+      "S2A_MSIL2A_20170613T101031_N9999_R022_T33UUP_26_57": [
+        {
+          "band": "B01",
+          "bounds": [
+            331200.0,
+            5330400.0,
+            332400.0,
+            5331600.0
+          ],
+          "bytes": 1172,
+          "crs": "EPSG:32633",
+          "dtype": "uint16",
+          "shape": [
+            20,
+            20
+          ]
+        },
+        {
+          "band": "B02",
+          "bounds": [
+            331200.0,
+            5330400.0,
+            332400.0,
+            5331600.0
+          ],
+          "bytes": 29196,
+          "crs": "EPSG:32633",
+          "dtype": "uint16",
+          "shape": [
+            120,
+            120
+          ]
+        },
+        {
+          "band": "B03",
+          "bounds": [
+            331200.0,
+            5330400.0,
+            332400.0,
+            5331600.0
+          ],
+          "bytes": 29196,
+          "crs": "EPSG:32633",
+          "dtype": "uint16",
+          "shape": [
+            120,
+            120
+          ]
+        },
+        {
+          "band": "B04",
+          "bounds": [
+            331200.0,
+            5330400.0,
+            332400.0,
+            5331600.0
+          ],
+          "bytes": 29196,
+          "crs": "EPSG:32633",
+          "dtype": "uint16",
+          "shape": [
+            120,
+            120
+          ]
+        },
+        {
+          "band": "B05",
+          "bounds": [
+            331200.0,
+            5330400.0,
+            332400.0,
+            5331600.0
+          ],
+          "bytes": 7572,
+          "crs": "EPSG:32633",
+          "dtype": "uint16",
+          "shape": [
+            60,
+            60
+          ]
+        },
+        {
+          "band": "B06",
+          "bounds": [
+            331200.0,
+            5330400.0,
+            332400.0,
+            5331600.0
+          ],
+          "bytes": 7572,
+          "crs": "EPSG:32633",
+          "dtype": "uint16",
+          "shape": [
+            60,
+            60
+          ]
+        },
+        {
+          "band": "B07",
+          "bounds": [
+            331200.0,
+            5330400.0,
+            332400.0,
+            5331600.0
+          ],
+          "bytes": 7572,
+          "crs": "EPSG:32633",
+          "dtype": "uint16",
+          "shape": [
+            60,
+            60
+          ]
+        },
+        {
+          "band": "B08",
+          "bounds": [
+            331200.0,
+            5330400.0,
+            332400.0,
+            5331600.0
+          ],
+          "bytes": 29196,
+          "crs": "EPSG:32633",
+          "dtype": "uint16",
+          "shape": [
+            120,
+            120
+          ]
+        },
+        {
+          "band": "B09",
+          "bounds": [
+            331200.0,
+            5330400.0,
+            332400.0,
+            5331600.0
+          ],
+          "bytes": 1172,
+          "crs": "EPSG:32633",
+          "dtype": "uint16",
+          "shape": [
+            20,
+            20
+          ]
+        },
+        {
+          "band": "B11",
+          "bounds": [
+            331200.0,
+            5330400.0,
+            332400.0,
+            5331600.0
+          ],
+          "bytes": 7572,
+          "crs": "EPSG:32633",
+          "dtype": "uint16",
+          "shape": [
+            60,
+            60
+          ]
+        },
+        {
+          "band": "B12",
+          "bounds": [
+            331200.0,
+            5330400.0,
+            332400.0,
+            5331600.0
+          ],
+          "bytes": 7572,
+          "crs": "EPSG:32633",
+          "dtype": "uint16",
+          "shape": [
+            60,
+            60
+          ]
+        },
+        {
+          "band": "B8A",
+          "bounds": [
+            331200.0,
+            5330400.0,
+            332400.0,
+            5331600.0
+          ],
+          "bytes": 7572,
+          "crs": "EPSG:32633",
+          "dtype": "uint16",
+          "shape": [
+            60,
+            60
+          ]
+        }
+      ]
+    },
+    "sample_only": true,
+    "source": "https://zenodo.org/records/10891137/files/BigEarthNet-S2.tar.zst?download=1",
+    "zstandard_version": "0.25.0"
+  }
+}

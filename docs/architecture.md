@@ -77,6 +77,7 @@ learning-oriented explanation.
 | Vector preparation | Enforce finite, unit-length rows before any cosine comparison | `vectors.py` |
 | EuroSAT dataset identity | Hold the archive checksum, band order, and member access | `datasets/eurosat.py` |
 | BigEarthNet dataset identity | Pin source/checksums and bound metadata-only acquisition | `datasets/bigearthnet.py` |
+| BigEarthNet metadata audit | Verify local Parquet inputs and measure label/date/grid coverage without selecting partitions | `datasets/bigearthnet_audit.py` |
 | STAC search | Validate a bounded query and collect safe item metadata | `stac.py` |
 | Preview materializer | Resolve an item, optionally sign in memory, and download a bounded image | `stac.py` |
 | Sentinel-2 chip builder | Align band windows, scale reflectance, apply SCL masks, and write georeferenced artifacts | `chips.py` |

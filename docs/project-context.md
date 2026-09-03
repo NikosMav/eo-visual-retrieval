@@ -177,11 +177,13 @@ reproducible. See the [BigEarthNet guide](benchmark-bigearthnet.md).
 
 Remaining work, in order:
 
-1. Inspect actual label, date, and official-split coverage in the two local metadata files.
-   Acquisition recovered after the initial Zenodo timeouts: both files are checksum-verified
-   and cached, totaling 4,326,511 bytes. See the executed recovery in [validation](validation.md).
-2. Finalize the bulk imagery byte ceiling and member-access/storage plan. The advertised S2
-   source is one 63.3 GB compressed tar, and selective access has not been established.
+1. Resolve the spatial and temporal partition rules using source footprints. The executed metadata
+   audit found 480,038 recommended patches with all 19 labels and valid dates, but the official
+   splits share dates. See the [aggregate report](results/bigearthnet-metadata-audit.json).
+2. Implement the [bounded acquisition proposal](decisions/0007-bounded-bigearthnet-acquisition.md).
+   A small sample proved sequential decoding; the proposed full transfer is 63,251,710,377 bytes
+   with at most 2 GiB retained on disk. Full acquisition has not started. The required footprint
+   inventory and frozen selection must precede the expensive imagery pass.
 3. Prepare and independently audit the 4,000 index / 500 development / 500 final partitions.
    Verify patch footprints, temporal grouping, exclusions, and label distributions.
 4. Implement the BigEarthNet input adapters, including TerraMind's native 12-band L2A path,

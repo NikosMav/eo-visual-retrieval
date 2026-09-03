@@ -21,6 +21,45 @@ The first three boxes record different kinds of evidence; passing one does not i
 See [Understanding the benchmarks](learning-benchmarks.md) for the evidence ladder and the exact
 training boundary.
 
+## BigEarthNet metadata inventory and bounded streaming probe — 2026-09-03
+
+`scripts/audit_bigearthnet_metadata.py` ran twice against both checksum-verified local Parquet
+files. The aggregate outputs matched byte for byte, with SHA-256
+`e63a203260ee2777538c0c7a1c12e6aabebc38bf6a0dc2551804ebb963b43813`.
+The [committed report](results/bigearthnet-metadata-audit.json) records the input hashes and schema.
+
+| Check | Executed result |
+|---|---|
+| Input populations | 480,038 recommended plus 69,450 excluded patches; 549,488 unique IDs in total, no cross-file overlap |
+| Recommended official splits | train 237,871; validation 122,342; test 119,825 |
+| Labels and dates | All 19 labels in each split; valid dates from 2017-06-13 through 2018-05-29 |
+| Temporal independence | Not established: train/validation share 77 dates; train/test and validation/test share 72 |
+| Repeated tile/row/column identity | 233,966 recommended keys, 139,499 seen on multiple dates; no exact key in multiple splits |
+| Geographic distance | Not audited; grid keys do not detect adjacent-tile footprint overlap or establish a guard band |
+
+The metadata audit is offline and rejects corrupt checksums, malformed IDs/dates/labels/splits,
+inconsistent exclusion flags, duplicate IDs, and overlap between recommended/excluded files.
+It does not create an image manifest, select partitions, or score retrieval.
+
+The archive API reported 63,251,710,377 compressed S2 bytes. Two 32-byte probes returned HTTP 206
+with the requested content ranges. The final four bytes do not match the standard Zstandard
+seek-table footer. A subsequent 1 MiB prefix probe streamed a complete 12-band GeoTIFF patch
+through Zstandard and tar in memory. The sample's native payload totals 164,560 bytes and all
+bands share the same 1,200 m footprint. A preceding 1 MiB attempt failed at the decoder memory
+limit; the successful attempt checked the advertised 2 MiB frame window before decoding.
+Total probe response bodies were 2,097,216 bytes, with no image payload retained on disk.
+
+The [probe evidence](decisions/evidence/bigearthnet-access-2026-09-03.json) and
+[acquisition proposal](decisions/0007-bounded-bigearthnet-acquisition.md) distinguish this smoke
+from an unexecuted full transfer. The proposed 2 GiB acquisition ceiling is not yet implemented.
+Neither full-archive integrity nor a valid final partition has been established by this probe.
+
+Ruff and Mypy passed (58 source files). Python 3.11.5 passed **176 tests at 82.14% coverage**.
+The optional `bigearthnet` group exposes the already-locked PyArrow 25.0.1 reader, and CI now
+installs it so real Parquet fixture tests run in every matrix job. No existing package versions
+were changed in the lockfile. Existing EuroSAT result files and all evaluator/representation
+code remain unchanged.
+
 ## BigEarthNet metadata acquisition recovered — 2026-09-03
 
 After the earlier timeouts, both an independent curl client and the unchanged project downloader

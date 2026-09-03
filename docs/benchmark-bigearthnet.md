@@ -18,9 +18,10 @@ The authoritative source is [Zenodo record 10891137](https://zenodo.org/records/
 | `metadata_for_patches_with_snow_cloud_or_shadow.parquet` | 710.2 kB | `fe31856f4986d446c9468b59d6387c91` |
 
 Sizes above are the source listing's rounded values, not measured local byte counts. The source
-lists one compressed S2 tar archive, with no S2 shards or member index. Selective patch download
-has therefore not been established. Reading compressed tar members is a sequential operation
-unless a compatible seek index is provided; HTTP range support alone would not establish one.
+lists one compressed S2 tar archive, with no S2 shards or member index. The API subsequently
+reported its exact compressed size as **63,251,710,377 bytes**. Two 32-byte range probes returned
+HTTP 206, but the archive lacks the standard Zstandard seek-table footer. Selective patch download
+has therefore not been established. HTTP range support alone does not provide a member index.
 
 The first acquisition stage is metadata only: two allowlisted files, each limited to 8 MiB,
 under ignored `data/downloads/bigearthnet-v2/`. It requires local CPU and disk and no paid service.
@@ -42,13 +43,43 @@ python scripts/download_bigearthnet_metadata.py --download
 The subsequent imagery stage must specify an exact byte ceiling, a storage layout that avoids
 extracting the full dataset, and a reproducible member-access strategy before starting the bulk
 transfer. The 4,000 index / 500 development / 500 final patch target remains unchanged.
+The [bounded acquisition proposal](decisions/0007-bounded-bigearthnet-acquisition.md) recommends
+streaming with a 2 GiB retained-data ceiling. A 1 MiB prefix probe successfully decoded one complete
+12-band patch in memory; it did not verify the full archive or prepare the benchmark.
 
-The documented metadata contains patch IDs, multi-label lists, official train/validation/test
-assignments, country, and snow/cloud exclusions. Acquisition time is encoded in each S2 patch ID
-as `YYYYMMDDTHHMMSS`. The official format establishes how dates can be read; it does not establish
-that usable temporal and geographic separation can be achieved for the selected partitions.
-The metadata listing does not supply the patch footprints needed for the independent spatial
-audit; those must be obtained and verified from the source georeferencing.
+## Executed metadata audit — 2026-09-03
+
+Install the optional reader and audit the two verified local files without any download:
+
+```powershell
+uv sync --locked --extra dev --extra geo --extra search --extra pca --extra bigearthnet
+uv run --locked --no-sync python scripts/audit_bigearthnet_metadata.py `
+  --output outputs/bigearthnet-metadata-audit.json
+```
+
+The [committed aggregate report](results/bigearthnet-metadata-audit.json) records the exact input
+hashes, schema, per-label/country/month counts, and repeated grid identities. It contains no imagery
+or selected benchmark partition. Both source files passed validation for unique IDs, valid calendar
+timestamps, non-empty labels, recognized splits, and consistent exclusion flags. Their ID sets
+are disjoint.
+
+| Official split | Recommended patches | Distinct acquisition dates | Rarest label count |
+|---|---:|---:|---:|
+| train | 237,871 | 79 | 670, Coastal wetlands |
+| validation | 122,342 | 77 | 426, Beaches, dunes, sands |
+| test | 119,825 | 72 | 117, Coastal wetlands |
+
+The recommended file contains **480,038 patches**, all 19 labels, and 54 MGRS tiles, dated
+2017-06-13 through 2018-05-29. The other file excludes 69,450 patches: 60,773 flagged for seasonal
+snow and 8,677 for cloud/shadow, with no patch flagged for both. Together they cover 549,488 IDs.
+
+Usable dates are present in every patch ID. However, train/validation share 77 dates and both
+train/test and validation/test share 72. The official splits do not establish temporal holdout.
+
+Among recommended patches, 233,966 distinct tile/row/column keys include 139,499 keys observed on
+multiple dates. No identical key crosses the official splits. These keys do not reveal metric
+distances or footprints shared by neighboring tiles. Full source-georeferencing checks, independent
+cell/guard-band audits, and a frozen temporal rule remain required before partition preparation.
 
 ## SSL4EO L2A gate — absent in the agreed sources
 

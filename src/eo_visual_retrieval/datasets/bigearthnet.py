@@ -15,6 +15,7 @@ BIGEARTHNET_RECORD_URL = "https://zenodo.org/records/10891137"
 BIGEARTHNET_LICENSE = "CDLA-Permissive-1.0"
 S2_ARCHIVE_FILENAME = "BigEarthNet-S2.tar.zst"
 S2_ARCHIVE_MD5 = "2245ed2d1a93f6ce637d839bc856396e"
+S2_ARCHIVE_BYTES = 63_251_710_377
 
 
 @dataclass(frozen=True)
@@ -46,6 +47,7 @@ def acquisition_plan() -> dict[str, Any]:
         "s2_archive": {
             "filename": S2_ARCHIVE_FILENAME,
             "published_md5": S2_ARCHIVE_MD5,
+            "published_bytes": S2_ARCHIVE_BYTES,
             "advertised_size": "63.3 GB (approximately 59 GiB)",
             "download_enabled": False,
         },
@@ -62,7 +64,8 @@ def acquisition_plan() -> dict[str, Any]:
     }
 
 
-def _verify(path: Path, asset: MetadataAsset) -> None:
+def verify_metadata_file(path: Path, asset: MetadataAsset) -> None:
+    """Verify a local metadata file against its pinned identity and byte ceiling."""
     if path.stat().st_size > MAX_METADATA_BYTES:
         raise ValueError(f"metadata exceeds byte limit: {asset.filename}")
     if file_md5(path) != asset.md5:
@@ -80,7 +83,7 @@ failed or oversized response is never promoted into the local dataset.
     for asset in METADATA_ASSETS:
         destination = output_dir / asset.filename
         if destination.exists():
-            _verify(destination, asset)
+            verify_metadata_file(destination, asset)
         else:
             url = f"{BIGEARTHNET_RECORD_URL}/files/{asset.filename}?download=1"
             with urlopen(url, timeout=30) as response:
@@ -91,7 +94,7 @@ failed or oversized response is never promoted into the local dataset.
                 temporary = Path(stream.name)
             try:
                 temporary.write_bytes(payload)
-                _verify(temporary, asset)
+                verify_metadata_file(temporary, asset)
                 temporary.replace(destination)
             finally:
                 temporary.unlink(missing_ok=True)
