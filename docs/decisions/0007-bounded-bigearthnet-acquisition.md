@@ -1,13 +1,16 @@
 # ADR 0007: Bounded BigEarthNet imagery acquisition
 
-- Status: proposed; full acquisition implementation and partition gates remain open
+- Status: proposed; footprint/selection gates passed, full S2 streaming remains unimplemented
 - Date: 2026-09-03
 - Scope: reduce local disk use while preserving source integrity
 
 ## Evidence
 
 The executed [metadata audit](../results/bigearthnet-metadata-audit.json) establishes usable
-labels and dates. It does not supply patch footprints or a temporally separated benchmark.
+labels and dates. The subsequent [footprint inventory](../results/bigearthnet-footprints.json) and
+[selection audit](../results/bigearthnet-selection-audit.json) establish a source-georeferenced
+acquisition selection under [ADR 0008](0008-bigearthnet-selection-protocol.md). Usable image
+partitions still depend on the full S2 stream and per-band validation.
 
 The [official Zenodo record](https://zenodo.org/records/10891137) reports an S2 archive of
 63,251,710,377 bytes and a reference-map archive of 282,391,301 bytes. An executed pair of 32-byte
@@ -44,13 +47,14 @@ valid source could exist.
 
 ## Proposed acquisition sequence and budgets
 
-1. Build a source-georeferenced footprint inventory before fixing the subset. Investigate using
-   the much smaller reference-map archive for this step, and verify matching footprints against
-   S2 bands. A compressed reference-map download would be bounded to 282,391,301 bytes and its
-   published checksum; do not extract the entire archive to disk.
+1. Build a source-georeferenced footprint inventory before fixing the subset. **Executed:** the
+   checksum-verified 282,391,301-byte reference archive supplies 549,488 map footprints in an
+   11,606,074-byte local Parquet inventory. No maps were extracted to disk. The first S2 probe
+   footprint agrees; all selected S2 bands must still be checked after acquisition.
 2. Audit geography and dates, then freeze exactly 4,000 index, 500 development, and 500 final IDs
-   inside their official splits. Validate label availability after these exclusions; the rarest
-   recommended test label has only 117 candidate patches before further filtering.
+   inside their official splits. **Executed:** every partition retains all 19 labels, disjoint
+   50 km cells, a 7 km centre guard, and the chronological windows in ADR 0008. All 5,000 selected
+   reference footprints were independently reopened with Rasterio and matched the inventory.
 3. Stream the original S2 archive once, hashing all compressed bytes while reading tar members
    sequentially. Retain only the frozen IDs' 12 native bands and the required small manifests.
 4. Apply a **2 GiB (2,147,483,648-byte) ceiling** to acquisition files, including staging, selected
@@ -83,7 +87,7 @@ holdout sizes and makes no benchmark-quality claim.
 
 ## Remaining gates
 
-- [ ] Validate a compact, source-georeferenced footprint inventory.
-- [ ] Freeze and audit the spatial/temporal selection with sufficient label coverage.
+- [x] Validate a compact, source-georeferenced footprint inventory.
+- [x] Freeze and audit the spatial/temporal acquisition selection with sufficient label coverage.
 - [ ] Implement and test bounded streaming, complete-source integrity, failure cleanup, and budgets.
 - [ ] Execute full acquisition only after these gates; then audit all selected S2 files.

@@ -78,6 +78,8 @@ learning-oriented explanation.
 | EuroSAT dataset identity | Hold the archive checksum, band order, and member access | `datasets/eurosat.py` |
 | BigEarthNet dataset identity | Pin source/checksums and bound metadata-only acquisition | `datasets/bigearthnet.py` |
 | BigEarthNet metadata audit | Verify local Parquet inputs and measure label/date/grid coverage without selecting partitions | `datasets/bigearthnet_audit.py` |
+| BigEarthNet footprint inventory | Bound and verify the reference archive; stream TIFF headers into compact local Parquet | `datasets/bigearthnet_footprints.py` |
+| BigEarthNet acquisition selection | Select IDs using fixed date/cell/label rules; independently audit fresh source geometry | `benchmarks/bigearthnet_partitions.py` |
 | STAC search | Validate a bounded query and collect safe item metadata | `stac.py` |
 | Preview materializer | Resolve an item, optionally sign in memory, and download a bounded image | `stac.py` |
 | Sentinel-2 chip builder | Align band windows, scale reflectance, apply SCL masks, and write georeferenced artifacts | `chips.py` |

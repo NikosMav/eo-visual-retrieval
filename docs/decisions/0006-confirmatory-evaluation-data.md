@@ -136,6 +136,9 @@ published EuroSAT numbers.
       queries without binary positives stay in the mean with zero binary metrics, and their
       graded nDCG is computed independently. This policy was fixed before any BigEarthNet score.
 - [ ] Prepare and audit the three partitions; publish the achieved label distribution.
+      Acquisition IDs and reference footprints are now frozen and independently audited under
+      [ADR 0008](0008-bigearthnet-selection-protocol.md). All 19 labels survive in each partition;
+      S2 acquisition and usable image manifests remain pending.
 - [ ] Add the frozen-configuration, one-shot final-scoring gate; the development command
       currently cannot score final queries.
 - [ ] Only then run the development comparison, freeze configuration, and score the final set once.

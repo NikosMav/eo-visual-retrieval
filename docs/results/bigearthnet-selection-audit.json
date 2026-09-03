@@ -1,0 +1,200 @@
+{
+  "distance_model": "spherical great-circle; maximum corner radii inflated by 1%",
+  "feasibility": {
+    "development": {
+      "after_spatial_filter": 21522,
+      "after_temporal_filter": 25047,
+      "available_cells": 89
+    },
+    "final": {
+      "after_spatial_filter": 38504,
+      "after_temporal_filter": 38504,
+      "available_cells": 108
+    },
+    "index": {
+      "after_spatial_filter": 74329,
+      "after_temporal_filter": 88702,
+      "available_cells": 162
+    }
+  },
+  "footprint_inventory_sha256": "d7384d485a519a2c630b8aed666d379a20ac44f7863e65a6ff311ba85776ca10",
+  "footprint_report_sha256": "c35dfb65eafec2f603ab9828c237354afe91ca5c8ae66f467f5cee920a9ba802",
+  "independent_geometry_readers_agree": true,
+  "pairwise_separation": {
+    "development/final": {
+      "footprint_separation_lower_bound_m": 5462.231553247567,
+      "minimum_center_distance_m": 7176.487656313134,
+      "shared_cells": 0,
+      "temporal_gap_days": 44
+    },
+    "index/development": {
+      "footprint_separation_lower_bound_m": 5568.5679102593895,
+      "minimum_center_distance_m": 7282.849138275105,
+      "shared_cells": 0,
+      "temporal_gap_days": 32
+    },
+    "index/final": {
+      "footprint_separation_lower_bound_m": 10514.311430982467,
+      "minimum_center_distance_m": 12228.524207606391,
+      "shared_cells": 0,
+      "temporal_gap_days": 195
+    }
+  },
+  "partitions": {
+    "development": {
+      "cells": 20,
+      "countries": {
+        "Finland": 127,
+        "Ireland": 151,
+        "Kosovo": 30,
+        "Portugal": 71,
+        "Serbia": 121
+      },
+      "date_max": "2018-02-28",
+      "date_min": "2017-11-01",
+      "label_counts": {
+        "Agro-forestry areas": 5,
+        "Arable land": 187,
+        "Beaches, dunes, sands": 7,
+        "Broad-leaved forest": 125,
+        "Coastal wetlands": 5,
+        "Complex cultivation patterns": 114,
+        "Coniferous forest": 149,
+        "Industrial or commercial units": 8,
+        "Inland waters": 54,
+        "Inland wetlands": 13,
+        "Land principally occupied by agriculture, with significant areas of natural vegetation": 149,
+        "Marine waters": 68,
+        "Mixed forest": 134,
+        "Moors, heathland and sclerophyllous vegetation": 20,
+        "Natural grassland and sparsely vegetated areas": 13,
+        "Pastures": 111,
+        "Permanent crops": 22,
+        "Transitional woodland, shrub": 167,
+        "Urban fabric": 95
+      },
+      "maximum_corner_radius_m": 848.6755220085932,
+      "patches": 500
+    },
+    "final": {
+      "cells": 20,
+      "countries": {
+        "Austria": 82,
+        "Finland": 211,
+        "Ireland": 61,
+        "Lithuania": 59,
+        "Portugal": 60,
+        "Serbia": 27
+      },
+      "date_max": "2018-05-29",
+      "date_min": "2018-04-13",
+      "label_counts": {
+        "Agro-forestry areas": 40,
+        "Arable land": 165,
+        "Beaches, dunes, sands": 5,
+        "Broad-leaved forest": 139,
+        "Coastal wetlands": 5,
+        "Complex cultivation patterns": 106,
+        "Coniferous forest": 192,
+        "Industrial or commercial units": 13,
+        "Inland waters": 89,
+        "Inland wetlands": 22,
+        "Land principally occupied by agriculture, with significant areas of natural vegetation": 119,
+        "Marine waters": 86,
+        "Mixed forest": 247,
+        "Moors, heathland and sclerophyllous vegetation": 9,
+        "Natural grassland and sparsely vegetated areas": 5,
+        "Pastures": 130,
+        "Permanent crops": 21,
+        "Transitional woodland, shrub": 132,
+        "Urban fabric": 53
+      },
+      "maximum_corner_radius_m": 848.6077483533539,
+      "patches": 500
+    },
+    "index": {
+      "cells": 162,
+      "countries": {
+        "Austria": 353,
+        "Belgium": 131,
+        "Finland": 1334,
+        "Ireland": 298,
+        "Lithuania": 733,
+        "Portugal": 344,
+        "Serbia": 576,
+        "Switzerland": 231
+      },
+      "date_max": "2017-09-30",
+      "date_min": "2017-06-13",
+      "label_counts": {
+        "Agro-forestry areas": 153,
+        "Arable land": 1603,
+        "Beaches, dunes, sands": 13,
+        "Broad-leaved forest": 1034,
+        "Coastal wetlands": 8,
+        "Complex cultivation patterns": 893,
+        "Coniferous forest": 1330,
+        "Industrial or commercial units": 123,
+        "Inland waters": 451,
+        "Inland wetlands": 223,
+        "Land principally occupied by agriculture, with significant areas of natural vegetation": 954,
+        "Marine waters": 636,
+        "Mixed forest": 1303,
+        "Moors, heathland and sclerophyllous vegetation": 89,
+        "Natural grassland and sparsely vegetated areas": 161,
+        "Pastures": 813,
+        "Permanent crops": 208,
+        "Transitional woodland, shrub": 990,
+        "Urban fabric": 575
+      },
+      "maximum_corner_radius_m": 848.6326245416202,
+      "patches": 4000
+    }
+  },
+  "policy": {
+    "algorithm": "final then development then index; rare-label cell allocation; seeded cell order and round-robin patch fill; one observation per grid key",
+    "cell_size_m": 50000,
+    "exclude_from_final": [
+      "S2A_MSIL2A_20170613T101031_N9999_R022_T33UUP_26_57"
+    ],
+    "minimum_center_distance_m": 7000,
+    "minimum_footprint_separation_lower_bound_m": 5000,
+    "minimum_label_count": 5,
+    "minimum_query_cells": 20,
+    "minimum_temporal_gap_days": 30,
+    "partitions": {
+      "development": {
+        "end": "2018-02-28",
+        "official_split": "validation",
+        "size": 500,
+        "start": "2017-11-01"
+      },
+      "final": {
+        "end": "2018-05-31",
+        "official_split": "test",
+        "size": 500,
+        "start": "2018-04-01"
+      },
+      "index": {
+        "end": "2017-09-30",
+        "official_split": "train",
+        "size": 4000,
+        "start": "2017-06-01"
+      }
+    },
+    "seed": 42,
+    "version": "bigearthnet-acquisition-selection-v1"
+  },
+  "retrieval_scored": false,
+  "runtime": {
+    "pillow": "12.3.0",
+    "pyarrow": "25.0.1",
+    "python": "3.11.5",
+    "rasterio": "1.4.4",
+    "zstandard": "0.25.0"
+  },
+  "s2_subset_footprints_verified": false,
+  "schema": "bigearthnet-selection-audit-v1",
+  "selected_reference_footprints_reloaded": 5000,
+  "selection_sha256": "f31d211bc52e3d1da107437aca3d4eba4c1c6ee77f953a32218d31e300ab39e1"
+}
