@@ -181,3 +181,5 @@ merging. Repository vulnerability alerts are a separate GitHub setting. A local 
 
 Do this in a disposable validation environment and a dedicated branch. A lockfile does not pin
 Torch Hub code, dataset revisions, or model weights; those need their own immutable identities.
+DINOv2 now carries one: a pinned commit whose extracted tree is hashed before use, recorded in
+[models and metrics](models-and-metrics.md) and [validation](validation.md).

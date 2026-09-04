@@ -1,4 +1,11 @@
-"""Frozen DINOv2 image embeddings through the official PyTorch Hub entrypoint."""
+"""Frozen DINOv2 image embeddings through the official PyTorch Hub entrypoint.
+
+Torch Hub resolves a bare repository name to its default branch and then reuses
+whatever it downloaded first, so a run records no usable code identity: locking
+Python packages does not pin downloaded executable model code. This module
+requests one immutable commit and verifies the bytes that arrive, because a
+reference states what was asked for and only a digest states what was received.
+"""
 
 from __future__ import annotations
 
@@ -8,6 +15,8 @@ import numpy as np
 from numpy.typing import NDArray
 from PIL import Image
 
+from eo_visual_retrieval.hashing import source_tree_sha256
+
 ALLOWED_MODELS = {
     "dinov2_vits14",
     "dinov2_vitb14",
@@ -15,11 +24,58 @@ ALLOWED_MODELS = {
     "dinov2_vitb14_reg",
 }
 
+# The commit recovered from the Torch Hub cache that produced the published
+# EuroSAT vectors, and the digest of that extracted tree. facebookresearch/dinov2
+# publishes no tags, so a commit is the only immutable reference available.
+HUB_REPO = "facebookresearch/dinov2"
+HUB_REF = "7764ea0f912e53c92e82eb78a2a1631e92725fc8"
+HUB_TREE_SHA256 = "735a0c2c248537a5a746d87d86ea4b9a32c869ec0ffcc470b05e90be3c1246a8"
+
+# Bytecode caches appear only after the code is imported, so the same download
+# would otherwise digest differently on its second use.
+_GENERATED_DIRECTORIES = frozenset({"__pycache__"})
+
+
+def hub_provenance() -> dict[str, str]:
+    """Return the code identity a run should record beside its vectors."""
+
+    return {
+        "hub_repo": HUB_REPO,
+        "hub_ref": HUB_REF,
+        "hub_tree_sha256": HUB_TREE_SHA256,
+    }
+
 
 def _resolve_device(torch: object, requested: str) -> str:
     if requested != "auto":
         return requested
     return "cuda" if torch.cuda.is_available() else "cpu"  # type: ignore[attr-defined]
+
+
+def _hub_source_root(torch: object) -> Path:
+    """Return the directory Torch Hub extracts the pinned commit into."""
+
+    owner, repository = HUB_REPO.split("/")
+    hub_dir = torch.hub.get_dir()  # type: ignore[attr-defined]
+    return Path(hub_dir) / f"{owner}_{repository}_{HUB_REF}"
+
+
+def _verify_hub_source(torch: object) -> None:
+    """Refuse to embed with model code that is not the pinned commit."""
+
+    root = _hub_source_root(torch)
+    if not root.is_dir():
+        raise RuntimeError(
+            f"cannot verify pinned DINOv2 code: {root} is missing. Torch Hub chooses "
+            "this directory name, so a layout change needs a new check rather than an "
+            "unverified run"
+        )
+    observed = source_tree_sha256(root, skip_directories=_GENERATED_DIRECTORIES)
+    if observed != HUB_TREE_SHA256:
+        raise RuntimeError(
+            f"DINOv2 code at {HUB_REF} hashed to {observed}, expected {HUB_TREE_SHA256}; "
+            "refusing to embed with model code that is not the reviewed commit"
+        )
 
 
 def dinov2_embeddings(
@@ -49,10 +105,11 @@ def dinov2_embeddings(
 
     selected_device = _resolve_device(torch, device)
     model = torch.hub.load(
-        "facebookresearch/dinov2",
+        f"{HUB_REPO}:{HUB_REF}",
         model_name,
         trust_repo=True,
     )
+    _verify_hub_source(torch)
     model.eval().to(selected_device)
     transform = Compose(
         [

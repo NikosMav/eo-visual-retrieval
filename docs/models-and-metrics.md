@@ -93,6 +93,13 @@ The current pipeline:
 The default and verified model is `dinov2_vits14`, which produces 384-dimensional features. The
 code also permits ViT-B/14 and register-token variants, but they require separate validation.
 
+The Torch Hub entrypoint is pinned to commit
+[`7764ea0f`](https://github.com/facebookresearch/dinov2/tree/7764ea0f912e53c92e82eb78a2a1631e92725fc8)
+rather than a branch, and the extracted tree is hashed before any image is embedded. A branch name
+resolves to different code on a later run, and locking Python packages does not pin model code
+downloaded at run time. `facebookresearch/dinov2` publishes no tags, so a commit is the only
+immutable reference available. Each store records the reference and tree digest it was built with.
+
 The model is frozen: this repository does not train or fine-tune DINOv2.
 
 Strengths:

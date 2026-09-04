@@ -216,7 +216,10 @@ eovr embed-dinov2 `
 ```
 
 `--device auto` selects CUDA only when the installed PyTorch build reports it as available. The
-first run may download model code and weights through the official PyTorch Hub entrypoint.
+first run may download model code and weights through the official PyTorch Hub entrypoint. The
+code reference is a pinned commit rather than a branch, the extracted tree is hashed before any
+image is embedded, and the resulting store records that reference and digest. A run whose
+downloaded code does not match the pinned commit fails instead of embedding.
 
 ### SSL4EO-S12
 

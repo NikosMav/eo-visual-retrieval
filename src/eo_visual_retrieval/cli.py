@@ -197,7 +197,7 @@ def _benchmark_eurosat_audit(args: argparse.Namespace) -> None:
 
 
 def _embed_dinov2(args: argparse.Namespace) -> None:
-    from eo_visual_retrieval.embeddings.dinov2 import dinov2_embeddings
+    from eo_visual_retrieval.embeddings.dinov2 import dinov2_embeddings, hub_provenance
 
     records = read_jsonl(args.manifest)
     vectors = dinov2_embeddings(
@@ -214,6 +214,9 @@ def _embed_dinov2(args: argparse.Namespace) -> None:
             "model": args.model,
             "device_requested": args.device,
             "preprocessing": "RGB, 224x224 bicubic, ImageNet normalization",
+            # Package versions cannot identify code downloaded at run time, so the
+            # store carries the model-code reference it was actually built with.
+            **hub_provenance(),
             **_run_metadata(records, args.manifest, ("numpy", "Pillow", "torch", "torchvision")),
         },
     )
