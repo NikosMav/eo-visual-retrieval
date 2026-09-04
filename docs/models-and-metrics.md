@@ -27,7 +27,7 @@ flowchart LR
     PCAEmbed --> Rank[Exact cosine ranking]
     DEmbed --> Rank
     SEmbed --> Rank
-    Rank --> Labels[Labels used only for evaluation]
+    Rank --> Labels[Compare ranked labels for evaluation]
 ```
 
 | Model | Pretrained? | Parameters learned in this repository? | EuroSAT labels used for learning? |
@@ -159,20 +159,22 @@ Changing both the selected dataset and model at once prevents a useful interpret
 for PCA/DINOv2 and 13 bands for SSL4EO-S12 is intentional, but means the multispectral comparison
 is not a controlled band ablation.
 
-[ADR 0009](decisions/0009-confirmatory-model-roster.md) supplied the missing control, and it has
-now been executed. The SSL4EO-S12 RGB MoCo ResNet-50 checkpoint shares the 13-band model's
-architecture and pretraining corpus, so running it on the same EuroSAT v1 patches, split,
-relevance, and ranker isolates the input bands as the only difference.
+[ADR 0009](decisions/0009-confirmatory-model-roster.md) added the SSL4EO-S12 RGB MoCo
+ResNet-50 comparison, which has now executed. It shares the 13-band model's architecture and
+pretraining corpus and uses the same selected patches, split, relevance, ranker, and band
+preprocessing routine. The variants nevertheless use distinct pretrained weights and input
+channels. This comparison measures two pretrained pipelines; it cannot assign an exact causal
+share of the difference to non-visible bands alone.
 
-At k=10 the 13-band encoder scored mAP 0.81360 against the RGB variant's 0.74452. The extra ten
-bands therefore account for +0.06907 — **34%** of the +0.20596 advantage the 13-band model holds
-over DINOv2. Two thirds of that advantage belongs to the RGB representation instead, and that
-comparison still confounds EO-domain pretraining with a ResNet-50 versus ViT-S/14 architecture
-change. So the band question is now answered for EuroSAT v1 and the pretraining question is not.
+At k=10 the 13-band encoder scored mAP 0.81360 against the RGB variant's 0.74452, a measured
+difference of +0.06907 using the unrounded scores. The RGB model also outperformed DINOv2, but
+that contrast changes pretraining, architecture, and preprocessing. Neither comparison isolates
+the effect of EO-domain pretraining.
 
-Read the per-class breakdown in the [band ablation](results/eurosat-v1-ssl4eo-band-ablation.md)
-before generalizing: the bands help water and crop classes substantially and are marginally
-harmful on `SeaLake`.
+Read the per-class breakdown in the [band comparison](results/eurosat-v1-ssl4eo-band-ablation.md)
+before generalizing: the 13-band pipeline improved several water and crop classes but scored
+slightly lower on `SeaLake`. The immutable result record retains its original wording; this
+interpretation corrects the earlier causal attribution without changing the measurements.
 
 ## Exact cosine retrieval
 

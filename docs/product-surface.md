@@ -34,7 +34,15 @@ benchmark-eurosat.md) and [embedding commands](pipeline-and-cli.md) to prepare t
 PCA upload support needs the saved projection generated alongside its store by
 `embed-pca --projection-output`; do not mix projections from different fits. Omit `--projection`
 for a comparison-only viewer. Startup rejects mismatched manifest hashes, ordered IDs, labels,
-or partitions across stores.
+or partitions across stores and against the manifest. It also rejects unsafe image paths,
+missing files, declared image checksum mismatches, and non-finite or degenerate vector rows.
+When a projection is supplied, startup checks it against every stored PCA row in batches of 32
+with `atol=1e-5`, `rtol=1e-4`. A projection from an unrelated fit is rejected even when its shape
+matches. These read-only checks add startup work; they do not refit PCA or rewrite the stores.
+
+Older generic manifests may omit image checksums; no pixel-identity guarantee is inferred for
+those files. Keep the corpus read-only while serving because startup verification does not monitor
+later filesystem edits.
 
 ## Query and upload behavior
 

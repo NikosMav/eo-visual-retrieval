@@ -53,6 +53,20 @@ def test_manifest_build_reports_deterministic_splits(
     assert manifest.is_file()
 
 
+def test_rgb_embedding_rejects_pixels_changed_since_manifest(
+    tmp_path: Path, images: Path, capsys: pytest.CaptureFixture[str],
+) -> None:
+    manifest = tmp_path / "manifest.jsonl"
+    _run(capsys, "manifest-build", "--images", str(images), "--output", str(manifest))
+    selected = next(images.rglob("*.png"))
+    selected.write_bytes(b"changed after the manifest was frozen")
+    output = tmp_path / "embeddings.npz"
+    with pytest.raises(ValueError, match="image checksum disagrees with manifest"):
+        _run(capsys, "embed-pca", "--manifest", str(manifest), "--image-root", str(images),
+             "--output", str(output), "--components", "3")
+    assert not output.exists()
+
+
 def test_pca_evaluate_grid_and_query_share_one_store(
     tmp_path: Path, images: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:

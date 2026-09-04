@@ -8,6 +8,7 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+from PIL import Image
 
 from eo_visual_retrieval.app.catalog import Catalog
 from eo_visual_retrieval.embeddings.projection import PcaProjection
@@ -56,6 +57,11 @@ def _store(
 
 
 def _write(tmp_path: Path, records: list[ImageRecord]) -> Path:
+    for position, record in enumerate(records):
+        image = tmp_path / record.path
+        image.parent.mkdir(parents=True, exist_ok=True)
+        Image.new("RGB", (IMAGE_SIZE, IMAGE_SIZE), color=(20 + position * 30, 40, 60)).save(image)
+        records[position] = replace(record, metadata={"sha256": _digest(image)})
     manifest = tmp_path / "manifest.jsonl"
     write_jsonl(records, manifest)
     return manifest
@@ -215,6 +221,11 @@ def test_rank_uploaded_ranks_through_the_projection_without_relevance(tmp_path: 
     )
     projection_path = tmp_path / "projection.npz"
     projection.save(projection_path)
+    pca_store = EmbeddingStore.load(paths[0])
+    replace(
+        pca_store,
+        vectors=projection.embed_images([tmp_path / record.path for record in records]),
+    ).save(paths[0])
 
     catalog = Catalog.load(
         manifest=manifest, image_root=tmp_path, stores=paths, projection=projection_path
@@ -412,3 +423,104 @@ def test_unknown_item_is_rejected(tmp_path: Path) -> None:
 
     with pytest.raises(KeyError, match="absent.png"):
         catalog.rank_item("absent.png", k=1)
+
+
+@pytest.mark.parametrize("row", [0, 3])
+@pytest.mark.parametrize("value", [np.nan, np.inf, 0.0, 1e30])
+def test_invalid_index_and_query_vectors_fail_at_startup(
+    tmp_path: Path, row: int, value: float
+) -> None:
+    records = _records()
+    store = _store(records, "pca", None, manifest_sha256="a" * 64)
+    vectors = store.vectors.copy()
+    vectors[row] = value
+    with pytest.raises(ValueError, match="finite|zero-length|unnormalizable"):
+        Catalog(records, [replace(store, vectors=vectors)], image_root=tmp_path)
+
+
+@pytest.mark.parametrize("field", ["label", "split"])
+def test_manifest_labels_and_splits_must_describe_stored_rows(
+    tmp_path: Path, field: str
+) -> None:
+    records = _records()
+    store = _store(records, "pca", None, manifest_sha256="a" * 64)
+    records[0] = (
+        replace(records[0], label="wrong") if field == "label"
+        else replace(records[0], split="query")
+    )
+    with pytest.raises(ValueError, match="manifest label or split"):
+        Catalog(records, [store], image_root=tmp_path)
+
+
+@pytest.mark.parametrize("path", ["../outside.png", "..\\outside.png", "/outside.png",
+                                  "C:\\outside.png", "C:outside.png", "\\\\host\\share\\a.png"])
+def test_manifest_paths_cannot_escape_image_root(tmp_path: Path, path: str) -> None:
+    records = _records()
+    store = _store(records, "pca", None, manifest_sha256="a" * 64)
+    records[0] = replace(records[0], path=path)
+    with pytest.raises(ValueError, match="image root"):
+        Catalog(records, [store], image_root=tmp_path)
+
+
+def test_changed_image_bytes_fail_before_serving_even_without_pca(tmp_path: Path) -> None:
+    _catalog(tmp_path)
+    Image.new("RGB", (8, 8), color="red").save(tmp_path / "forest/a.png")
+    with pytest.raises(ValueError, match="image checksum does not match manifest"):
+        Catalog.load(
+            manifest=tmp_path / "manifest.jsonl", image_root=tmp_path,
+            stores=[tmp_path / "dinov2.npz"], projection=None,
+        )
+
+
+def _compatible_pca_inputs(tmp_path: Path) -> tuple[Path, Path, Path]:
+    records = _records()
+    manifest = _write(tmp_path, records)
+    projection = PcaProjection(
+        mean=np.zeros(IMAGE_SIZE * IMAGE_SIZE * 3, dtype=np.float32),
+        components=np.eye(2, IMAGE_SIZE * IMAGE_SIZE * 3, dtype=np.float32),
+        image_size=IMAGE_SIZE, seed=42,
+    )
+    store = _store(records, "pca", None, manifest_sha256=_digest(manifest))
+    store_path = tmp_path / "pca.npz"
+    replace(
+        store,
+        vectors=projection.embed_images([tmp_path / record.path for record in records]),
+    ).save(store_path)
+    projection_path = tmp_path / "projection.npz"
+    projection.save(projection_path)
+    return manifest, store_path, projection_path
+
+
+def test_same_dimension_unrelated_pca_fit_is_rejected(tmp_path: Path) -> None:
+    manifest, store_path, projection_path = _compatible_pca_inputs(tmp_path)
+    projection = PcaProjection.load(projection_path)
+    replace(projection, components=projection.components[::-1].copy()).save(projection_path)
+    with pytest.raises(ValueError, match="does not reproduce stored vectors"):
+        Catalog.load(
+            manifest=manifest, image_root=tmp_path, stores=[store_path], projection=projection_path
+        )
+
+
+def test_legacy_pca_basis_without_digest_allows_float32_drift(tmp_path: Path) -> None:
+    manifest, store_path, projection_path = _compatible_pca_inputs(tmp_path)
+    store = EmbeddingStore.load(store_path)
+    replace(store, vectors=store.vectors + np.float32(1e-6)).save(store_path)
+    catalog = Catalog.load(
+        manifest=manifest, image_root=tmp_path, stores=[store_path], projection=projection_path
+    )
+    assert catalog.upload_available
+
+
+def test_pca_verification_checks_later_batches_and_query_rows(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setattr("eo_visual_retrieval.app.catalog.PROJECTION_BATCH_SIZE", 2)
+    manifest, store_path, projection_path = _compatible_pca_inputs(tmp_path)
+    store = EmbeddingStore.load(store_path)
+    vectors = store.vectors.copy()
+    vectors[-1] = -vectors[-1]
+    replace(store, vectors=vectors).save(store_path)
+    with pytest.raises(ValueError, match="forest/q.png"):
+        Catalog.load(
+            manifest=manifest, image_root=tmp_path, stores=[store_path], projection=projection_path
+        )

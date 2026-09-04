@@ -67,6 +67,16 @@ def test_nearest_distances_rejects_malformed_input(
         nearest_distances_m(left, right)
 
 
+@pytest.mark.parametrize("point", [[np.nan, 0], [0, np.inf], [181, 0], [0, -91]])
+@pytest.mark.parametrize("side", ["left", "right"])
+def test_nearest_distances_rejects_invalid_geography(point: list[float], side: str) -> None:
+    invalid = np.asarray([point], dtype=np.float64)
+    valid = np.asarray([[0.0, 0.0]])
+    left, right = (invalid, valid) if side == "left" else (valid, invalid)
+    with pytest.raises(ValueError, match="coordinates"):
+        nearest_distances_m(left, right)
+
+
 def _candidate(label: str, member: str, cell: str, lon: float, lat: float) -> EuroSatCandidate:
     return EuroSatCandidate(
         member=member,
@@ -177,13 +187,14 @@ def test_distance_tiers_rejects_a_used_member_that_is_not_a_candidate() -> None:
         )
 
 
-def test_distance_tiers_reject_a_non_positive_threshold() -> None:
+@pytest.mark.parametrize("threshold", [0, np.nan, np.inf])
+def test_distance_tiers_reject_a_non_positive_threshold(threshold: float) -> None:
     with pytest.raises(ValueError, match="thresholds_km must be positive"):
         distance_tiers(
             _sample(),
             used_members=set(),
             reference_lonlat=np.asarray([[0.0, 0.0]]),
-            thresholds_km=[0],
+            thresholds_km=[threshold],
         )
 
 

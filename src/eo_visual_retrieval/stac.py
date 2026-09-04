@@ -9,8 +9,9 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlparse
 
+from eo_visual_retrieval.hashing import bytes_sha256, file_sha256
 from eo_visual_retrieval.manifests import write_jsonl
-from eo_visual_retrieval.models import ImageRecord, StacItemRecord
+from eo_visual_retrieval.models import ImageRecord, StacItemRecord, validate_stac_api_url
 
 SAFE_PROPERTY_KEYS = (
     "constellation",
@@ -39,8 +40,7 @@ class StacSearchConfig:
             raise ValueError("bbox longitudes must satisfy -180 <= west < east <= 180")
         if not (-90 <= south < north <= 90):
             raise ValueError("bbox latitudes must satisfy -90 <= south < north <= 90")
-        if not self.api_url.startswith("https://"):
-            raise ValueError("api_url must use HTTPS")
+        validate_stac_api_url(self.api_url)
         if not self.collection:
             raise ValueError("collection must not be empty")
         if not self.datetime:
@@ -128,9 +128,10 @@ def read_stac_jsonl(path: Path) -> list[StacItemRecord]:
     return records
 
 
-def _safe_filename(item_id: str, suffix: str) -> str:
+def _safe_filename(item_id: str, suffix: str, *, namespace: str = "") -> str:
     stem = re.sub(r"[^A-Za-z0-9._-]+", "-", item_id).strip(".-") or "item"
-    return f"{stem}{suffix}"
+    identity = json.dumps([namespace, item_id], ensure_ascii=True).encode()
+    return f"{stem[:80]}-{bytes_sha256(identity)}{suffix}"
 
 
 def _image_suffix(content_type: str) -> str:
@@ -167,6 +168,8 @@ def materialize_previews(
 
     if signer not in {"none", "planetary-computer"}:
         raise ValueError("signer must be 'none' or 'planetary-computer'")
+    if len({record.item_id for record in records}) != len(records):
+        raise ValueError("preview item IDs must be unique across sources")
     output_dir.mkdir(parents=True, exist_ok=True)
     session = requests.Session()
     session.mount("https://", requests.adapters.HTTPAdapter(max_retries=3))
@@ -215,7 +218,10 @@ def materialize_previews(
                 else:
                     content_type = response_type or asset.media_type or ""
                 suffix = _image_suffix(content_type)
-                destination = output_dir / _safe_filename(record.item_id, suffix)
+                namespace = json.dumps([record.api_url, record.collection, asset_key])
+                destination = output_dir / _safe_filename(
+                    record.item_id, suffix, namespace=namespace
+                )
                 temporary = destination.with_suffix(destination.suffix + ".part")
                 downloaded = 0
                 try:
@@ -245,6 +251,7 @@ def materialize_previews(
                 split="index",
                 source="stac-preview",
                 metadata={
+                    "sha256": file_sha256(destination),
                     "api_url": record.api_url,
                     "collection": record.collection,
                     "datetime": record.datetime,
