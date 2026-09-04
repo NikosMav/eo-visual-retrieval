@@ -6,6 +6,7 @@ import asyncio
 import hashlib
 import io
 import sys
+from dataclasses import replace
 from pathlib import Path
 
 import numpy as np
@@ -41,12 +42,13 @@ def _catalog(tmp_path: Path) -> Catalog:
         ImageRecord(item_id=i, path=i, split=s, label=lab, metadata={"sha256": str(n) * 64})
         for n, (i, s, lab) in enumerate(rows)
     ]
-    for record in records:
+    for position, record in enumerate(records):
         destination = tmp_path / record.path
         destination.parent.mkdir(parents=True, exist_ok=True)
         Image.fromarray(
-            np.full((IMAGE_SIZE, IMAGE_SIZE, 3), 60, dtype=np.uint8)
+            np.full((IMAGE_SIZE, IMAGE_SIZE, 3), 60 + position * 30, dtype=np.uint8)
         ).save(destination, format="TIFF")
+        record.metadata["sha256"] = hashlib.sha256(destination.read_bytes()).hexdigest()
 
     manifest = tmp_path / "manifest.jsonl"
     write_jsonl(records, manifest)
@@ -69,12 +71,17 @@ def _catalog(tmp_path: Path) -> Catalog:
     store.save(store_path)
 
     projection_path = tmp_path / "projection.npz"
-    PcaProjection(
+    projection = PcaProjection(
         mean=np.zeros(FEATURES, dtype=np.float32),
         components=np.eye(2, FEATURES, dtype=np.float32) + 0.5,
         image_size=IMAGE_SIZE,
         seed=42,
-    ).save(projection_path)
+    )
+    projection.save(projection_path)
+    replace(
+        store,
+        vectors=projection.embed_images([tmp_path / record.path for record in records]),
+    ).save(store_path)
 
     return Catalog.load(
         manifest=manifest,

@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass, field
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 
 import numpy as np
 from numpy.typing import NDArray
@@ -23,6 +23,11 @@ from eo_visual_retrieval.models import ImageRecord
 from eo_visual_retrieval.retrieval import ExactCosineIndex
 
 PCA_BACKEND = "pca"
+PROJECTION_BATCH_SIZE = 32
+# The persisted legacy PCA basis reproduced stored vectors within 9.6411e-6.
+# These tolerances allow that float32 drift while refusing an unrelated fit.
+PROJECTION_ATOL = 1e-5
+PROJECTION_RTOL = 1e-4
 
 
 @dataclass(frozen=True)
@@ -66,7 +71,13 @@ class Catalog:
 
         self._stores = tuple(stores)
         self._projection = projection
-        path_by_id = {record.item_id: image_root / record.path for record in records}
+        self._image_root = image_root.resolve()
+        record_by_id = {record.item_id: record for record in records}
+        if len(record_by_id) != len(records):
+            raise ValueError("manifest item IDs must be unique")
+        path_by_id = {
+            record.item_id: self._safe_image_path(record.path) for record in records
+        }
 
         reference = stores[0]
         missing = set(reference.ids) - set(path_by_id)
@@ -78,6 +89,20 @@ class Catalog:
                 "instead of failing at startup"
             )
         self._path_by_id = path_by_id
+        for item_id, label, split in zip(
+            reference.ids, reference.labels, reference.splits, strict=True
+        ):
+            record = record_by_id[item_id]
+            if record.label != label or record.split != split:
+                raise ValueError(f"manifest label or split disagrees with stores for {item_id!r}")
+
+        for store in stores:
+            if not np.isfinite(store.vectors).all():
+                raise ValueError("embedding stores must contain only finite vectors")
+            with np.errstate(over="ignore", invalid="ignore"):
+                norms = np.linalg.norm(store.vectors, axis=1)
+            if not np.isfinite(norms).all() or np.any(norms == 0):
+                raise ValueError("embedding stores contain a zero-length or unnormalizable vector")
 
         if projection is not None:
             self._validate_projection_matches_pca_store(projection)
@@ -140,19 +165,15 @@ class Catalog:
                 )
 
     def _validate_projection_matches_pca_store(self, projection: PcaProjection) -> None:
-        """Refuse a projection that was not fitted for the loaded PCA store.
-
-        ``embeddings/encode.py`` runs these same two checks before embedding a
-        query image on the CLI path. The served path must run them too: a
-        projection whose component count happens to match the store's dimension
-        would otherwise be accepted, and every upload would be projected through
-        the wrong basis and ranked against vectors it was never fitted to compare.
-        """
+        """Check declared compatibility; ``load`` also checks actual projections."""
 
         position = self._pca_position()
         if position is None:
             return
         store = self._stores[position]
+        projection_digest = projection.metadata.get("manifest_sha256")
+        if projection_digest is not None and projection_digest != store.metadata["manifest_sha256"]:
+            raise ValueError("PCA projection manifest hash does not match the store")
         recorded_size = store.metadata.get("image_size")
         if recorded_size is not None and int(recorded_size) != projection.image_size:
             raise ValueError(
@@ -164,6 +185,49 @@ class Catalog:
                 f"projection produces {projection.dimension} dimensions but the pca "
                 f"store holds {store.vectors.shape[1]}"
             )
+
+    def _verify_projection_vectors(self) -> None:
+        """Check every saved vector against its image through the supplied basis.
+
+        Old artifacts have no basis digest. Shape and corpus metadata cannot
+        establish that two fits share a coordinate system. Numerical agreement
+        verifies compatibility without refitting or rewriting those artifacts.
+        """
+
+        position = self._pca_position()
+        if self._projection is None or position is None:
+            return
+        store = self._stores[position]
+        for start in range(0, len(store.ids), PROJECTION_BATCH_SIZE):
+            identifiers = store.ids[start:start + PROJECTION_BATCH_SIZE]
+            try:
+                actual = self._projection.embed_images(
+                    [self.image_path(item_id) for item_id in identifiers]
+                )
+            except (OSError, ValueError) as error:
+                raise ValueError(
+                    f"cannot verify PCA projection against corpus images: {error}"
+                ) from error
+            expected = store.vectors[start:start + PROJECTION_BATCH_SIZE]
+            expected = expected / np.linalg.norm(expected, axis=1, keepdims=True)
+            agreement = np.isclose(actual, expected, atol=PROJECTION_ATOL, rtol=PROJECTION_RTOL)
+            mismatched = np.flatnonzero(~agreement.all(axis=1))
+            if mismatched.size:
+                item_id = identifiers[int(mismatched[0])]
+                raise ValueError(
+                    f"PCA projection does not reproduce stored vectors for {item_id!r}; "
+                    "supply the basis fitted alongside this store"
+                )
+
+    def _safe_image_path(self, path: str) -> Path:
+        # Check Windows paths on every platform, including drives and UNC roots.
+        portable = PureWindowsPath(path)
+        if portable.drive or portable.root or ".." in portable.parts:
+            raise ValueError(f"manifest image path must stay relative to image root: {path!r}")
+        candidate = self._image_root / path
+        if not candidate.resolve().is_relative_to(self._image_root):
+            raise ValueError(f"manifest image path escapes image root: {path!r}")
+        return candidate
 
     @classmethod
     def load(
@@ -197,9 +261,17 @@ class Catalog:
             if not projection.is_file():
                 raise ValueError(f"missing PCA projection: {projection}")
             basis = PcaProjection.load(projection)
-        return cls(
-            read_jsonl(manifest), loaded, image_root=image_root, projection=basis
-        )
+        records = read_jsonl(manifest)
+        catalog = cls(records, loaded, image_root=image_root, projection=basis)
+        for record in records:
+            image = catalog.image_path(record.item_id)
+            if not image.is_file():
+                raise ValueError(f"missing corpus image for {record.item_id!r}")
+            expected_digest = record.metadata.get("sha256")
+            if expected_digest is not None and file_sha256(image) != expected_digest:
+                raise ValueError(f"image checksum does not match manifest for {record.item_id!r}")
+        catalog._verify_projection_vectors()
+        return catalog
 
     @property
     def query_ids(self) -> tuple[str, ...]:
@@ -224,9 +296,13 @@ class Catalog:
 
     def image_path(self, item_id: str) -> Path:
         try:
-            return self._path_by_id[item_id]
+            path = self._path_by_id[item_id]
         except KeyError as error:
             raise KeyError(f"unknown item: {item_id}") from error
+        resolved = path.resolve()
+        if not resolved.is_relative_to(self._image_root):
+            raise ValueError("corpus image resolves outside the image root")
+        return resolved
 
     def label(self, item_id: str) -> str | None:
         return self._label_by_query[item_id]

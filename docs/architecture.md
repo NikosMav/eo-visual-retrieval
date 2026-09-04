@@ -61,7 +61,7 @@ flowchart LR
     Fit --> FrozenPCA[Fixed PCA transform]
     Frozen --> Vectors[Embedding vectors]
     FrozenPCA --> Vectors
-    Labels[EuroSAT labels] --> Evaluation[Evaluation only]
+    Labels[EuroSAT labels] --> Evaluation[Evaluate ranked results]
     Vectors --> Evaluation
 ```
 
@@ -74,11 +74,12 @@ learning-oriented explanation.
 | Component | Responsibility | Main module |
 |---|---|---|
 | Content digests | Produce one streaming SHA-256/MD5 identity for every artifact | `hashing.py` |
-| Vector preparation | Enforce finite, unit-length rows before any cosine comparison | `vectors.py` |
+| Vector preparation | Shared L2 normalization; the served catalog additionally validates finite, non-degenerate rows | `vectors.py`, `app/catalog.py` |
 | EuroSAT dataset identity | Hold the archive checksum, band order, and member access | `datasets/eurosat.py` |
 | BigEarthNet dataset identity | Pin source/checksums and bound metadata-only acquisition | `datasets/bigearthnet.py` |
 | BigEarthNet metadata audit | Verify local Parquet inputs and measure label/date/grid coverage without selecting partitions | `datasets/bigearthnet_audit.py` |
 | BigEarthNet footprint inventory | Bound and verify the reference archive; stream TIFF headers into compact local Parquet | `datasets/bigearthnet_footprints.py` |
+| BigEarthNet S2 acquisition | Stage only frozen selected bands, verify native geometry inline, and promote after archive integrity checks | `datasets/bigearthnet_s2.py` |
 | BigEarthNet acquisition selection | Select IDs using fixed date/cell/label rules; independently audit fresh source geometry | `benchmarks/bigearthnet_partitions.py` |
 | STAC search | Validate a bounded query and collect safe item metadata | `stac.py` |
 | Preview materializer | Resolve an item, optionally sign in memory, and download a bounded image | `stac.py` |
@@ -119,6 +120,12 @@ contains:
 Asset HREFs are excluded because providers may add expiring signatures or credentials. At
 materialization time, the item is fetched again by stable identity and any signed URL remains in
 memory.
+
+The persisted API identity must have a hostname and contain no userinfo, query, or fragment.
+Preview filenames include a stable digest of source identity to avoid collisions when item IDs
+contain punctuation. Downloaded previews carry content hashes; RGB embedding commands verify
+declared hashes before processing. EuroSAT separation audits validate declared geographic metadata
+and optional file hashes; they do not independently recompute geometry from source raster pixels.
 
 ### Image manifest
 

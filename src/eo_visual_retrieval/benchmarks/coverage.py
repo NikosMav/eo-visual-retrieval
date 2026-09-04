@@ -33,6 +33,10 @@ def _as_lonlat(values: NDArray[np.float64], name: str) -> NDArray[np.float64]:
         raise ValueError(f"{name} must have shape (n, 2) of longitude and latitude")
     if array.shape[0] == 0:
         raise ValueError(f"{name} must contain at least one point")
+    if not np.isfinite(array).all():
+        raise ValueError(f"{name} coordinates must be finite")
+    if np.any(np.abs(array[:, 0]) > 180) or np.any(np.abs(array[:, 1]) > 90):
+        raise ValueError(f"{name} coordinates exceed longitude/latitude bounds")
     return array
 
 
@@ -167,8 +171,8 @@ def distance_tiers(
 
     if not candidates:
         raise ValueError("at least one candidate is required")
-    if not thresholds_km or any(value <= 0 for value in thresholds_km):
-        raise ValueError("thresholds_km must be positive")
+    if not thresholds_km or any(not np.isfinite(value) or value <= 0 for value in thresholds_km):
+        raise ValueError("thresholds_km must be positive and finite")
 
     unused, nearest = _unused_nearest_m(candidates, used_members, reference_lonlat)
 

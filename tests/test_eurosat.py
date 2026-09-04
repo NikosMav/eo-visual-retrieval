@@ -12,7 +12,8 @@ from eo_visual_retrieval.benchmarks.eurosat import (
     prepare_eurosat_benchmark,
     select_spatial_split,
 )
-from eo_visual_retrieval.manifests import read_jsonl
+from eo_visual_retrieval.manifests import read_jsonl, write_jsonl
+from eo_visual_retrieval.models import ImageRecord
 
 
 def _candidate(label: str, index: int, *, y_offset: float) -> EuroSatCandidate:
@@ -181,3 +182,39 @@ def test_prepare_eurosat_rejects_wrong_archive_checksum(tmp_path: Path) -> None:
             manifest=tmp_path / "manifest.jsonl",
             expected_md5="0" * 32,
         )
+
+
+@pytest.mark.parametrize("field", ["centroid_lonlat", "centroid_epsg6933", "separation"])
+def test_audit_refuses_nonfinite_spatial_metadata(tmp_path: Path, field: str) -> None:
+    records = []
+    for split in ("index", "query"):
+        metadata = {
+            "spatial_group": split,
+            "centroid_epsg6933": [0.0, 0.0],
+            "centroid_lonlat": [0.0, 0.0] if split == "index" else [5.0, 0.0],
+            "source_bounds": [0.0, 0.0, 640.0, 640.0],
+            "minimum_index_query_separation_m": 5000.0,
+        }
+        if split == "query":
+            if field == "separation":
+                metadata["minimum_index_query_separation_m"] = np.nan
+            else:
+                metadata[field] = [np.nan, 0.0]
+        records.append(ImageRecord(
+            item_id=split, path=split + ".tif", split=split,
+            label="Forest", source="eurosat-ms-v1", metadata=metadata,
+        ))
+    manifest = tmp_path / "manifest.jsonl"
+    write_jsonl(records, manifest)
+    with pytest.raises(ValueError, match="finite|invalid spatial"):
+        audit_eurosat_manifest(
+            manifest, expected_labels=("Forest",), expected_index_per_class=1,
+            expected_queries_per_class=1,
+        )
+
+
+@pytest.mark.parametrize("distance", [np.nan, np.inf, -1])
+def test_split_rejects_invalid_guard_band(distance: float) -> None:
+    with pytest.raises(ValueError, match="minimum_separation_m"):
+        select_spatial_split([], queries_per_class=1, index_per_class=1,
+                             minimum_separation_m=distance)

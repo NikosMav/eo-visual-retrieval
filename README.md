@@ -4,8 +4,8 @@ An educational Earth-observation image-retrieval system built to demonstrate the
 retrieval workflow: public-data discovery, reproducible manifests, image embeddings, exact and
 approximate ranking, and honest offline evaluation.
 
-The project compares transparent PCA, frozen RGB DINOv2, and frozen 13-band SSL4EO-S12 and
-TerraMind-Tiny features.
+The project compares PCA, frozen RGB DINOv2, RGB and 13-band SSL4EO-S12, and
+13-band TerraMind-Tiny features.
 It provides a tested offline pipeline, command-line interface, interactive representation explorer,
 and a spatially separated EuroSAT benchmark. Broader temporal and cross-dataset generalization has **not** yet been
 established.
@@ -102,7 +102,7 @@ editable-install alternative, but do not reproduce the committed lockfile.
 ```powershell
 py -3.11 -m venv C:\Users\<you>\.venvs\eovr
 C:\Users\<you>\.venvs\eovr\Scripts\python -m pip install --upgrade pip
-C:\Users\<you>\.venvs\eovr\Scripts\python -m pip install -e ".[dev,stac,geo,ml,search]"
+C:\Users\<you>\.venvs\eovr\Scripts\python -m pip install -e ".[dev,app,stac,geo,ml,search,bigearthnet]"
 ```
 
 Confirm the local code is healthy:
@@ -219,6 +219,9 @@ See [Faiss v1 results](docs/results/faiss-v1.md) for the complete matrix and evi
 See [Validation](docs/validation.md) for exact evidence and limitations.
 
 ## Documentation
+
+Start with the [checkpoint review](docs/project-review.md) for current findings, applied fixes,
+the technology stack, third-party options, and remaining work.
 
 Read the guides in this order:
 

@@ -22,7 +22,7 @@ from eo_visual_retrieval.datasets.eurosat import (
     EUROSAT_SOURCE,
     verify_archive,
 )
-from eo_visual_retrieval.hashing import file_md5
+from eo_visual_retrieval.hashing import bytes_sha256, file_md5, file_sha256
 from eo_visual_retrieval.manifests import write_jsonl
 from eo_visual_retrieval.models import ImageRecord, Split
 
@@ -127,8 +127,8 @@ def discover_candidates(
 ) -> list[EuroSatCandidate]:
     """Read georeferencing from every official EuroSAT multispectral patch."""
 
-    if group_size_m <= 0:
-        raise ValueError("group_size_m must be positive")
+    if not math.isfinite(group_size_m) or group_size_m <= 0:
+        raise ValueError("group_size_m must be positive and finite")
     verify_archive(archive, expected_md5=None)
 
     try:
@@ -240,8 +240,8 @@ def select_spatial_split(
 
     if queries_per_class <= 0 or index_per_class <= 0:
         raise ValueError("per-class query and index counts must be positive")
-    if minimum_separation_m < 0:
-        raise ValueError("minimum_separation_m must not be negative")
+    if not math.isfinite(minimum_separation_m) or minimum_separation_m < 0:
+        raise ValueError("minimum_separation_m must be finite and not negative")
 
     candidates_by_label: dict[str, list[EuroSatCandidate]] = defaultdict(list)
     for candidate in candidates:
@@ -350,10 +350,6 @@ def select_spatial_split(
     )
 
 
-def _sha256_bytes(value: bytes) -> str:
-    return hashlib.sha256(value).hexdigest()
-
-
 def _rgb_from_multispectral(source: np.ndarray, valid: np.ndarray) -> np.ndarray:
     """Apply the published EuroSAT RGB band choice and fixed 0-2750 stretch."""
 
@@ -418,7 +414,7 @@ def _materialize_candidate(
         label=candidate.label,
         source=EUROSAT_SOURCE,
         metadata={
-            "sha256": _sha256_bytes(output_payload),
+            "sha256": bytes_sha256(output_payload),
             "dataset_doi": EUROSAT_DOI,
             "archive": EUROSAT_ARCHIVE,
             "archive_member": candidate.member,
@@ -517,6 +513,8 @@ def audit_eurosat_manifest(
             minimum = float(record.metadata["minimum_index_query_separation_m"])
         except (KeyError, TypeError, ValueError) as error:
             raise ValueError(f"record lacks spatial audit metadata: {record.item_id}") from error
+        if not all(math.isfinite(value) for value in (x, y, minimum)) or minimum < 0:
+            raise ValueError(f"record has invalid spatial audit metadata: {record.item_id}")
         per_class[record.label][record.split] += 1
         groups_by_split[record.split].add(group)
         declared_separations.add(minimum)
@@ -537,7 +535,7 @@ def audit_eurosat_manifest(
             path = image_root / record.path
             if not path.is_file():
                 raise ValueError(f"manifest references missing image: {path}")
-            observed_sha256 = hashlib.sha256(path.read_bytes()).hexdigest()
+            observed_sha256 = file_sha256(path)
             if observed_sha256 != record.metadata.get("sha256"):
                 raise ValueError(f"image checksum mismatch: {path}")
             verified_files += 1
@@ -570,7 +568,7 @@ def audit_eurosat_manifest(
             f"minimum separation is {observed_minimum:.3f} m; expected {declared_minimum:.3f} m"
         )
 
-    manifest_digest = hashlib.sha256(manifest.read_bytes()).hexdigest()
+    manifest_digest = file_sha256(manifest)
     return EuroSatAudit(
         items=len(records),
         index=sum(record.split == "index" for record in records),

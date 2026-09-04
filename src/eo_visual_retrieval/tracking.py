@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
-import hashlib
 import re
 from pathlib import Path
 from typing import Any
 
 from eo_visual_retrieval.embeddings.store import EmbeddingStore
 from eo_visual_retrieval.evaluation import EvaluationSummary
+from eo_visual_retrieval.hashing import file_sha256
 
 
 def evaluation_parameters(store: EmbeddingStore, *, store_sha256: str) -> dict[str, Any]:
@@ -53,11 +53,7 @@ def log_evaluation(
     except ImportError as error:
         raise RuntimeError("local tracking requires the 'experiments' dependency group") from error
 
-    digest = hashlib.sha256()
-    with embeddings_path.open("rb") as stream:
-        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
-            digest.update(chunk)
-    parameters = evaluation_parameters(store, store_sha256=digest.hexdigest())
+    parameters = evaluation_parameters(store, store_sha256=file_sha256(embeddings_path))
     parameters["k"] = summary.k
     metrics = {
         key: float(value)

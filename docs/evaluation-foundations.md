@@ -1,6 +1,7 @@
 # Evaluation foundations: decisions, setup, and next gates
 
-This phase deliberately precedes the product interface. Read
+These foundations were established before the product interface, which is now implemented locally.
+Read the [product guide](product-surface.md) for serving and
 [ADR 0005](decisions/0005-evaluation-foundations-before-product.md) for the choices and
 [validation](validation.md) for executed evidence. A dependency being installed is not evidence
 that a model, optimizer, or database improves retrieval.
@@ -13,7 +14,7 @@ that a model, optimizer, or database improves retrieval.
 | Inference | Separate CPU/CUDA environments; frozen pretrained encoders | A measured GPU throughput improvement |
 | Model | TerraMind-Tiny challenger; SSL4EO reference | TerraMind is better on our task |
 | Tracking | Local MLflow, aggregate-only, opt-in | Hosted experiment management |
-| Optimization | Optuna selected for development-only searches | A tuned or superior search configuration |
+| Optimization | Optuna selected for future development-only searches; no tuning dependency installed | A tuned or superior search configuration |
 | Product vector store | Qdrant first future adapter experiment | Qdrant is deployed or faster than Faiss |
 | Scale alternative | Milvus after real workload evidence | Distributed infrastructure is currently necessary |
 | Evaluation | EuroSAT v1 regression; new data for final confirmation | A class-balanced holdout across all 10 classes in untouched EuroSAT cells; ADR 0006 measured that this is impossible |
@@ -40,14 +41,17 @@ Run from the repository root:
 
 ```powershell
 $env:UV_PROJECT_ENVIRONMENT = 'C:\Users\<you>\.venvs\eovr-check'
-& $uv sync --locked --python 3.11 --extra dev --extra geo --extra search
+& $uv sync --locked --python 3.11 `
+  --extra dev --extra app --extra stac --extra geo --extra search --extra pca --extra bigearthnet
 & $uv run --locked --no-sync python -m ruff check .
-& $uv run --locked --no-sync python -m pytest
+& $uv run --locked --no-sync python -m mypy
+& $uv run --locked --no-sync python -m pytest --cov=eo_visual_retrieval --cov-fail-under=75
 & $uv pip check --python $env:UV_PROJECT_ENVIRONMENT
 ```
 
 Repeat with `--python 3.12` and a different environment path to validate that interpreter.
 CI uses this locked workflow on both Linux and Windows. It does not fetch model checkpoints.
+The separate wheel/browser job is described in the [development guide](development.md).
 
 ## 3. Choose a CPU or CUDA environment
 
@@ -56,7 +60,7 @@ For a complete CPU environment, use the normal model group plus the explicit CPU
 ```powershell
 $env:UV_PROJECT_ENVIRONMENT = 'C:\Users\<you>\.venvs\eovr-cpu-locked'
 & $uv sync --locked --python 3.11 `
-  --extra dev --extra stac --extra geo --extra ml --extra cpu --extra search
+  --extra dev --extra app --extra stac --extra geo --extra ml --extra cpu --extra search --extra bigearthnet
 ```
 
 For the GPU/experiment environment:
@@ -64,7 +68,7 @@ For the GPU/experiment environment:
 ```powershell
 $env:UV_PROJECT_ENVIRONMENT = 'C:\Users\<you>\.venvs\eovr-gpu'
 & $uv sync --locked --python 3.11 `
-  --extra dev --extra stac --extra geo --extra ml --extra cuda --extra search `
+  --extra dev --extra app --extra stac --extra geo --extra ml --extra cuda --extra search --extra bigearthnet `
   --extra experiments --extra foundation
 & $uv run --locked --no-sync python -c `
   "import torch; print(torch.__version__, torch.version.cuda, torch.cuda.is_available())"
@@ -132,7 +136,8 @@ This is a local development viewer, not a public server. No MLflow account is re
 
 ## 5. Model and data experiment gate
 
-TerraMind-Tiny is selected for an S2L1C-only frozen experiment. Before publishing scores, record:
+TerraMind-Tiny completed the S2L1C-only EuroSAT experiment; see [its results](results/terramind-v1.md).
+The protocol required:
 
 - immutable checkpoint revision and SHA-256;
 - expected Sentinel-2 band ordering, radiometric normalization, spatial resizing, and pooling;
@@ -144,10 +149,11 @@ TerraMind-Tiny is selected for an S2L1C-only frozen experiment. Before publishin
 Keep the new result separate from the original v1 artifacts. A higher EuroSAT score would be a
 regression-benchmark observation, not independent confirmation of generalization.
 
-The next dataset phase must pre-register geographically separated index, development-query, and
-final-query partitions. Use development queries for Optuna and preserve the final set until the
-model/search configuration is frozen. BigEarthNet v2 requires multi-label relevance support and
-an acquisition/storage plan; the existing single-class evaluator must not be reused unchanged.
+BigEarthNet now has frozen geographically separated index, development-query, and final-query
+partitions, a separate multi-label development evaluator, and a bounded acquisition implementation.
+Full S2 acquisition remains paused. Any future tuning must use development queries and preserve
+the final set until model/search configuration is frozen. Optuna is selected for that future task;
+it was removed from installed dependencies because no tuning workflow uses it yet.
 
 ## Accounts and user decisions
 
@@ -157,7 +163,8 @@ its official public API/Hub client provides the same model-identity checks.
 
 Later decisions needing user input are a cloud-compute budget, a managed-database provider, or
 access to gated DINOv3 weights. Never paste API keys into documentation or commit credentials.
-Docker is needed only when the Qdrant/Milvus service experiment begins.
+Docker is optional for the explorer's container definition and future service experiments.
+The local explorer runs without it; container build and execution are still unvalidated.
 
 ## Updating dependencies
 
@@ -166,7 +173,9 @@ merging. Repository vulnerability alerts are a separate GitHub setting. A local 
 
 ```powershell
 & $uv lock --upgrade-package <package>
-& $uv sync --locked --extra dev --extra geo --extra search
+& $uv sync --locked --extra dev --extra app --extra stac --extra geo --extra search --extra pca --extra bigearthnet
+& $uv run --locked --no-sync python -m ruff check .
+& $uv run --locked --no-sync python -m mypy
 & $uv run --locked --no-sync python -m pytest
 ```
 

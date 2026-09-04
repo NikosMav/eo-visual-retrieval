@@ -134,3 +134,16 @@ def test_chip_rejects_bounds_outside_reference(tmp_path: Path) -> None:
             bounds_crs="EPSG:32610",
             processing_baseline="05.10",
         )
+
+
+def test_chip_rejects_access_bearing_provenance_before_writing(tmp_path: Path) -> None:
+    output = tmp_path / "chips"
+    with pytest.raises(ValueError, match="api_url"):
+        build_sentinel2_chip(
+            {}, output_dir=output, item_id="test",
+            api_url="https://example.test/stac?api_key=synthetic-value",
+            collection="sentinel-2-l2a", datetime=None,
+            bounds=(500000, 960, 500040, 1000), bounds_crs="EPSG:32610",
+            processing_baseline="05.10",
+        )
+    assert not output.exists()

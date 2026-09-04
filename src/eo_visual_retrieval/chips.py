@@ -17,7 +17,7 @@ from numpy.typing import NDArray
 
 from eo_visual_retrieval.hashing import file_sha256
 from eo_visual_retrieval.manifests import write_jsonl
-from eo_visual_retrieval.models import ImageRecord, StacItemRecord
+from eo_visual_retrieval.models import ImageRecord, StacItemRecord, validate_stac_api_url
 
 RGB_ASSET_KEYS = ("B04", "B03", "B02")
 DEFAULT_MASKED_SCL_CLASSES = (0, 1, 3, 7, 8, 9, 10, 11)
@@ -206,6 +206,7 @@ def build_sentinel2_chip(
         message = 'geospatial chip support is optional; install with pip install -e ".[geo]"'
         raise RuntimeError(message) from error
 
+    validate_stac_api_url(api_url)
     _validate_bounds(bounds)
     if reflectance_min >= reflectance_max:
         raise ValueError("reflectance_min must be less than reflectance_max")

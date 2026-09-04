@@ -26,7 +26,7 @@ The repository currently contains:
 - bounded public preview materialization with optional in-memory signing;
 - aligned Sentinel-2 BOA-reflectance and model-ready RGB chip materialization;
 - deterministic image manifests with index/query partitions;
-- PCA, frozen RGB DINOv2, and frozen 13-band SSL4EO-S12 embedding backends;
+- PCA, frozen RGB DINOv2, and frozen RGB/13-band SSL4EO-S12 embedding backends;
 - a persisted PCA basis and a ranking path for images outside the original manifest;
 - a pinned frozen TerraMind-Tiny challenger, evaluated without replacing the SSL4EO reference;
 - locked CPU/CUDA dependency profiles, local MLflow evaluation tracking, and a CUDA parity smoke;
@@ -35,7 +35,7 @@ The repository currently contains:
 - a separate multi-label development evaluator with Jaccard relevance and held-out final queries;
 - a reproducible Faiss exact-versus-HNSW benchmark with an explicit ANN-recall contract;
 - an executed 2,000-image, spatially separated EuroSAT benchmark;
-- aggregate and per-class metrics plus qualitative best/worst grids for all three representations;
+- aggregate and per-class evidence for five representation variants, with qualitative result grids;
 - unit tests, linting, static type checking, an enforced coverage floor, CI, and executed
   smoke validation.
 
@@ -159,7 +159,11 @@ The project is portfolio-ready when:
 - no private data, sensitive geography, signed URLs, or generated datasets are committed;
 - the repository name and release metadata match the EO visual-retrieval identity.
 
-## Next task
+## Next work
+
+The [2026-09-04 checkpoint review](project-review.md) records the code audit, remediations,
+third-party options, and remaining risks. The local surface now validates source hashes and PCA
+compatibility at startup and has separate browser tests against the built distribution.
 
 The evaluation-foundations gates are complete. The next phase was blocked on new held-out data,
 and measurement has now settled where that data can come from: not EuroSAT. Preparing v1 consumed
@@ -186,13 +190,17 @@ existing EuroSAT stores and is independent of that transfer.
 
 Remaining work:
 
-1. Select a hosting destination and validate deployment of the local explorer. The container
+1. Address the CLI projection-binding and numerical-validation gaps in a separately validated
+   change, preserving the published EuroSAT rankings. Recover and pin DINOv2 code provenance
+   before the next inference run; track the unresolved optional Lightning advisory.
+2. Select a hosting destination and validate deployment of the local explorer. The container
    definition uses read-only runtime mounts; it does not package data into Git or the image.
-2. Resume BigEarthNet acquisition only after explicit operator authorization and a viable transfer
+3. Resume BigEarthNet acquisition only after explicit operator authorization and a viable transfer
    strategy. Preserve the frozen 4,000 index / 500 development / 500 final IDs; verify every native
    band before preparing model inputs. No BigEarthNet score exists.
-3. Implement the BigEarthNet input adapters and frozen-configuration final-scoring gate, then run
+4. Implement the BigEarthNet input adapters and frozen-configuration final-scoring gate, then run
    development comparisons before a separately authorized final evaluation.
-4. Test a Qdrant adapter against exact search when serving requirements justify it.
+5. Test a Qdrant adapter against exact search when serving requirements justify it. A geographic
+   radius filter over the current small local corpus does not require a database migration.
 
 Paid services, gated-model accounts, and distributed Milvus deployment remain deferred.

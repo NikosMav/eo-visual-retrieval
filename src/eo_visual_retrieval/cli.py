@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import platform
 from importlib.metadata import PackageNotFoundError, version
@@ -13,6 +12,7 @@ from typing import Any
 from eo_visual_retrieval.embeddings.store import EmbeddingStore
 from eo_visual_retrieval.evaluation import evaluate_store
 from eo_visual_retrieval.evaluation_multilabel import DEFAULT_THRESHOLD, DEVELOPMENT_THRESHOLDS
+from eo_visual_retrieval.hashing import file_sha256
 from eo_visual_retrieval.manifests import build_image_manifest, read_jsonl, write_jsonl
 from eo_visual_retrieval.retrieval import ExactCosineIndex
 from eo_visual_retrieval.stac import (
@@ -29,6 +29,10 @@ def _paths(records: list[Any], image_root: Path) -> list[Path]:
     missing = [path for path in paths if not path.is_file()]
     if missing:
         raise ValueError(f"manifest references missing image: {missing[0]}")
+    for record, path in zip(records, paths, strict=True):
+        expected = record.metadata.get("sha256")
+        if expected is not None and file_sha256(path) != expected:
+            raise ValueError(f"image checksum disagrees with manifest: {record.item_id}")
     return paths
 
 
@@ -52,7 +56,7 @@ def _run_metadata(
         except PackageNotFoundError:
             versions[package] = "not-installed"
     return {
-        "manifest_sha256": hashlib.sha256(manifest.read_bytes()).hexdigest(),
+        "manifest_sha256": file_sha256(manifest),
         "items": len(records),
         "index_items": sum(record.split == "index" for record in records),
         "query_items": sum(record.split == "query" for record in records),
@@ -342,7 +346,6 @@ def _evaluate(args: argparse.Namespace) -> None:
 
 def _evaluate_multilabel(args: argparse.Namespace) -> None:
     from eo_visual_retrieval.evaluation_multilabel import evaluate_multilabel_development
-    from eo_visual_retrieval.hashing import file_sha256
     from eo_visual_retrieval.relevance import RelevanceManifest
 
     if args.output.resolve() in {args.embeddings.resolve(), args.relevance.resolve()}:
@@ -368,7 +371,7 @@ def _evaluate_multilabel(args: argparse.Namespace) -> None:
 
 
 def _benchmark_faiss(args: argparse.Namespace) -> None:
-    from eo_visual_retrieval.faiss_benchmark import benchmark_faiss, file_sha256
+    from eo_visual_retrieval.faiss_benchmark import benchmark_faiss
 
     store = EmbeddingStore.load(args.embeddings)
     result = benchmark_faiss(

@@ -9,6 +9,9 @@ production readiness.
 Update this record only after executing the relevant validation. Keep planned work in
 `docs/project-context.md`.
 
+Entries are dated execution records. Older limitations and test counts describe their recorded
+run; use the newest relevant entry and [checkpoint review](project-review.md) for current status.
+
 ```mermaid
 flowchart LR
     Tests[Tests and CI<br/>code behavior] --> Smoke[Smoke runs<br/>small real paths]
@@ -20,6 +23,38 @@ flowchart LR
 The first three boxes record different kinds of evidence; passing one does not imply the next.
 See [Understanding the benchmarks](learning-benchmarks.md) for the evidence ladder and the exact
 training boundary.
+
+## Project checkpoint revision — 2026-09-04
+
+Executed on Windows. This revision changed validation boundaries, serving checks, packaging tests,
+and documentation. It did not alter neural encoders, the persisted embedding format, frozen
+partitions, the evaluator, the exact ranker, or published benchmark results.
+
+| Check | Executed evidence |
+|---|---|
+| Fresh locked environment | uv 0.12.9, Python 3.11.5; `dev,app,stac,geo,search,pca,bigearthnet`; 88 installed packages passed compatibility checks |
+| Code gates | Ruff passed; Mypy passed across 79 source files; locked suite 354 passed, 2 skipped in 40.22 s; coverage 87.05% against the 75% floor |
+| Existing ML environment | Full suite 355 passed, 1 skipped in 26.04 s; coverage 87.58%; the DINOv2 execution test uses a stub checkpoint |
+| Installed-wheel browser gate | Fresh app/browser-only environment, Python 3.12.1, Playwright 1.62.0, pytest-playwright 0.9.0, Chromium 151.0.7922.34; 5 tests passed in 6.90 s; all 36 packages passed compatibility checks |
+| Browser scope | Synthetic corpus; class filtering/navigation, PCA-only unlabeled upload, malformed-image recovery, narrow layout and keyboard controls; packaged imports verified and neural frameworks/scikit-learn absent |
+| Real catalog startup | All five existing stores accepted; 1,600 index and 400 query items; all 2,000 image hashes and PCA projections checked in 19.0118071 s; no Torch, torchvision, TerraTorch, or scikit-learn imported |
+| Local explorer | Restarted from the updated checkout; browser rendered the professional title, SeaLake query, and all five representation rows |
+| Dependency usage | deptry 0.25.1 scanned 46 source/script files and reported no issues with the documented import mappings and optional-integration exceptions |
+| Housekeeping | Removed the clean merged streaming worktree and its local/remote branch at `628dea3a255ba2d74afaccb6b63ef428f09fb4c4`; PR #16's four CI checks passed; only ignored test caches accompanied tracked files |
+
+The suite emitted upstream TestClient deprecation warnings about httpx and, in the existing ML
+environment, AnyIO's BlockingPortal alias. They were not suppressed. This run does not validate a
+replacement HTTP client. The dependency review left the optional Lightning alert open; see the
+[review and upstream sources](project-review.md#remaining-work-in-priority-order).
+
+PCA startup comparison is a read-only numerical compatibility check against existing vectors, not
+a refit, new benchmark, or proof that the original projection bytes are identical. The new tests
+also reproduce and reject non-finite geographic metadata, unsafe STAC API identity, preview-name
+collisions, changed image hashes, invalid served vectors, and an incompatible same-shaped PCA fit.
+
+Full BigEarthNet S2 acquisition was not run. No imagery beyond the prior pilot patches was
+acquired, and no BigEarthNet score exists. Docker startup was not retried. Public deployment,
+container execution, and concurrent-load performance remain unvalidated.
 
 ## Product surface completion checks — 2026-09-04
 
@@ -81,14 +116,15 @@ changed pretraining, architecture, and bands at once, so none of its advantage c
 | Evaluation | 400 queries, zero skipped; mAP@10 `0.7445231150793652` | Passed |
 | Store identity | SHA-256 `773dcaf1290e84b36511306a497e2d1b7dd58264d9ec249a86dd2398d349078e` | Recorded |
 
-At k=10 the 13-band encoder scored mAP `0.81360` against the RGB variant's `0.74452`. The extra ten
-bands therefore account for `+0.06907`, **34%** of the `+0.20596` advantage the 13-band model holds
-over DINOv2. The remaining 66% belongs to the RGB representation, a comparison that confounds
-EO-domain pretraining with a ResNet-50 versus ViT-S/14 architecture change and **is not isolated
-here**. Bands helped `River` most (`+0.2038`) and hurt `SeaLake` slightly (`−0.0216`).
+At k=10 the 13-band encoder scored mAP `0.81360` against the RGB variant's `0.74452`, a pipeline
+difference of `+0.06907` using unrounded scores. The 13-band pipeline improved `River` most
+(`+0.2038`) and scored slightly lower on `SeaLake` (`−0.0216`).
 
-Only the band attribution is controlled. This is EuroSAT v1 development evidence, not confirmatory,
-and it establishes nothing about other datasets, tasks, or label schemes. Full result:
+Interpretation corrected during the 2026-09-04 code/documentation review: the variants use
+distinct pretrained checkpoints. Their difference cannot establish an exact causal percentage
+attributable to bands alone. Comparison with DINOv2 also changes architecture and preprocessing.
+The executed numbers remain unchanged. This is EuroSAT v1 development evidence, not confirmatory,
+and establishes nothing about other datasets, tasks, or label schemes. Original result record:
 [band ablation](results/eurosat-v1-ssl4eo-band-ablation.md).
 
 ### Preprocessing deviation, measured
@@ -784,7 +820,8 @@ B938BF1BC15CD2EC0FEACFE3A1BB553FE8EA9CA46A7E1D8D00217F29AEF60CD9
 - Retrieval quality for genuinely unseen query images; the new-image path is verified for
   numerical agreement only.
 - Any confirmatory result. BigEarthNet metadata and reference geometry have been acquired;
-  usable S2 image partitions, frozen model settings, and final evaluation remain pending.
+  usable S2 image partitions, implemented inputs for the frozen model roster, and the final
+  frozen-configuration gate remain pending.
 - ANN behavior on a genuinely larger EO corpus rather than deterministic synthetic expansion.
 - Representative GPU throughput, precision/batch-size sweeps, or cross-hardware performance.
 - Public deployment or concurrent-load validation. Local interactive checks are recorded above.

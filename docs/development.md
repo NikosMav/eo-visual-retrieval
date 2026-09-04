@@ -12,24 +12,30 @@ src/eo_visual_retrieval/
   stac.py                catalog discovery and preview materialization
   chips.py               windowed, georeferenced Sentinel-2 chip materialization
   retrieval.py           exact cosine index
+  app/                   served catalog, FastAPI routes, templates, CSS, and JavaScript
   faiss_benchmark.py     exact-versus-HNSW systems benchmark
   evaluation.py          ranked-retrieval metrics
   tracking.py            opt-in local MLflow aggregate tracking
   visualization.py       per-class best/worst result grids
   datasets/
     eurosat.py           EuroSAT identity, band order, and archive access
+    bigearthnet*.py      pinned metadata, reference footprints, and staged S2 acquisition
+    acquisition_io.py    bounded, retryable archive transport
   benchmarks/
     eurosat.py           spatially separated benchmark preparation and audit
+    coverage.py          geographic validation and distance calculations
+    bigearthnet*.py      frozen partition preparation and spatial audit
   embeddings/
     pca.py               classical pixel/PCA baseline
     projection.py        persisted PCA basis for embedding unseen images
     dinov2.py            frozen DINOv2 baseline
-    ssl4eo.py            frozen 13-band SSL4EO-S12 encoder
+    ssl4eo.py            frozen RGB and 13-band SSL4EO-S12 encoders
     terramind.py         pinned frozen TerraMind-Tiny experiment
     encode.py            embed one new image with a store's own backend
     store.py             NPZ embedding persistence
 scripts/                 executed validation utilities outside the package
-tests/                   lightweight unit tests
+tests/                   unit and integration tests
+tests/browser/           separate Chromium tests with a synthetic corpus
 docs/                    concepts, workflow, decisions, and evidence
 ```
 
@@ -54,7 +60,7 @@ older Windows path limits when the environment lives inside an already long chec
 ```powershell
 py -3.11 -m venv C:\Users\<you>\.venvs\eovr
 C:\Users\<you>\.venvs\eovr\Scripts\python -m pip install --upgrade pip
-C:\Users\<you>\.venvs\eovr\Scripts\python -m pip install -e ".[dev,stac,geo,ml,search]"
+C:\Users\<you>\.venvs\eovr\Scripts\python -m pip install -e ".[dev,app,stac,geo,ml,search,bigearthnet]"
 ```
 
 An editable install points Python at the current checkout. If the repository is moved or another
@@ -76,13 +82,15 @@ Optional groups add:
 
 - `stac`: PySTAC Client, Planetary Computer signing, and HTTP downloads;
 - `geo`: Rasterio for windowed, aligned geospatial raster processing;
+- `bigearthnet`: PyArrow for Parquet metadata and Zstandard for streaming archives;
 - `pca`: scikit-learn alone, so the deterministic PCA path is testable without PyTorch;
 - `ml`: scikit-learn PCA and PyTorch/torchvision DINOv2 execution;
 - `search`: Faiss CPU indexes and psutil process-memory observations;
-- `app`: FastAPI, Uvicorn, Jinja2, and python-multipart for the served comparison surface;
+- `app`: FastAPI/Starlette, Uvicorn, Jinja2, and python-multipart for the comparison surface;
+- `browser`: Pytest and Playwright for an explicitly provisioned Chromium test environment;
 - `dev`: Ruff, Mypy, Pytest, and pytest-cov.
 - `cpu` / `cuda`: mutually exclusive official PyTorch wheel selections when using uv;
-- `experiments`: local MLflow and Optuna (tuning still requires independent development data);
+- `experiments`: opt-in local MLflow; Optuna remains a future tuning choice, not an installed dependency;
 - `foundation`: TerraTorch for the TerraMind model experiment.
 
 This lets lightweight CI test the deterministic core without downloading model checkpoints.
@@ -109,13 +117,29 @@ To inspect coverage:
 ```powershell
 C:\Users\<you>\.venvs\eovr\Scripts\python -m pytest `
   --cov=eo_visual_retrieval `
-  --cov-report=term-missing
+  --cov-report=term-missing --cov-fail-under=75
 ```
 
 GitHub Actions uses the committed lockfile on Linux and Windows, Python 3.11 and 3.12, running
 Ruff, Mypy, the test suite, and `uv pip check`. Coverage must stay at or above 75%; the threshold
-is a regression guard, not a target. CI installs `dev`, `geo`, `search`, and `pca`, so tests that
-require PyTorch skip there and run locally in the full environment.
+is a regression guard, not a target. CI installs `dev`, `app`, `stac`, `geo`, `search`, `pca`, and
+`bigearthnet`. Tests that require PyTorch skip there and run locally in the full environment.
+
+A separate Ubuntu job builds and installs the wheel with only `app` and `browser`, installs
+Chromium, and exercises navigation, uploads, errors, keyboard controls, and narrow layouts with
+synthetic images. It also checks that serving does not need neural frameworks or scikit-learn.
+No real imagery or checkpoints are downloaded by either CI profile.
+
+To run browser tests locally, use a separate environment with the `app,browser` extras, then run
+`python -m playwright install chromium` and `python -m pytest tests/browser --browser chromium`.
+Without Playwright the browser module skips in the ordinary suite; installing the browser extra
+means Chromium must also be available.
+
+Run dependency hygiene on demand with `uvx --from deptry==0.25.1 deptry src scripts`. The
+configuration maps distribution/import names and treats the test groups as development-only.
+Jinja2 and python-multipart are declared integrations loaded by FastAPI. Review findings rather
+than removing packages from text matching alone. See the [checkpoint review](project-review.md)
+for the dependency security finding and third-party tool assessment.
 
 ## Testing strategy
 
@@ -130,6 +154,8 @@ The current tests cover:
 - Faiss normalization, deterministic scale expansion, ANN overlap, and exact/HNSW contracts;
 - skipped queries, partial relevance, and the metric denominators;
 - STAC query bounds, media-type handling, output-filename safety, and manifest sanitization;
+- non-finite geographic coordinates, unsafe API identities, preview-name collisions, and image hashes;
+- served catalog path containment, label/split alignment, valid vectors, and PCA projection compatibility;
 - EuroSAT band mapping, archive-member validation, and checksum verification;
 - PCA fitting on index rows only, and reuse of a saved projection;
 - DINOv2 guards, device selection, and preprocessing against a stubbed checkpoint;
@@ -144,7 +170,8 @@ High-value missing tests include:
 - malformed embedding-store archives;
 - CLI-level Faiss output and argument validation;
 - the multispectral encoders' torch execution paths, which need real checkpoints;
-- future geospatial windows, transforms, scaling, nodata, and cloud masks.
+- independent verification of EuroSAT manifest geometry against source raster geometry;
+- CLI projection binding and extreme-vector behavior beyond the validated serving boundary.
 
 Network and large-model tests should not make the default unit suite slow or unreliable. Use small
 local fixtures and dependency injection or mocks for deterministic behavior, then record bounded

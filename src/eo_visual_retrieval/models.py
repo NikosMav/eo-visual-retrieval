@@ -4,8 +4,23 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from typing import Any, Literal
+from urllib.parse import urlparse
 
 Split = Literal["index", "query"]
+
+
+def validate_stac_api_url(api_url: str) -> None:
+    """Reject access-bearing endpoints before they become persistent provenance."""
+    parsed = urlparse(api_url)
+    if parsed.scheme != "https" or not parsed.hostname:
+        raise ValueError("STAC api_url must use HTTPS with a hostname")
+    if (
+        parsed.username is not None
+        or parsed.password is not None
+        or parsed.query
+        or parsed.fragment
+    ):
+        raise ValueError("STAC api_url must not contain userinfo, query parameters, or fragments")
 
 
 @dataclass(frozen=True)
@@ -64,6 +79,9 @@ class StacItemRecord:
     datetime: str | None
     asset_keys: tuple[str, ...]
     properties: dict[str, Any] = field(default_factory=dict)
+
+    def __post_init__(self) -> None:
+        validate_stac_api_url(self.api_url)
 
     def to_dict(self) -> dict[str, Any]:
         return {

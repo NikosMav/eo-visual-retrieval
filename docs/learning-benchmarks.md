@@ -3,7 +3,7 @@
 ## The short answer
 
 This project currently **uses pretrained neural networks but does not train or fine-tune them**.
-DINOv2 and SSL4EO-S12 arrive with learned weights and remain frozen. The project uses them as
+DINOv2, SSL4EO-S12, and TerraMind arrive with learned weights and remain frozen. The project uses them as
 feature extractors: an image goes in and an embedding vector comes out.
 
 PCA is different. It has no downloaded pretrained weights, so this project fits a 64-component
@@ -11,8 +11,9 @@ projection using only the 1,600 index images. That is a learned preprocessing st
 unsupervised: PCA never sees the EuroSAT class labels, and it never sees the 400 query images while
 fitting.
 
-No model is currently trained to predict EuroSAT classes. The labels are opened only by the
-evaluator after retrieval, like an answer key used to score the ranked results.
+No model is currently trained to predict EuroSAT classes. Labels support balanced dataset
+preparation, the UI's query picker, and relevance display/evaluation. They do not train the
+encoders or contribute to cosine ranking.
 
 ## Vocabulary
 
@@ -37,6 +38,8 @@ evaluator after retrieval, like an answer key used to score the ranked results.
 | PCA-64 | In this project, from index RGB pixels | Fit once, then transform index and query | No | No |
 | DINOv2 ViT-S/14 | Outside this project during DINOv2 pretraining | Load frozen checkpoint and infer RGB embeddings | No | No parameter learning |
 | SSL4EO-S12 ResNet-50 | Outside this project during EO self-supervised pretraining | Load frozen checkpoint and infer 13-band embeddings | No | No parameter learning |
+| SSL4EO-S12 RGB ResNet-50 | Outside this project during EO self-supervised pretraining | Load a distinct frozen RGB checkpoint | No | No parameter learning |
+| TerraMind-Tiny | Outside this project during multimodal EO pretraining | Load frozen checkpoint and infer S2L1C embeddings | No | No parameter learning |
 
 “Unsupervised” or “self-supervised” does not mean nothing was learned. It means the representation
 was learned without this benchmark's ordinary class labels. DINOv2 and SSL4EO-S12 underwent large
@@ -154,9 +157,13 @@ At `k=10`, the system can return only ten items.
 Recall therefore looks small even for a strong model. It should not be compared with precision as
 if both had the same attainable range in this benchmark.
 
-## Executed result
+## Original three-model result
 
-All numbers below come from the same 400 queries; no query was skipped.
+All numbers below come from the same 400 queries; no query was skipped. This table describes
+the original comparison. The later [SSL4EO RGB comparison](results/eurosat-v1-ssl4eo-band-ablation.md)
+and [TerraMind experiment](results/terramind-v1.md) add two variants now available in the explorer.
+Read [the current interpretation](models-and-metrics.md#fair-model-comparison) before attributing
+a score difference to individual bands or pretraining choices.
 
 | Representation | Input | Learning performed here | P@10 | R@10 | mAP@10 | nDCG@10 |
 |---|---|---|---:|---:|---:|---:|
@@ -210,15 +217,19 @@ copies rather than new EO observations. Read [the Faiss benchmark](benchmark-fai
 
 ## Would we train a model later?
 
-Possibly, but training would be a new experimental phase rather than a hidden change to this
-benchmark. Fine-tuning on EuroSAT would require a new data contract:
+Possibly, but training would be a new experimental phase with a new data contract. EuroSAT v1
+queries have already informed repeated development comparisons and are a regression set, not
+an untouched final test. A later training experiment would need to:
 
-1. keep the current query set untouched as a final test set;
-2. divide the non-query data into training and validation partitions with leakage controls;
+1. preserve EuroSAT v1 for regression comparisons;
+2. obtain independently held-out data and freeze training, development, and final partitions;
 3. train only on the training partition;
 4. choose hyperparameters using validation, never the final queries;
 5. report the frozen baseline and fine-tuned result separately;
-6. repeat on another dataset before making a generalization claim.
+6. assess transfer before making a broader generalization claim.
+
+BigEarthNet's frozen partitions are the current confirmatory plan. Imagery acquisition is paused,
+and the model roster calls for frozen inference; it does not authorize fine-tuning or final scoring.
 
 For now, frozen models are valuable because they let us compare representations without adding a
 supervised training loop, label leakage, hyperparameter tuning, or a much larger experiment matrix.

@@ -1,14 +1,18 @@
 import json
+from contextlib import nullcontext
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any
 
 import pytest
 
+from eo_visual_retrieval.hashing import file_sha256
 from eo_visual_retrieval.models import StacItemRecord
 from eo_visual_retrieval.stac import (
     StacSearchConfig,
     _image_suffix,
     _safe_filename,
+    materialize_previews,
     read_stac_jsonl,
     write_stac_jsonl,
 )
@@ -105,7 +109,9 @@ def test_asset_filenames_cannot_escape_the_output_directory(
 ) -> None:
     name = _safe_filename(item_id, ".tif")
 
-    assert name == expected
+    assert name.startswith(expected.removesuffix(".tif") + "-")
+    assert name.endswith(".tif")
+    assert name == _safe_filename(item_id, ".tif")
     assert "/" not in name and "\\" not in name
 
 
@@ -134,3 +140,63 @@ def test_empty_and_malformed_manifests_are_rejected(tmp_path: Path) -> None:
     malformed.write_text('{"api_url": "https://example.test"}\n', encoding="utf-8")
     with pytest.raises(ValueError, match="invalid STAC manifest record at line 1"):
         read_stac_jsonl(malformed)
+
+
+@pytest.mark.parametrize("url", [
+    "https://name:synthetic-password@example.test/stac",
+    "https://example.test/stac?api_key=synthetic-value",
+    "https://example.test/stac#synthetic-fragment",
+    "https:///missing-host",
+])
+def test_access_bearing_api_urls_are_rejected_before_persistence(url: str, tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="api_url"):
+        StacSearchConfig(api_url=url, collection="test", bbox=(0, 0, 1, 1), datetime="2024-01-01")
+    record: dict[str, Any] = {
+        "api_url": url, "collection": "test", "item_id": "test",
+        "bbox": None, "datetime": None, "asset_keys": [],
+    }
+    manifest = tmp_path / "unsafe.jsonl"
+    manifest.write_text(json.dumps(record), encoding="utf-8")
+    with pytest.raises(ValueError, match="invalid STAC manifest"):
+        read_stac_jsonl(manifest)
+
+
+def test_preview_colliding_sanitized_names_keep_distinct_pixels(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    import requests
+    from pystac_client import Client
+
+    records = [StacItemRecord(
+        api_url="https://example.test/stac", collection="test", item_id=identity,
+        bbox=None, datetime=None, asset_keys=("rendered_preview",),
+    ) for identity in ("tile/a", "tile:a")]
+    contents = {"https://example.test/a.png": b"first", "https://example.test/b.png": b"second"}
+    items = dict(zip((row.item_id for row in records), contents, strict=True))
+    collection = SimpleNamespace(get_item=lambda identity: SimpleNamespace(assets={
+        "rendered_preview": SimpleNamespace(href=items[identity], media_type="image/png"),
+    }))
+    monkeypatch.setattr(Client, "open", lambda url: SimpleNamespace(
+        get_collection=lambda name: collection,
+    ))
+
+    def response(url: str, **kwargs: Any) -> Any:
+        return nullcontext(SimpleNamespace(
+            headers={"content-type": "image/png"}, raise_for_status=lambda: None,
+            iter_content=lambda chunk_size: iter([contents[url]]),
+        ))
+
+    monkeypatch.setattr(requests, "Session", lambda: SimpleNamespace(
+        mount=lambda *args: None, get=response,
+    ))
+    images = materialize_previews(
+        records, output_dir=tmp_path / "images", image_manifest=tmp_path / "images.jsonl",
+    )
+    assert images[0].path != images[1].path
+    retained = [(tmp_path / "images" / row.path).read_bytes() for row in images]
+    assert retained == [b"first", b"second"]
+    assert all(row.metadata["sha256"] == file_sha256(tmp_path / "images" / row.path)
+               for row in images)
+    assert _safe_filename("tile/a", ".png", namespace="first") != _safe_filename(
+        "tile/a", ".png", namespace="second"
+    )
