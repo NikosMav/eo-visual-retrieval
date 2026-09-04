@@ -190,12 +190,14 @@ existing EuroSAT stores and is independent of that transfer.
 
 Remaining work:
 
-1. Resolve the unresolved optional Lightning advisory. Two earlier items are closed. The CLI
-   projection-binding and numerical-validation gaps: the shared normalizer, exact ranker, and
-   new-image query path now reject the inputs the served catalog already refused, and every
-   published EuroSAT result was reproduced from the existing stores. DINOv2 model-code
-   provenance: the commit behind the published vectors was recovered, pinned, and confirmed by
-   bitwise reproduction of those vectors. See [validation](validation.md).
+1. The near-term correctness and provenance items are closed. The CLI projection-binding and
+   numerical-validation gaps: the shared normalizer, exact ranker, and new-image query path now
+   reject the inputs the served catalog already refused, and every published EuroSAT result was
+   reproduced from the existing stores. DINOv2 model-code provenance: the commit behind the
+   published vectors was recovered, pinned, and confirmed by bitwise reproduction of those
+   vectors. The optional Lightning advisory: assessed as unreachable in every executed path, with
+   re-check triggers recorded in [ADR 0010](decisions/0010-lightning-checkpoint-advisory.md);
+   it stays open until a patched release exists. See [validation](validation.md).
 2. Select a hosting destination and validate deployment of the local explorer. The container
    definition uses read-only runtime mounts; it does not package data into Git or the image.
 3. Resume BigEarthNet acquisition only after explicit operator authorization and a viable transfer

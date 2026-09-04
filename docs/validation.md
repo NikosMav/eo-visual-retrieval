@@ -24,6 +24,33 @@ The first three boxes record different kinds of evidence; passing one does not i
 See [Understanding the benchmarks](learning-benchmarks.md) for the evidence ladder and the exact
 training boundary.
 
+## Lightning advisory reachability — 2026-09-04
+
+Executed on Windows 11. Dependabot alert #4 reports
+[GHSA-qqmf-gpg7-g8gw](https://github.com/advisories/GHSA-qqmf-gpg7-g8gw) / CVE-2026-58659 against
+the locked `lightning` 2.6.5. The advisory names its fix as a commit, and both `lightning` and
+`pytorch-lightning` published 2.6.5 as their latest release, so no upgrade was available. The
+alert was assessed for reachability instead of severity alone, continuing the practice recorded in
+the [2026-09-03 dependency review](#dependency-vulnerability-review--2026-09-03).
+
+| Check | Executed evidence |
+|---|---|
+| Advisory record | Read from the GitHub advisory API: high severity, published 2026-07-15, updated 2026-09-03, not withdrawn. Description says "through 2.6.5, fixed in commit `d710d68`"; the structured range says affected `< 2022.6.15`, first patched `2022.6.15` |
+| Version conflict | `2022.6.15` is a calendar-numbered 2022 development release. PEP 440 orders 2.6.5 below it, which is why the alert fires, but that "remedy" would install a package four years older than the one described as vulnerable |
+| Vulnerable path | Read in the installed 2.6.5: `load_from_checkpoint` (`core/module.py:1796`, `core/datamodule.py:245`) reaches `_load_state` (`core/saving.py:119`), which at lines 157-161 imports and calls the dotted path found in the checkpoint's `_instantiator` hyperparameter. `weights_only=True` does not prevent it, because the import happens after deserialization |
+| Repository | No reference to `lightning` or `load_from_checkpoint` in `src/`, `tests/`, or `scripts/` |
+| Dependency chain | terratorch 1.2.11, torchgeo 0.8.1, and lightly 1.5.22 contain no file referencing `load_from_checkpoint` |
+| Installed profiles | Lightning arrives only through the optional `foundation` extra. The container installs `app`, the CI test job installs `dev app stac geo search pca bigearthnet`, and the browser job installs `app browser`; none includes it |
+
+The project's only checkpoint deserialization is `embeddings/terramind.py`, which verifies SHA-256
+against a pinned digest, builds with `pretrained=False`, and calls `torch.load(weights_only=True)`
+directly. The protection is that Lightning's loader is never invoked, not that flag: the advisory
+describes a bypass of exactly that flag inside the loader.
+
+Recorded as [ADR 0010](decisions/0010-lightning-checkpoint-advisory.md) with machine-readable
+evidence. This is source inspection of the versions installed on one machine, not an exhaustive
+audit, and it is void if any of the ADR's re-check triggers fires.
+
 ## DINOv2 model-code provenance recovered and pinned — 2026-09-04
 
 Executed on Windows 11. This revision closed the second remaining item of the
