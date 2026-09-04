@@ -134,18 +134,15 @@ exact search remains the selected default. See `docs/benchmark-faiss.md`, ADR 00
 
 ### Milestone 5: usable project surface
 
-Expose the evaluated workflow through a small API or interactive demo. A user should be able to
-select or upload a public query chip, inspect ranked results and metadata, and see which model and
-index generated the ranking.
+Exposed as `eovr serve`: a representation-comparison view over the prepared EuroSAT v1 stores,
+where one query is ranked by every supplied model with its provenance, and an uploaded image is
+ranked through the persisted PCA basis. See [Pipeline and CLI](pipeline-and-cli.md).
 
-The retrieval capability this needs now exists: `eovr query --image` embeds a new local image with
-the backend recorded in the store and ranks it against the index, and `embed-pca
---projection-output` persists the one basis that is fitted inside this project. What remains for
-this milestone is the interface itself — an HTTP surface, upload handling, and result presentation
-— not the underlying ranking path.
-
-Containers and release automation should be added when they support this workflow, not as isolated
-portfolio decoration.
+What remains is deployment and breadth, not capability: the surface has not been published
+anywhere, uploads work for PCA only because the other representations would put a model framework
+in the served process, and it serves EuroSAT v1 alone. A public deployment needs no paid
+infrastructure — the served payload is roughly 35 MB with no GPU and no model framework — so it
+remains a reversible step rather than a cost decision.
 
 ## Portfolio-ready definition
 

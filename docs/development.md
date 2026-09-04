@@ -79,6 +79,7 @@ Optional groups add:
 - `pca`: scikit-learn alone, so the deterministic PCA path is testable without PyTorch;
 - `ml`: scikit-learn PCA and PyTorch/torchvision DINOv2 execution;
 - `search`: Faiss CPU indexes and psutil process-memory observations;
+- `app`: FastAPI, Uvicorn, Jinja2, and python-multipart for the served comparison surface;
 - `dev`: Ruff, Mypy, Pytest, and pytest-cov.
 - `cpu` / `cuda`: mutually exclusive official PyTorch wheel selections when using uv;
 - `experiments`: local MLflow and Optuna (tuning still requires independent development data);

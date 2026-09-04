@@ -99,6 +99,8 @@ learning-oriented explanation.
 | Multi-label development evaluator | Score binary and graded Jaccard relevance while excluding final queries | `evaluation_multilabel.py` |
 | Local experiment tracker | Opt-in aggregate metrics/content hashes to local MLflow SQLite | `tracking.py` |
 | Result-grid renderer | Select per-class best/worst queries and render exact ranked results | `visualization.py` |
+| Served catalog | Rank one query with several representations and report their provenance | `app/catalog.py` |
+| Comparison surface | Route, render, and accept uploads over the served catalog | `app/main.py` |
 | CLI | Validate arguments and connect all stages | `cli.py` |
 
 ## Data contracts
@@ -226,9 +228,9 @@ The byte RGB file is the model input. It does not replace the reflectance artifa
   without it can still be queried by item ID, but not with a new image.
 - Exact search is intentionally linear in corpus size.
 - HNSW is benchmarked but is not the current default query path.
-- There is no product API, serving database, job runner, or interactive retrieval viewer.
-  The CLI can now rank a new local image, which is the capability such a surface would need,
-  but no HTTP interface, upload handling, or session state exists.
+- The interactive viewer serves precomputed vectors only. There is still no serving database or
+  job runner, and uploads are embedded with PCA alone, because the other representations would
+  require a model framework in the served process.
   Optional local MLflow SQLite stores experiment metrics, not the serving corpus.
 
 These constraints define the roadmap rather than hidden production claims.
