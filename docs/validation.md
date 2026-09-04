@@ -24,6 +24,49 @@ The first three boxes record different kinds of evidence; passing one does not i
 See [Understanding the benchmarks](learning-benchmarks.md) for the evidence ladder and the exact
 training boundary.
 
+## DINOv2 model-code provenance recovered and pinned — 2026-09-04
+
+Executed on Windows 11. This revision closed the second remaining item of the
+[checkpoint review](project-review.md): DINOv2 loaded the Torch Hub repository by branch, so no
+run recorded which model code produced its vectors.
+
+### Recovery
+
+The Torch Hub cache still held the source tree downloaded on 2026-08-27 16:27. Comparing it
+against a clone of the upstream repository by git blob hash identified exactly one matching
+commit among the 65 in that repository, with all 203 files byte-identical:
+
+```text
+facebookresearch/dinov2  7764ea0f912e53c92e82eb78a2a1631e92725fc8
+```
+
+The cached checkpoint `dinov2_vits14_pretrain.pth` is 88,283,115 bytes with SHA-256
+`B938BF1BC15CD2EC0FEACFE3A1BB553FE8EA9CA46A7E1D8D00217F29AEF60CD9`, matching the value recorded
+for the 2026-08-27 smoke validation. The repository publishes no tags, so a commit is the only
+immutable reference available.
+
+### Reproduction
+
+| Check | Executed evidence |
+|---|---|
+| Pinned download | `eovr embed-dinov2` fetched `zipball/7764ea0f…` into a commit-named cache directory, separate from the branch directory. The extracted tree hashed to `735a0c2c248537a5a746d87d86ea4b9a32c869ec0ffcc470b05e90be3c1246a8`, the digest computed from the earlier branch download |
+| Published vectors | The 2,000 × 384 float32 matrix is **bitwise identical** to `artifacts/eurosat-v1-dinov2-vits14.npz`; maximum absolute difference 0.0 and identical IDs, labels, and splits |
+| Store identity | The committed store file is unchanged at SHA-256 `b63731fc…`, matching the value recorded in the Faiss results |
+| Code gates | Ruff passed; Mypy passed across 79 source files; suite 365 passed, 3 skipped, coverage 87.14% against the 75% floor; 367 passed, 1 skipped in the environment where torch is installed |
+
+Bitwise reproduction settles what timestamps alone could only suggest: commit `7764ea0f` is the
+code that produced the published DINOv2 vectors, not merely code consistent with them. Because the
+vectors are identical, every published DINOv2 metric follows unchanged.
+
+### Boundary
+
+The published store predates the provenance fields and was left untouched, because its file digest
+is cited in the Faiss records; stores built from now on carry their own reference and tree digest.
+The digest covers the extracted source tree, excluding bytecode caches written by the first import.
+It is not a signature: it proves the delivered bytes match the reviewed commit, not that the commit
+itself is trustworthy. The checkpoint is still fetched by URL without a recorded expected digest;
+only the code reference is pinned here.
+
 ## Shared numerical contracts — 2026-09-04
 
 Executed on Windows 11, Python 3.12.1, NumPy 2.5.2, Faiss 1.15.0, uv 0.12.9. This revision

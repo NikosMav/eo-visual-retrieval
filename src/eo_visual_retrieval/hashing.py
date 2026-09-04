@@ -67,3 +67,29 @@ def verify_sha256(path: Path, expected: str) -> str:
     if observed.lower() != expected.lower():
         raise ValueError(f"checkpoint checksum mismatch: expected {expected}, observed {observed}")
     return observed
+
+
+def source_tree_sha256(root: Path, *, skip_directories: frozenset[str] = frozenset()) -> str:
+    """Return one digest over the files of a downloaded source tree.
+
+    Pinning an immutable reference states which code was requested; this states
+    which code arrived. Relative paths and sizes are hashed alongside contents so
+    a renamed or truncated file cannot collide with the original tree. Generated
+    caches are excluded because they appear only after the code has been
+    imported and would make the same download digest differently.
+    """
+
+    if not root.is_dir():
+        raise ValueError(f"source tree does not exist: {root}")
+    digest = hashlib.sha256()
+    for path in sorted(
+        candidate
+        for candidate in root.rglob("*")
+        if candidate.is_file() and skip_directories.isdisjoint(candidate.relative_to(root).parts)
+    ):
+        relative = path.relative_to(root).as_posix()
+        digest.update(f"{relative}\x00{path.stat().st_size}\x00".encode())
+        with path.open("rb") as stream:
+            for chunk in iter(lambda: stream.read(CHUNK_BYTES), b""):
+                digest.update(chunk)
+    return digest.hexdigest()
