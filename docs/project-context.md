@@ -198,8 +198,11 @@ Remaining work:
    vectors. The optional Lightning advisory: assessed as unreachable in every executed path, with
    re-check triggers recorded in [ADR 0010](decisions/0010-lightning-checkpoint-advisory.md);
    it stays open until a patched release exists. See [validation](validation.md).
-2. Select a hosting destination and validate deployment of the local explorer. The container
-   definition uses read-only runtime mounts; it does not package data into Git or the image.
+2. Select a hosting destination. The container itself is no longer unproven: it builds and serves
+   the real corpus locally with its documented hardening, recorded in [validation](validation.md).
+   What remains is choosing a destination, transferring the prepared subset there, and measuring
+   load, TLS, and cost. The definition uses read-only runtime mounts; it does not package data
+   into Git or the image.
 3. Resume BigEarthNet acquisition only after explicit operator authorization and a viable transfer
    strategy. Preserve the frozen 4,000 index / 500 development / 500 final IDs; verify every native
    band before preparing model inputs. No BigEarthNet score exists.

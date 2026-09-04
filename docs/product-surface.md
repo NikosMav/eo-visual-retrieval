@@ -72,9 +72,17 @@ docker compose up --build
 docker compose down
 ```
 
-Container execution is **not yet validated**: the local Docker engine failed to start during the
-2026-09-04 check. The Compose configuration was parsed successfully. This is a launch definition,
-not evidence of a built image or running deployment.
+Container execution is **validated locally**. On 2026-09-04 the image built from this definition
+and served the prepared EuroSAT corpus on Docker Engine 29.7.2 under Windows 11: all five stores
+loaded, the comparison and thumbnail routes answered, PCA upload ranked a new image, and the
+upload limits and error paths behaved as documented. The container ran as uid 10001 with a
+read-only root filesystem, all capabilities dropped, and both mounts read-only; writes to `/app`
+and `/stores` failed while the bounded `/tmp` stayed writable. Startup took about 71 seconds,
+most of it verifying 2,000 image hashes and re-projecting the PCA vectors across a bind mount.
+The executed checks are in [validation](validation.md).
+
+That is evidence of a working local container, not of a deployment. Load, hosting, and TLS remain
+unmeasured.
 
 Public hosting is not configured. Choose a destination, transfer the prepared subset separately,
 and verify the container there before publishing a URL. Hosting costs, TLS, concurrency limits,
