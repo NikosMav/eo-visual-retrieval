@@ -1,0 +1,55 @@
+{
+  "base_commit": "0f8e964cd60bf1f69055bd31b927d2471bfdcfa3",
+  "complete_archive_checksum_verified": false,
+  "complete_selected_bands": 24,
+  "complete_selected_patches": 2,
+  "completion_marker_written": false,
+  "compressed_bytes_received": 148504576,
+  "compressed_bytes_reserved": 150994944,
+  "date": "2026-09-03",
+  "environment": {
+    "python": "3.11.5",
+    "rasterio": "1.4.4",
+    "zstandard": "0.25.0"
+  },
+  "execution_note": "Executed with the pre-update diagnostic mode of the same range, Zstandard, tar, raster, and storage path. The selected prefix files match the earlier two-patch pilot diagnostic.",
+  "geometry_disagreements": 0,
+  "http_range_requests": 9,
+  "last_patch_seen": "S2A_MSIL2A_20170613T101031_N9999_R022_T33UUP_60_50",
+  "local_state_sha256": "872b96f622b58220df4ac3e7bd39e7e603a97b95898c984335989e4d44fe12ce",
+  "no_embedding_or_retrieval_run": true,
+  "prefix_checksum_scope": "Only the received prefix; the archive MD5 was not verified.",
+  "prefix_md5": "3d76233f054d690cd97dce74a221fd4b",
+  "prefix_sha256": "0511f05aefcae5147cf49c6f5fb13e5882a3f3c9d10a9d4afb9065e7c77d13f7",
+  "projected_full_stream_hours_at_sample_rate": 14.19747729457172,
+  "projection_basis_bytes": 63251710377,
+  "projection_note": "Linear projection from this one local two-minute sample; not an SLA.",
+  "retained_tiff_bytes": 329120,
+  "retained_tiff_files": 24,
+  "sample_seconds": 120.0,
+  "scanned_raster_members": 14573,
+  "schema": "bigearthnet-s2-throughput-sample-v1",
+  "selected_patches": [
+    {
+      "all_geometry_agrees": true,
+      "band_count": 12,
+      "partition": "index",
+      "patch_id": "S2A_MSIL2A_20170613T101031_N9999_R022_T33UUP_37_88",
+      "receipt_sha256": "8157fb68388dc4e27a46484e5d584ff1dbc98e721627fad1eb0f03bd9f5a6c8f"
+    },
+    {
+      "all_geometry_agrees": true,
+      "band_count": 12,
+      "partition": "index",
+      "patch_id": "S2A_MSIL2A_20170613T101031_N9999_R022_T33UUP_39_87",
+      "receipt_sha256": "ffe285af584e6bc6f5f99b059e5513cd431240dc7b0dffaa3b0d62c794dcc52e"
+    }
+  ],
+  "status": "incomplete_diagnostic",
+  "stop_reason": "acquisition wall-clock limit reached",
+  "storage_bytes_after_sample": 299916681,
+  "storage_count_scope": "Logical acquisition file bytes including retained inputs and diagnostic roots.",
+  "storage_peak_bytes": 300219618,
+  "throughput_mib_per_second": 1.1802083333333333,
+  "transport_retries": 0
+}
