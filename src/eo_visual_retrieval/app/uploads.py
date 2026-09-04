@@ -7,10 +7,9 @@ is established by decoding rather than by trusting a declared content type.
 The decode itself works entirely in memory. It is not true, however, that the
 bytes never touch disk on the served path: the pinned Starlette multipart parser
 spools any file part larger than 1 MB to an on-disk temporary file before this
-module ever sees the data, and it enforces its own part-size limit only on
-non-file fields, leaving a file part unbounded. That is why a request-size guard
-(``app.main.ContentLengthLimitMiddleware``) runs ahead of form parsing, rejecting
-an oversized declared body before Starlette starts spooling it.
+module ever sees the data. The request-size guard in ``app.main`` buffers and
+bounds actual bytes before form parsing, including bodies with no declared
+length, so an oversized request never reaches the temporary-file spool.
 """
 
 from __future__ import annotations

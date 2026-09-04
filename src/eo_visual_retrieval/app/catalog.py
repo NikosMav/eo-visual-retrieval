@@ -8,7 +8,6 @@ computed offline.
 
 from __future__ import annotations
 
-import hashlib
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -18,6 +17,7 @@ from numpy.typing import NDArray
 
 from eo_visual_retrieval.embeddings.projection import PcaProjection
 from eo_visual_retrieval.embeddings.store import EmbeddingStore
+from eo_visual_retrieval.hashing import file_sha256
 from eo_visual_retrieval.manifests import read_jsonl
 from eo_visual_retrieval.models import ImageRecord
 from eo_visual_retrieval.retrieval import ExactCosineIndex
@@ -32,6 +32,7 @@ class RankedResult:
     item_id: str
     score: float
     relevant: bool | None
+    label: str | None = None
 
 
 @dataclass(frozen=True)
@@ -129,6 +130,8 @@ class Catalog:
             if (
                 store.metadata.get("manifest_sha256") != reference_digest
                 or store.ids != reference.ids
+                or store.splits != reference.splits
+                or store.labels != reference.labels
             ):
                 raise ValueError(
                     "supplied stores did not rank the same corpus: their manifest hashes "
@@ -179,7 +182,7 @@ class Catalog:
                 )
         loaded = [EmbeddingStore.load(path) for path in stores]
         cls._require_one_corpus(loaded)
-        manifest_digest = hashlib.sha256(manifest.read_bytes()).hexdigest()
+        manifest_digest = file_sha256(manifest)
         stores_digest = loaded[0].metadata.get("manifest_sha256")
         if manifest_digest != stores_digest:
             raise ValueError(
@@ -225,6 +228,9 @@ class Catalog:
         except KeyError as error:
             raise KeyError(f"unknown item: {item_id}") from error
 
+    def label(self, item_id: str) -> str | None:
+        return self._label_by_query[item_id]
+
     def _pca_position(self) -> int | None:
         for position, store in enumerate(self._stores):
             if store.metadata.get("backend") == PCA_BACKEND:
@@ -242,6 +248,10 @@ class Catalog:
             value = store.metadata.get(key)
             if isinstance(value, str):
                 provenance[key] = value
+        bands = store.metadata.get("bands")
+        provenance["input"] = (
+            ", ".join(str(band) for band in bands) if isinstance(bands, list) else "RGB"
+        )
         return provenance
 
     def _rank(
@@ -259,6 +269,7 @@ class Catalog:
             RankedResult(
                 item_id=item.item_id,
                 score=item.score,
+                label=self._label_by_id.get(item.item_id),
                 relevant=(
                     None
                     if query_label is None

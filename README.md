@@ -6,8 +6,8 @@ approximate ranking, and honest offline evaluation.
 
 The project compares transparent PCA, frozen RGB DINOv2, and frozen 13-band SSL4EO-S12 and
 TerraMind-Tiny features.
-It provides a tested offline pipeline, command-line interface, and a first spatially separated
-EuroSAT benchmark. Broader temporal and cross-dataset generalization has **not** yet been
+It provides a tested offline pipeline, command-line interface, interactive representation explorer,
+and a spatially separated EuroSAT benchmark. Broader temporal and cross-dataset generalization has **not** yet been
 established.
 
 ## What the project does
@@ -22,6 +22,8 @@ established.
 - Persists the fitted PCA basis so images outside the original manifest can be embedded.
 - Provides an experimental pinned, frozen TerraMind-Tiny S2L1C embedding adapter.
 - Ranks images with exact cosine similarity, for a stored item or a new local RGB image.
+- Serves a browser comparison across prepared representations, with class filtering, provenance,
+  and PCA queries from uploaded RGB chips.
 - Benchmarks Faiss HNSW recall, latency, construction time, and storage against exact search.
 - Reports Precision@k, Recall@k, mAP@k, and nDCG@k.
 - Scores multi-label development queries with Jaccard relevance while holding final queries out.
@@ -59,6 +61,16 @@ data-access workflow, but they are not analysis-ready chips and must not be used
 quantitative retrieval claims.
 
 See [Architecture](docs/architecture.md) for the components, boundaries, and design decisions.
+
+## Explore the product surface
+
+The local explorer compares the same query across PCA, DINOv2, SSL4EO-S12 RGB, SSL4EO-S12
+13-band, and TerraMind-Tiny stores. Inspect class labels, cosine scores, and model provenance,
+or upload an RGB chip to search through the saved PCA projection.
+
+Install the optional `app` extra and follow [the product surface guide](docs/product-surface.md)
+for the launch command, required local artifacts, and container setup. The viewer needs no GPU
+or model framework. Prepared imagery and embeddings remain outside Git.
 
 ## Are we training models?
 
@@ -228,6 +240,8 @@ Read the guides in this order:
 16. [BigEarthNet acquisition and evaluation](docs/benchmark-bigearthnet.md) — source inventory, SSL4EO compatibility gate, and multi-label development scoring.
 17. [BigEarthNet S2 streaming](docs/bigearthnet-streaming.md) — single-pass staging, inline geometry checks, interruption recovery, and throughput evidence.
 
+18. [Product surface](docs/product-surface.md) — interactive comparison, local launch, upload behavior, and container status.
+
 ## Data and privacy policy
 
 - Do not commit EO imagery, generated embeddings, credentials, or signed URLs.
@@ -242,7 +256,8 @@ The locked-environment, local-tracking, GPU-parity, and frozen TerraMind regress
 executed. Measurement then established that EuroSAT cannot supply a confirmatory holdout: preparing
 v1 consumed 725 of its 845 fifty-kilometre cells, leaving one class with no untouched patches.
 EuroSAT v1 is permanently a regression benchmark, and BigEarthNet v2 is the specified confirmatory
-set. Exact search remains the default; Qdrant is the first future product-store experiment, and
+set. Its downloader is implemented, but the full acquisition remains paused. The EuroSAT product
+surface works locally; hosting is the next deployment decision. Exact search remains the default; Qdrant is the first future product-store experiment, and
 Milvus is deferred until scale evidence justifies it. See
 [ADR 0005](docs/decisions/0005-evaluation-foundations-before-product.md) and
 [ADR 0006](docs/decisions/0006-confirmatory-evaluation-data.md).

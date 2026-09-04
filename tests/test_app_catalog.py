@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+from dataclasses import replace
 from pathlib import Path
 
 import numpy as np
@@ -389,6 +390,21 @@ def test_query_ids_are_the_query_split_only(tmp_path: Path) -> None:
     catalog = _catalog(tmp_path)
 
     assert catalog.query_ids == ("forest/q.png",)
+
+
+@pytest.mark.parametrize("change_labels", [True, False])
+def test_same_hash_cannot_hide_changed_labels_or_partitions(
+    tmp_path: Path, change_labels: bool
+) -> None:
+    records = _records()
+    original = _store(records, "pca", None, manifest_sha256="a" * 64)
+    changed = (
+        replace(original, labels=("water", *original.labels[1:]))
+        if change_labels else
+        replace(original, splits=("query", *original.splits[1:]))
+    )
+    with pytest.raises(ValueError, match="same corpus"):
+        Catalog(records, [original, changed], image_root=tmp_path)
 
 
 def test_unknown_item_is_rejected(tmp_path: Path) -> None:

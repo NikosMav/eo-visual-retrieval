@@ -9,31 +9,26 @@ from __future__ import annotations
 from pathlib import Path
 
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import HTMLResponse, PlainTextResponse, Response
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.concurrency import run_in_threadpool
-from starlette.types import ASGIApp, Receive, Scope, Send
+from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 from eo_visual_retrieval.app.catalog import Catalog, ModelRanking
 from eo_visual_retrieval.app.thumbnails import thumbnail_jpeg
 from eo_visual_retrieval.app.uploads import MAX_UPLOAD_BYTES, decode_upload
 
 TEMPLATES = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
-THUMBNAIL_PIXELS = 96
+THUMBNAIL_PIXELS = 192
 
 
 class ContentLengthLimitMiddleware:
-    """Reject an oversized request by its declared ``Content-Length`` header.
+    """Bound actual request bytes before multipart parsing, including chunked bodies.
 
-    This runs ahead of Starlette's multipart form parser, which spools any file
-    part larger than 1 MB to an on-disk temporary file and enforces its own size
-    limit only on non-file fields (see ``starlette/formparsers.py``). Without this
-    guard, a large upload would be fully written to disk before ``decode_upload``
-    ever got a chance to refuse it.
-
-    A chunked request has no ``Content-Length`` header and is not covered here;
-    a real deployment needs a reverse-proxy body-size limit in front of this
-    process for that case.
+    Buffer at most the cap in memory, then replay the body to the parser. An
+    oversized body never reaches the parser or its temporary-file spool.
     """
 
     def __init__(self, app: ASGIApp, *, max_bytes: int) -> None:
@@ -48,11 +43,43 @@ class ContentLengthLimitMiddleware:
                 try:
                     length = int(declared)
                 except ValueError:
-                    length = None
-                if length is not None and length > self._max_bytes:
+                    length = -1
+                if length < 0:
+                    await PlainTextResponse("invalid content length", status_code=400)(
+                        scope, receive, send
+                    )
+                    return
+                if length > self._max_bytes:
                     response = PlainTextResponse("upload exceeds size limit", status_code=413)
                     await response(scope, receive, send)
                     return
+            buffer = bytearray()
+            while True:
+                message = await receive()
+                if message["type"] == "http.disconnect":
+                    return
+                chunk = message.get("body", b"")
+                if len(buffer) + len(chunk) > self._max_bytes:
+                    await PlainTextResponse("upload exceeds size limit", status_code=413)(
+                        scope, receive, send
+                    )
+                    return
+                buffer.extend(chunk)
+                if not message.get("more_body", False):
+                    break
+            body = bytes(buffer)
+            buffer.clear()
+            delivered = False
+
+            async def replay() -> Message:
+                nonlocal delivered
+                if delivered:
+                    return await receive()
+                delivered = True
+                return {"type": "http.request", "body": body, "more_body": False}
+
+            await self._app(scope, replay, send)
+            return
         await self._app(scope, receive, send)
 
 
@@ -67,7 +94,11 @@ def create_app(catalog: Catalog, *, k: int = 5) -> FastAPI:
             "supply a larger corpus"
         )
     app = FastAPI(title="EO visual retrieval")
+    app.mount("/static", StaticFiles(directory=Path(__file__).parent / "static"), name="static")
     app.add_middleware(ContentLengthLimitMiddleware, max_bytes=MAX_UPLOAD_BYTES)
+    query_groups: dict[str, list[str]] = {}
+    for item_id in catalog.query_ids:
+        query_groups.setdefault(catalog.label(item_id) or "Unlabelled", []).append(item_id)
 
     def render(
         request: Request,
@@ -75,18 +106,42 @@ def create_app(catalog: Catalog, *, k: int = 5) -> FastAPI:
         *,
         query_id: str | None,
         is_upload: bool,
+        error: str | None = None,
+        status_code: int = 200,
     ) -> HTMLResponse:
         return TEMPLATES.TemplateResponse(
             request=request,
             name="compare.html",
+            status_code=status_code,
             context={
                 "rankings": rankings,
                 "query_ids": catalog.query_ids,
                 "query_id": query_id,
                 "is_upload": is_upload,
                 "upload_available": catalog.upload_available,
+                "query_groups": dict(sorted(query_groups.items())),
+                "query_label": catalog.label(query_id) if query_id else None,
+                "index_size": catalog.index_size,
+                "k": k,
+                "error": error,
             },
         )
+
+    @app.exception_handler(HTTPException)
+    async def page_error(request: Request, error: HTTPException) -> Response:
+        if request.url.path == "/thumbnail":
+            return PlainTextResponse("thumbnail unavailable", status_code=error.status_code)
+        return render(request, [], query_id=None, is_upload=False,
+                      error=str(error.detail), status_code=error.status_code)
+
+    @app.exception_handler(RequestValidationError)
+    async def invalid_form(request: Request, error: RequestValidationError) -> Response:
+        return render(request, [], query_id=None, is_upload=False,
+                      error="Choose a query or an image file, then try again.", status_code=422)
+
+    @app.get("/healthz")
+    def health() -> dict[str, str]:
+        return {"status": "ok"}
 
     @app.get("/", response_class=HTMLResponse)
     def home(request: Request) -> HTMLResponse:
@@ -105,15 +160,19 @@ def create_app(catalog: Catalog, *, k: int = 5) -> FastAPI:
     async def compare_upload(
         request: Request, image: UploadFile = File(...)  # noqa: B008
     ) -> HTMLResponse:
-        data = await image.read(MAX_UPLOAD_BYTES + 1)
         try:
+            if not catalog.upload_available:
+                raise ValueError("Image upload is unavailable in this demo. Choose a corpus query.")
+            data = await image.read(MAX_UPLOAD_BYTES + 1)
             # decode_upload does real image-library CPU work; running it inline in
             # an async handler would block the event loop and stall every other
             # request for the duration of one decode.
             pixels = await run_in_threadpool(decode_upload, data, image_size=catalog.image_size)
-            ranking = catalog.rank_uploaded(pixels, k=k)
+            ranking = await run_in_threadpool(catalog.rank_uploaded, pixels, k=k)
         except ValueError as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
+        finally:
+            await image.close()
         return render(request, [ranking], query_id=None, is_upload=True)
 
     @app.get("/thumbnail")

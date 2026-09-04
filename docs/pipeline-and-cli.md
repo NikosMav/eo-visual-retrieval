@@ -386,6 +386,9 @@ requested local JSON. See [Evaluation foundations](evaluation-foundations.md).
 
 ## Serve the comparison surface
 
+Install `.[app]` first. See [the product surface guide](product-surface.md) for all five stores,
+container startup, upload limits, and the deployment boundary.
+
 ```powershell
 eovr serve `
   --manifest data/eurosat-v1/manifest.jsonl `

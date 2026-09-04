@@ -21,6 +21,34 @@ The first three boxes record different kinds of evidence; passing one does not i
 See [Understanding the benchmarks](learning-benchmarks.md) for the evidence ladder and the exact
 training boundary.
 
+## Product surface completion checks — 2026-09-04
+
+Executed on Windows with Python 3.11.5 against all five existing EuroSAT v1 stores. No embedding
+store, evaluator, ranker, frozen partition, or published result was changed.
+
+| Check | Executed evidence |
+|---|---|
+| Code gates | Ruff passed; Mypy passed over 77 source files; full suite 312 passed in 19.44 s, coverage 86.09% (75% floor) |
+| Local server | Home and `/healthz` returned HTTP 200; 400 query items and 1,600 index images |
+| Browser comparison | Class selector changed AnnualCrop to River; five named representation rows rendered |
+| Responsive layout | Inspected desktop and 390 × 844 viewport; mobile document width and content width both 375 CSS pixels (scrollbar excluded), with no horizontal overflow |
+| Provenance | Expanded PCA details showed exact-cosine, 1,600 index items, RGB, and the committed manifest hash |
+| Real upload | `River/River_1114.tif`, 9,090 bytes, returned HTTP 200, one PCA row and five unknown-relevance results; also submitted through the browser file picker |
+| Invalid input | Undecodable upload returned HTTP 400 with an HTML alert; absent query returned HTTP 404 |
+| Thumbnail | HTTP 200, `image/jpeg`, 1,015 bytes for the River query |
+| Packaging | Wheel built successfully; archive includes template, CSS, and JavaScript; both static routes returned HTTP 200 |
+| Container configuration | `docker compose config --quiet` passed; engine startup failed, so image build and container execution were not validated |
+
+The upload source SHA-256 was
+`1029f8cf20fddfa9cf38baf606b3500f0d249081bbef4c29011bdf00c8738739`.
+GitHub inspection also found Dependabot alert #4 open for the optional Lightning dependency in
+`uv.lock`. This change does not upgrade that ML stack or dismiss the alert; the served app extra
+does not include Lightning.
+
+These are interaction and execution checks, not new retrieval-quality measurements. Public
+hosting and concurrent-load behavior remain unvalidated. BigEarthNet acquisition remains paused;
+no imagery beyond the prior pilot patches was acquired, and no BigEarthNet score exists.
+
 ## Comparison surface smoke — 2026-09-03
 
 Executed against the local EuroSAT v1 corpus with four representations loaded.
@@ -759,7 +787,7 @@ B938BF1BC15CD2EC0FEACFE3A1BB553FE8EA9CA46A7E1D8D00217F29AEF60CD9
   usable S2 image partitions, frozen model settings, and final evaluation remain pending.
 - ANN behavior on a genuinely larger EO corpus rather than deterministic synthetic expansion.
 - Representative GPU throughput, precision/batch-size sweeps, or cross-hardware performance.
-- API, interactive-demo, or deployment validation.
+- Public deployment or concurrent-load validation. Local interactive checks are recorded above.
 
 ## Allowed claims
 

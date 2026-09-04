@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import hashlib
 import io
 import sys
@@ -21,8 +22,9 @@ from eo_visual_retrieval.models import ImageRecord, Split
 pytest.importorskip("fastapi")
 
 from fastapi.testclient import TestClient  # noqa: E402
+from starlette.types import Message, Receive, Scope, Send  # noqa: E402
 
-from eo_visual_retrieval.app.main import create_app  # noqa: E402
+from eo_visual_retrieval.app.main import ContentLengthLimitMiddleware, create_app  # noqa: E402
 
 IMAGE_SIZE = 8
 FEATURES = IMAGE_SIZE * IMAGE_SIZE * 3
@@ -190,6 +192,83 @@ def test_undecodable_upload_is_a_bad_request(client: TestClient) -> None:
 
     assert response.status_code == 400
     assert "not a readable image" in response.text
+    assert 'role="alert"' in response.text
+    assert "Return to the explorer" in response.text
+
+
+def test_health_and_missing_form_field(client: TestClient) -> None:
+    assert client.get("/healthz").json() == {"status": "ok"}
+    response = client.get("/compare")
+    assert response.status_code == 422
+    assert 'role="alert"' in response.text
+
+
+def test_query_picker_and_result_identity_are_labelled(client: TestClient) -> None:
+    page = client.get("/").text
+    assert '<optgroup label="forest">' in page
+    assert 'alt="Rank 1: forest"' in page
+    assert "forest/a.tif" in page
+    assert "Same class" in page
+    assert "Model &amp; data provenance" in page
+    assert 'name="viewport"' in page
+
+
+@pytest.mark.parametrize("declared", [None, b"1", b"bad", b"-1"])
+def test_actual_body_is_bounded_before_parser(declared: bytes | None) -> None:
+    """Chunked or falsely small declared bodies must never reach the parser."""
+    called = False
+    sent: list[Message] = []
+    messages: list[Message] = [
+        {"type": "http.request", "body": b"1234", "more_body": True},
+        {"type": "http.request", "body": b"5678", "more_body": False},
+    ]
+    chunks = iter(messages)
+
+    async def parser(scope: Scope, receive: Receive, send: Send) -> None:
+        nonlocal called
+        called = True
+
+    async def receive() -> Message:
+        return next(chunks)
+
+    async def send(message: Message) -> None:
+        sent.append(message)
+
+    headers = [] if declared is None else [(b"content-length", declared)]
+    asyncio.run(ContentLengthLimitMiddleware(parser, max_bytes=6)(
+        {"type": "http", "headers": headers}, receive, send
+    ))
+    assert not called
+    assert sent[0]["status"] == (400 if declared in (b"bad", b"-1") else 413)
+
+
+def test_bounded_chunked_body_is_replayed_and_disconnect_is_safe() -> None:
+    consumed: list[Message] = []
+
+    async def run(disconnected: bool) -> None:
+        chunks: list[Message] = [
+            {"type": "http.request", "body": b"12", "more_body": True},
+            {"type": "http.disconnect"} if disconnected else
+            {"type": "http.request", "body": b"34", "more_body": False},
+        ]
+
+        async def receive() -> Message:
+            return chunks.pop(0)
+
+        async def parser(scope: Scope, receive: Receive, send: Send) -> None:
+            consumed.append(await receive())
+
+        async def send(message: Message) -> None:
+            pass
+
+        await ContentLengthLimitMiddleware(parser, max_bytes=4)(
+            {"type": "http", "headers": []}, receive, send
+        )
+
+    asyncio.run(run(disconnected=True))
+    assert consumed == []
+    asyncio.run(run(disconnected=False))
+    assert consumed == [{"type": "http.request", "body": b"1234", "more_body": False}]
 
 
 def test_served_process_imports_no_model_framework() -> None:
