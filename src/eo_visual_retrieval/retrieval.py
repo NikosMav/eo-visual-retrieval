@@ -1,4 +1,10 @@
-"""Exact cosine retrieval used as the quality reference."""
+"""Exact cosine retrieval used as the quality reference.
+
+Normalization is delegated to :mod:`eo_visual_retrieval.vectors` so the ranker
+and the embedding backends can never disagree about what a unit vector is, and
+so both reject the inputs that would otherwise rank silently: a NaN row, whose
+norm is not ``0``, and a finite row whose norm overflows float32.
+"""
 
 from __future__ import annotations
 
@@ -6,6 +12,8 @@ from dataclasses import dataclass
 
 import numpy as np
 from numpy.typing import NDArray
+
+from eo_visual_retrieval.vectors import l2_normalize
 
 
 @dataclass(frozen=True)
@@ -23,11 +31,8 @@ class ExactCosineIndex:
             raise ValueError("index must contain at least one vector")
         if len(set(ids)) != len(ids):
             raise ValueError("index IDs must be unique")
-        norms = np.linalg.norm(vectors, axis=1, keepdims=True)
-        if np.any(norms == 0):
-            raise ValueError("index contains a zero-length vector")
         self.ids = tuple(ids)
-        self.vectors = np.asarray(vectors / norms, dtype=np.float32)
+        self.vectors = l2_normalize(vectors)
 
     def search(
         self,
@@ -40,11 +45,11 @@ class ExactCosineIndex:
             raise ValueError("query dimension does not match the index")
         if not 1 <= k <= len(self.ids):
             raise ValueError(f"k must be between 1 and {len(self.ids)}")
-        norm = float(np.linalg.norm(query))
-        if norm == 0:
-            raise ValueError("query must not be a zero-length vector")
+        # Normalizing through the shared rule also rejects a NaN query, whose
+        # norm is not ``== 0`` and whose NaN scores make ``argsort`` arbitrary.
+        unit_query = l2_normalize(np.asarray(query, dtype=np.float32).reshape(1, -1))[0]
 
-        scores = self.vectors @ (query / norm)
+        scores = self.vectors @ unit_query
         if exclude_id is not None and exclude_id in self.ids:
             scores = scores.copy()
             scores[self.ids.index(exclude_id)] = -np.inf

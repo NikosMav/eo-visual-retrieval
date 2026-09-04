@@ -34,6 +34,17 @@ def _projection(dimension: int = 2, image_size: int = IMAGE_SIZE) -> PcaProjecti
     )
 
 
+def _projection_with_digest(digest: str) -> PcaProjection:
+    projection = _projection()
+    return PcaProjection(
+        mean=projection.mean,
+        components=projection.components,
+        image_size=projection.image_size,
+        seed=projection.seed,
+        metadata={"manifest_sha256": digest},
+    )
+
+
 def _store(backend: str, dimension: int = 2, **metadata: Any) -> EmbeddingStore:
     return EmbeddingStore(
         ids=("a", "b"),
@@ -95,3 +106,29 @@ def test_dimension_mismatch_between_projection_and_store_is_rejected(tmp_path: P
             store=_store("pca", dimension=3, image_size=IMAGE_SIZE),
             projection=_projection(dimension=2),
         )
+
+
+def test_projection_from_a_different_corpus_is_rejected(tmp_path: Path) -> None:
+    """Matching shapes do not establish a shared coordinate system.
+
+    The served catalog re-projects corpus images to prove agreement. A CLI query
+    holds no images, so the recorded manifest digest is the binding available
+    here, and an unrelated fit must not rank against these vectors.
+    """
+
+    with pytest.raises(ValueError, match="manifest hash does not match"):
+        embed_query_image(
+            _image(tmp_path),
+            store=_store("pca", image_size=IMAGE_SIZE, manifest_sha256="a" * 64),
+            projection=_projection_with_digest("b" * 64),
+        )
+
+
+def test_projection_fitted_on_the_stores_manifest_is_accepted(tmp_path: Path) -> None:
+    vector = embed_query_image(
+        _image(tmp_path),
+        store=_store("pca", image_size=IMAGE_SIZE, manifest_sha256="a" * 64),
+        projection=_projection_with_digest("a" * 64),
+    )
+
+    assert vector.shape == (2,)

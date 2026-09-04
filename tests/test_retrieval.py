@@ -31,3 +31,27 @@ def test_exact_cosine_rejects_zero_query() -> None:
     index = ExactCosineIndex(["a"], np.asarray([[1.0, 0.0]], dtype=np.float32))
     with pytest.raises(ValueError, match="zero-length"):
         index.search(np.asarray([0.0, 0.0], dtype=np.float32), k=1)
+
+
+def test_exact_cosine_rejects_non_finite_index_vectors() -> None:
+    """A NaN norm is not ``== 0``, so a poisoned row used to pass the guard."""
+
+    with pytest.raises(ValueError, match="only finite values"):
+        ExactCosineIndex(
+            ["a", "b"],
+            np.asarray([[1.0, 0.0], [np.nan, 1.0]], dtype=np.float32),
+        )
+
+
+def test_exact_cosine_rejects_non_finite_query() -> None:
+    """NaN scores make ``argsort`` order arbitrary instead of raising."""
+
+    index = ExactCosineIndex(["a"], np.asarray([[1.0, 0.0]], dtype=np.float32))
+    with pytest.raises(ValueError, match="finite"):
+        index.search(np.asarray([np.nan, 1.0], dtype=np.float32), k=1)
+
+
+def test_exact_cosine_rejects_a_query_whose_norm_overflows() -> None:
+    index = ExactCosineIndex(["a"], np.asarray([[1.0, 0.0]], dtype=np.float32))
+    with pytest.raises(ValueError, match="norm overflowed float32"):
+        index.search(np.asarray([1e20, 1e20], dtype=np.float32), k=1)

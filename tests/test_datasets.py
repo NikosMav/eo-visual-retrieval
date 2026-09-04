@@ -146,3 +146,18 @@ def test_normalization_rejects_input_that_cannot_be_ranked() -> None:
         l2_normalize(np.asarray([[np.nan, 1.0]], dtype=np.float32))
     with pytest.raises(ValueError, match="zero-length rows"):
         l2_normalize(np.zeros((1, 3), dtype=np.float32))
+
+
+def test_normalization_rejects_inputs_whose_float32_norm_overflows() -> None:
+    """Finite inputs can still square to infinity, which silently zeroed the row.
+
+    ``matrix / inf`` returns zeros, so the zero-length guard above cannot catch
+    this: it runs before the division. An unranked zero vector must be an error
+    rather than a row that quietly stops matching anything.
+    """
+
+    overflowing = np.asarray([[1e20, 1e20]], dtype=np.float32)
+    assert np.isfinite(overflowing).all()
+
+    with pytest.raises(ValueError, match="norm overflowed float32"):
+        l2_normalize(overflowing)

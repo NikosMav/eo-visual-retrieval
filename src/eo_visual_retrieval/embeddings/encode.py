@@ -54,6 +54,23 @@ def embed_query_image(
                 "--projection-output; without it a new image cannot be placed in "
                 "the same space"
             )
+        # Shapes alone cannot establish a shared coordinate system: an unrelated
+        # fit of the same size projects into a different space. The served
+        # catalog re-projects corpus images to prove agreement, but a CLI query
+        # holds no images, so the recorded manifest digest is the binding
+        # available here. Projections saved before that digest was recorded stay
+        # accepted, without any claim that their basis was verified.
+        projection_digest = projection.metadata.get("manifest_sha256")
+        store_digest = store.metadata.get("manifest_sha256")
+        if (
+            projection_digest is not None
+            and store_digest is not None
+            and projection_digest != store_digest
+        ):
+            raise ValueError(
+                "PCA projection manifest hash does not match the store; supply the "
+                "basis saved by the embed-pca run that produced these vectors"
+            )
         recorded_size = store.metadata.get("image_size")
         if recorded_size is not None and int(recorded_size) != projection.image_size:
             raise ValueError(

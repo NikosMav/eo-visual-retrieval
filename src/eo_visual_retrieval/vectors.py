@@ -20,7 +20,15 @@ def l2_normalize(vectors: NDArray[np.float32]) -> NDArray[np.float32]:
         raise ValueError("vectors must be a non-empty two-dimensional matrix")
     if not np.isfinite(matrix).all():
         raise ValueError("vectors must contain only finite values")
-    norms = np.linalg.norm(matrix, axis=1, keepdims=True)
+    # Squaring a large finite float32 overflows, and dividing by the resulting
+    # infinity returns zeros: a row that silently stops matching anything. The
+    # zero-length guard runs before that division and cannot see it.
+    with np.errstate(over="ignore"):
+        norms = np.linalg.norm(matrix, axis=1, keepdims=True)
+    if not np.isfinite(norms).all():
+        raise ValueError(
+            "a vector norm overflowed float32; rescale the inputs before normalizing"
+        )
     if np.any(norms == 0):
         raise ValueError("vectors must not contain zero-length rows")
     return np.ascontiguousarray(matrix / norms, dtype=np.float32)

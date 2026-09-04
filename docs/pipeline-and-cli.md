@@ -273,10 +273,17 @@ never produced by preprocessing that disagrees with the vectors it is compared a
 
 | Store backend | New-image query | Requirement |
 |---|---|---|
-| `pca` | Supported | `--projection` from `embed-pca --projection-output` |
+| `pca` | Supported | `--projection` from the `embed-pca` run that produced this store |
 | `dinov2` | Supported | The model name recorded in the store; weights are fetched on first use |
 | `ssl4eo-s12` | Refused | Reads 13-band members from the verified archive, not an RGB file |
 | `terramind` | Refused | Same 13-band archive contract |
+
+`--projection` must be the basis saved beside these vectors. The command compares the manifest
+digest recorded in both files and refuses a projection fitted on a different corpus: two fits of
+the same shape project into different spaces, so matching dimensions prove nothing. A projection
+saved before that digest was recorded is still accepted, without any claim that its basis was
+verified. The server performs the stronger check, re-projecting corpus images at startup, because
+it has the images; a command-line query does not.
 
 The multispectral backends refuse rather than approximate: an RGB rendering is not the input
 those encoders were pretrained on, and silently substituting one would invalidate the ranking.
