@@ -21,7 +21,7 @@ The first three boxes record different kinds of evidence; passing one does not i
 See [Understanding the benchmarks](learning-benchmarks.md) for the evidence ladder and the exact
 training boundary.
 
-## Product surface completion checks — 2026-09-04
+## Product surface completion checks â€” 2026-09-04
 
 Executed on Windows with Python 3.11.5 against all five existing EuroSAT v1 stores. No embedding
 store, evaluator, ranker, frozen partition, or published result was changed.
@@ -31,7 +31,7 @@ store, evaluator, ranker, frozen partition, or published result was changed.
 | Code gates | Ruff passed; Mypy passed over 77 source files; full suite 312 passed in 19.44 s, coverage 86.09% (75% floor) |
 | Local server | Home and `/healthz` returned HTTP 200; 400 query items and 1,600 index images |
 | Browser comparison | Class selector changed AnnualCrop to River; five named representation rows rendered |
-| Responsive layout | Inspected desktop and 390 × 844 viewport; mobile document width and content width both 375 CSS pixels (scrollbar excluded), with no horizontal overflow |
+| Responsive layout | Inspected desktop and 390 Ã— 844 viewport; mobile document width and content width both 375 CSS pixels (scrollbar excluded), with no horizontal overflow |
 | Provenance | Expanded PCA details showed exact-cosine, 1,600 index items, RGB, and the committed manifest hash |
 | Real upload | `River/River_1114.tif`, 9,090 bytes, returned HTTP 200, one PCA row and five unknown-relevance results; also submitted through the browser file picker |
 | Invalid input | Undecodable upload returned HTTP 400 with an HTML alert; absent query returned HTTP 404 |

@@ -240,7 +240,7 @@ Read the guides in this order:
 16. [BigEarthNet acquisition and evaluation](docs/benchmark-bigearthnet.md) — source inventory, SSL4EO compatibility gate, and multi-label development scoring.
 17. [BigEarthNet S2 streaming](docs/bigearthnet-streaming.md) — single-pass staging, inline geometry checks, interruption recovery, and throughput evidence.
 
-18. [Product surface](docs/product-surface.md) � interactive comparison, local launch, upload behavior, and container status.
+18. [Product surface](docs/product-surface.md) — interactive comparison, local launch, upload behavior, and container status.
 
 ## Data and privacy policy
 
