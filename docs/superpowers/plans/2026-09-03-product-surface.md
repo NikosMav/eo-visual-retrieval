@@ -1,5 +1,9 @@
 # Product Surface Implementation Plan
 
+Historical implementation plan, delivered in PR #17. The original checkboxes below are not a
+current task queue. See [the operator guide](../../product-surface.md) and
+[validation record](../../validation.md) for current behavior and executed evidence.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Serve a representation-comparison interface over local EuroSAT v1 stores, where one query is ranked side by side by every supplied model with full provenance, and an uploaded RGB image is ranked through the persisted PCA basis.

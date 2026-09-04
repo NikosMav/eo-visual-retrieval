@@ -11,7 +11,7 @@ The current system is deliberately small:
 - files and JSONL manifests instead of a database;
 - compressed NumPy arrays instead of a vector service;
 - exact cosine search as the default plus an isolated Faiss HNSW benchmark path;
-- a command-line interface instead of an API or web application.
+- a command-line interface and an optional FastAPI comparison surface over local stores.
 
 Those choices keep the quality baseline understandable before scale-oriented components are added.
 
@@ -100,7 +100,7 @@ learning-oriented explanation.
 | Local experiment tracker | Opt-in aggregate metrics/content hashes to local MLflow SQLite | `tracking.py` |
 | Result-grid renderer | Select per-class best/worst queries and render exact ranked results | `visualization.py` |
 | Served catalog | Rank one query with several representations and report their provenance | `app/catalog.py` |
-| Comparison surface | Route, render, and accept uploads over the served catalog | `app/main.py` |
+| Comparison surface | Route, render, and bound uploads before parsing; serve responsive assets | `app/main.py`, `app/static/` |
 | CLI | Validate arguments and connect all stages | `cli.py` |
 
 ## Data contracts

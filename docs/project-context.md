@@ -20,6 +20,8 @@ The intended learning outcomes are:
 The repository currently contains:
 
 - a typed Python package and `eovr` command-line interface;
+- an interactive representation explorer over EuroSAT, with PCA uploads and model provenance;
+- a bounded, tested BigEarthNet S2 downloader; full acquisition is paused;
 - provider-neutral STAC discovery with sanitized JSONL manifests;
 - bounded public preview materialization with optional in-memory signing;
 - aligned Sentinel-2 BOA-reflectance and model-ready RGB chip materialization;
@@ -39,8 +41,8 @@ The repository currently contains:
 
 The current evidence proves that the workflow runs and establishes a first bounded RGB and
 multispectral representation comparison on spatially separated EuroSAT v1. It does **not**
-establish temporal, cross-dataset, or production generalization, nor isolate the causal value of
-extra bands. No portfolio claim should exceed the evidence in `docs/validation.md`.
+establish temporal, cross-dataset, or production generalization. The executed SSL4EO RGB/13-band
+ablation is recorded separately as EuroSAT development evidence. No portfolio claim should exceed the evidence in `docs/validation.md`.
 
 ## Project boundaries
 
@@ -61,8 +63,8 @@ flowchart LR
     M2[Milestone 2<br/>leakage-aware benchmark<br/>completed]
     M3[Milestone 3<br/>representation analysis<br/>completed for EuroSAT v1]
     M4[Milestone 4<br/>approximate search<br/>completed v1]
-    E[Evaluation foundations<br/>current phase]
-    M5[Milestone 5<br/>usable product surface<br/>after evaluation foundations]
+    E[Evaluation foundations<br/>completed]
+    M5[Milestone 5<br/>usable product surface<br/>local explorer implemented]
     M1 --> M2 --> M3 --> M4 --> E --> M5
 ```
 
@@ -138,11 +140,10 @@ Exposed as `eovr serve`: a representation-comparison view over the prepared Euro
 where one query is ranked by every supplied model with its provenance, and an uploaded image is
 ranked through the persisted PCA basis. See [Pipeline and CLI](pipeline-and-cli.md).
 
-What remains is deployment and breadth, not capability: the surface has not been published
-anywhere, uploads work for PCA only because the other representations would put a model framework
-in the served process, and it serves EuroSAT v1 alone. A public deployment needs no paid
-infrastructure — the served payload is roughly 35 MB with no GPU and no model framework — so it
-remains a reversible step rather than a cost decision.
+The local surface is implemented; public deployment is a separate remaining step. Uploads use
+PCA only and the corpus is EuroSAT v1. See the [product surface guide](product-surface.md) for
+local startup, the container definition, and the exact validation boundary. No hosted endpoint
+or production readiness is claimed.
 
 ## Portfolio-ready definition
 
@@ -178,25 +179,20 @@ TerraMind-Tiny. SSL4EO's 13-band reference cannot read BigEarthNet's 12-band Lev
 the RGB variant of the same pretraining corpus enters instead. That does not test the 13-band
 representation, and no report of the confirmatory result may imply otherwise.
 
-Remaining work, in order:
+Completed prerequisites: the SSL4EO RGB adapter and EuroSAT band ablation, frozen BigEarthNet
+selection/reference geometry, and the bounded S2 downloader. Its throughput diagnostic projected
+14.2 hours, so full acquisition remains **paused by operator decision**. The product surface uses
+existing EuroSAT stores and is independent of that transfer.
 
-0. Add the 3-band SSL4EO adapter path with the ADR 0009 checkpoint, leaving the 13-band contract
-   intact, and run it on EuroSAT v1 as the controlled band ablation ADR 0003 recorded as missing.
-   This is regression evidence, not confirmatory, and is independent of the acquisition below.
-1. Implement the [bounded acquisition proposal](decisions/0007-bounded-bigearthnet-acquisition.md).
-   The prerequisite footprint inventory and 4,000 index / 500 development / 500 final acquisition
-   IDs are complete under [ADR 0008](decisions/0008-bigearthnet-selection-protocol.md). The
-   [audit](results/bigearthnet-selection-audit.json) confirms all 19 labels, disjoint 50 km cells,
-   at least 7 km between centres, and chronological windows with at least 30 days between them.
-   Implement complete-stream integrity, safe staging, cleanup, and the 2 GiB disk ceiling before
-   beginning the 63,251,710,377-byte S2 transfer. Full S2 acquisition has not started.
-2. Acquire only the frozen IDs' 12 native bands, verify every band against the reference footprint,
-   and prepare image/relevance manifests. The acquisition-selection JSON is not yet model input.
-3. Implement the BigEarthNet input adapters, including TerraMind's native 12-band L2A path,
-   and the frozen-configuration final-scoring gate. The current TerraMind adapter is EuroSAT L1C.
-4. Run the development comparison and threshold sensitivity; freeze settings before the single
-   final evaluation. Audit pretraining and historical EuroSAT geography overlap before making
-   generalization claims.
-5. Test a Qdrant adapter against exact search, then return to the product surface.
+Remaining work:
+
+1. Select a hosting destination and validate deployment of the local explorer. The container
+   definition uses read-only runtime mounts; it does not package data into Git or the image.
+2. Resume BigEarthNet acquisition only after explicit operator authorization and a viable transfer
+   strategy. Preserve the frozen 4,000 index / 500 development / 500 final IDs; verify every native
+   band before preparing model inputs. No BigEarthNet score exists.
+3. Implement the BigEarthNet input adapters and frozen-configuration final-scoring gate, then run
+   development comparisons before a separately authorized final evaluation.
+4. Test a Qdrant adapter against exact search when serving requirements justify it.
 
 Paid services, gated-model accounts, and distributed Milvus deployment remain deferred.

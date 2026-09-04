@@ -1,92 +1,118 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>EO visual retrieval — representation comparison</title>
-  <style>
-    body { font-family: system-ui, sans-serif; margin: 2rem; color: #1a1a1a; }
-    h1 { font-size: 1.25rem; }
-    .note { color: #555; font-size: 0.85rem; max-width: 46rem; }
-    .row { margin: 1.5rem 0; border-top: 1px solid #ddd; padding-top: 1rem; }
-    .tiles { display: flex; gap: 0.5rem; align-items: flex-start; }
-    .tile img { width: 96px; height: 96px; display: block; border: 3px solid #ccc; }
-    .query img { border-color: #2864dc; }
-    .hit img { border-color: #239646; }
-    .miss img { border-color: #cd3737; }
-    .unknown img { border-color: #999; }
-    .cap { font-size: 0.7rem; color: #444; }
-    .prov { font-size: 0.7rem; color: #666; font-family: ui-monospace, monospace; }
-    form { margin: 1rem 0; }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Compare RGB and multispectral retrieval of satellite imagery from EuroSAT.">
+<title>EO Visual Retrieval · Compare satellite imagery</title>
+<link rel="stylesheet" href="/static/explorer.css">
 </head>
 <body>
-  <h1>Representation comparison</h1>
-  <p class="note">
-    One query, ranked by each representation with exact cosine similarity over
-    precomputed embeddings. Blue marks the query, green a same-class result, red a
-    different-class result, and grey a result whose relevance is unknown.
-  </p>
-  <p class="note">
-    Representations are listed in the order they were supplied on the command
-    line, not ranked by quality.
-  </p>
+<a class="skip" href="#results">Skip to results</a>
+<header>
+<div class="masthead">
+<a class="brand" href="/">EO Visual Retrieval</a>
+<span class="dataset">EuroSAT v1 / Representation explorer</span>
+</div>
+</header>
+<main>
+<div class="intro">
+<h1>Same place. Different ideas of similar.</h1>
+<p class="muted">Choose a satellite image and compare what each representation finds. RGB models see visible light. Multispectral models also use bands beyond human vision.</p>
+</div>
+{% if error %}<div class="notice error" role="alert">
+<strong>That query could not be completed.</strong>
+<br>{{ error }} <a href="/">Return to the explorer</a>
+</div>{% endif %}
+<div class="workspace">
+<aside aria-label="Choose a query">
+<h2>Your query</h2>
+<form method="get" action="/compare">
+<div id="class-filter" hidden>
+<label for="scene-class">Scene class</label>
+<select id="scene-class">
+<option value="">All classes</option>
+{% for label in query_groups %}<option value="{{ label }}" {% if label == query_label %}selected{% endif %}>{{ label }}</option>
+{% endfor %}
+</select>
+<br>
+<br>
+</div>
+<label for="item_id">Corpus query</label>
+<select name="item_id" id="item_id">
+{% for label, candidates in query_groups.items() %}<optgroup label="{{ label }}">
+{% for candidate in candidates %}<option value="{{ candidate }}" {% if candidate == query_id %}selected{% endif %}>{{ candidate.split("/")[-1] }}</option>
+{% endfor %}
+</optgroup>
+{% endfor %}
+</select>
+<button type="submit">Compare representations</button>
+</form>
+{% if query_id %}<img class="query-image" src="/thumbnail?item_id={{ query_id | urlencode }}" alt="Selected satellite query: {{ query_label or 'unlabelled' }}">
+<strong>{{ query_label or 'Unlabelled query' }}</strong>
+<div class="identifier">{{ query_id }}</div>{% elif is_upload %}<p class="note">Uploaded image selected. Its pixels are resized for the saved PCA projection.</p>{% endif %}
+<details class="upload" {% if is_upload %}open{% endif %}>
+<summary>Try your own image</summary>
+{% if upload_available %}<form method="post" action="/compare/upload" enctype="multipart/form-data">
+<p class="note" id="upload-help">Use an RGB satellite chip. Uploads search with PCA only; no class label or relevance score is assigned. Maximum request size: 8 MiB.</p>
+<label for="image">Image file</label>
+<input type="file" name="image" id="image" accept="image/*" required aria-describedby="upload-help">
+<button type="submit">Rank upload</button>
+</form>{% else %}<p class="note">Image upload is unavailable in this demo. Choose a corpus query to compare the supplied representations.</p>{% endif %}
+</details>
+</aside>
+<section class="results" id="results" aria-label="Retrieval results">
+<div class="results-heading">
+<h2>Nearest images</h2>
+<p class="note">{{ index_size }} index images / Top {{ k }}</p>
+</div>
+<p class="note">Exact cosine similarity. Scores describe proximity within each model, not confidence or a scale shared across models. Rows are not ranked by quality.</p>
+<div class="legend" aria-label="Relevance legend">
+<span style="--color:var(--blue)">Blue: query</span>
+<span style="--color:var(--green)">Same class</span>
+<span style="--color:var(--red)">Different class</span>
+<span style="--color:#71838c">Grey: unknown</span>
+</div>
+{% if is_upload %}<p class="notice">This image has <strong>no label</strong>. Grey means unknown, not wrong. No per-query metric is computed. Only PCA is used for uploads.</p>{% endif %}
+{% set names = {'pca':'PCA', 'dinov2_vits14':'DINOv2 ViT-S/14', 'ssl4eo-s12-moco-resnet50':'SSL4EO-S12 · 13 bands', 'ssl4eo-s12-rgb-moco-resnet50':'SSL4EO-S12 · RGB', 'terramind_v1_tiny':'TerraMind-Tiny · 13 bands'} %}
 
-  <form method="get" action="/compare">
-    <label for="item_id">Corpus query</label>
-    <select name="item_id" id="item_id">
-      {% for candidate in query_ids %}
-      <option value="{{ candidate }}" {% if candidate == query_id %}selected{% endif %}>{{ candidate }}</option>
-      {% endfor %}
-    </select>
-    <button type="submit">Rank</button>
-  </form>
+{% for ranking in rankings %}<article class="row">
+<div class="model-heading">
+<h3>{{ names.get(ranking.name, ranking.name) }}</h3>
+<span>{{ ranking.dimension }} dimensions</span>
+</div>
+<ol class="tiles">
+{% for result in ranking.results %}<li class="tile {% if result.relevant is none %}unknown{% elif result.relevant %}hit{% else %}miss{% endif %}">
+<img src="/thumbnail?item_id={{ result.item_id | urlencode }}" alt="Rank {{ loop.index }}: {{ result.label or 'unlabelled satellite image' }}" width="192" height="192" loading="lazy">
+<strong>{{ result.label or 'Unlabelled' }}</strong>
+<div class="cap">#{{ loop.index }} / Cosine {{ "%.3f"|format(result.score) }}</div>
+<div class="relevance">{% if result.relevant is none %}Unknown relevance{% elif result.relevant %}Same class{% else %}Different class{% endif %}</div>
+<details>
+<summary>Image identity</summary>
+<p class="identifier">{{ result.item_id }}</p>
+</details>
+</li>
+{% endfor %}
+</ol>
+<details class="provenance">
+<summary>Model &amp; data provenance</summary>
+<dl>
+{% for key, value in ranking.provenance.items() %}<dt>{{ key | replace('_',' ') }}</dt>
+<dd>{{ value }}</dd>
+{% endfor %}
+</dl>
+</details>
+</article>
+{% endfor %}
 
-  {% if upload_available %}
-  <form method="post" action="/compare/upload" enctype="multipart/form-data">
-    <label for="image">Or upload an image</label>
-    <input type="file" name="image" id="image" accept="image/*" required>
-    <button type="submit">Rank upload</button>
-  </form>
-  {% else %}
-  <p class="note">Upload is disabled: start the server with <code>--projection</code> to enable it.</p>
-  {% endif %}
-
-  {% if is_upload %}
-  <p class="note">
-    This query was uploaded, so it carries <strong>no label</strong>. Results are
-    shown without relevance colouring, and no per-query metric is computed: grey
-    means unknown, not wrong. Uploads are embedded with PCA only, the one
-    representation this project fits itself.
-  </p>
-  {% endif %}
-
-  {% for ranking in rankings %}
-  <div class="row">
-    <div><strong>{{ ranking.name }}</strong> &mdash; {{ ranking.dimension }} dimensions</div>
-    <div class="prov">
-      {% for key, value in ranking.provenance.items() %}{{ key }}={{ value }} {% endfor %}
-    </div>
-    <div class="tiles">
-      {% if query_id %}
-      <div class="tile query">
-        <img src="/thumbnail?item_id={{ query_id | urlencode }}" alt="query">
-        <div class="cap">query</div>
-      </div>
-      {% endif %}
-      {% for result in ranking.results %}
-      <div class="tile {% if result.relevant is none %}unknown{% elif result.relevant %}hit{% else %}miss{% endif %}">
-        <img src="/thumbnail?item_id={{ result.item_id | urlencode }}" alt="result">
-        <div class="cap">#{{ loop.index }} {{ "%.3f"|format(result.score) }}</div>
-      </div>
-      {% endfor %}
-    </div>
-  </div>
-  {% endfor %}
-
-  <p class="note">
-    Corpus imagery is drawn from the EuroSAT dataset (Zenodo record
-    <a href="https://doi.org/10.5281/zenodo.7711810">10.5281/zenodo.7711810</a>),
-    licensed under the MIT licence.
-  </p>
+</section>
+</div>
+<footer>
+<p>Same-class labels are a broad scene proxy, not a judgment of usefulness. These rankings explore the fixed EuroSAT v1 development benchmark; they do not establish geographic or seasonal generalization.</p>
+<p>Imagery: <a href="https://doi.org/10.5281/zenodo.7711810">EuroSAT, Zenodo record 7711810</a>, MIT licence. <a href="https://github.com/NikosMav/eo-visual-retrieval">Source, methods &amp; recorded results</a>.</p>
+</footer>
+</main>
+<script src="/static/explorer.js" defer>
+</script>
 </body>
 </html>

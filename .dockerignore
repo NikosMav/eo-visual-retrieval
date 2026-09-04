@@ -1,0 +1,11 @@
+# Build context is code only. Runtime data is mounted explicitly and read-only.
+*
+!Dockerfile
+!pyproject.toml
+!uv.lock
+!README.md
+!LICENSE.md
+!src/
+!src/**
+**/__pycache__/
+**/*.pyc

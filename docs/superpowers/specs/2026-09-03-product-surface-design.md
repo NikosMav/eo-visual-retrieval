@@ -1,7 +1,7 @@
 # Product surface: design
 
 - Date: 2026-09-03
-- Status: approved, not yet implemented
+- Status: core implementation merged in PR #17; current operator guide: `docs/product-surface.md`
 - Deliverable: a served comparison interface over the existing EuroSAT v1 evidence
 
 ## Why this work exists
@@ -31,8 +31,7 @@ the `River` query that RGB answers with buildings and 13-band answers correctly.
 ### Shape
 
 A new optional extra `app` — FastAPI, Uvicorn, Jinja2, and `python-multipart` — living in
-`src/eo_visual_retrieval/app/` and launched by `eovr serve`. Optional, so CI, the benchmark path,
-and the core install stay untouched, matching how `stac`, `geo`, `ml`, and `search` already work.
+`src/eo_visual_retrieval/app/` and launched by `eovr serve`. Optional, so the benchmark path and the core install remain independent, matching how `stac`, `geo`, `ml`, and `search` already work.
 
 The command takes the inputs explicitly, in the style of the existing CLI, rather than discovering
 them:
@@ -167,6 +166,6 @@ EuroSAT is MIT-licensed and openly accessible, confirmed from Zenodo record 7711
 |---|---|
 | Upload works only for PCA | Accepted, and stated on the page itself. A reviewer will notice; better that the page says it first. |
 | Thumbnail decoding cost | 2,000 GeoTIFFs at ~1.3 KB JPEG each is cheap, but must be LRU-cached or every page view re-decodes. |
-| New web dependencies in a deliberately lean project | Confined to an optional extra; CI's install set is unchanged. |
+| New web dependencies in a deliberately lean project | Confined to an optional extra; CI explicitly installs and exercises the optional app extra. |
 | The demo needs prepared local data | Inherent. Startup failures name the commands that produce it. |
 | A future public deployment inherits upload risk | The threat model above is designed for it now rather than retrofitted. |

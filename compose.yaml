@@ -1,0 +1,30 @@
+services:
+  explorer:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m,mode=1777
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    volumes:
+      - ./data/eurosat-v1:/corpus:ro
+      - ./artifacts:/stores:ro
+    command:
+      - --manifest
+      - /corpus/manifest.jsonl
+      - --image-root
+      - /corpus/images
+      - --store
+      - /stores/eurosat-v1-pca-64.npz
+      - --store
+      - /stores/eurosat-v1-dinov2-vits14.npz
+      - --store
+      - /stores/eurosat-v1-ssl4eo-s12-rgb-moco-resnet50.npz
+      - --store
+      - /stores/eurosat-v1-ssl4eo-s12-moco-resnet50.npz
+      - --store
+      - /stores/eurosat-v1-terramind-tiny.npz
+      - --projection
+      - /stores/eurosat-v1-pca-64-projection.npz
