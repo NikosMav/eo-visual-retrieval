@@ -24,6 +24,39 @@ The first three boxes record different kinds of evidence; passing one does not i
 See [Understanding the benchmarks](learning-benchmarks.md) for the evidence ladder and the exact
 training boundary.
 
+## Shared numerical contracts — 2026-09-04
+
+Executed on Windows 11, Python 3.12.1, NumPy 2.5.2, Faiss 1.15.0, uv 0.12.9. This revision
+closed the first remaining item of the [checkpoint review](project-review.md): the guards the
+served catalog already applied were absent from the offline callers. It added rejections only.
+No encoder, embedding format, frozen partition, metric, or ranking rule changed.
+
+| Check | Executed evidence |
+|---|---|
+| Code gates | Ruff passed; Mypy passed across 79 source files; full suite 360 passed, 2 skipped in 15.41 s; coverage 87.09% against the 75% floor |
+| EuroSAT reproduction | `eovr evaluate --k 10` re-run from the existing stores for PCA-64, DINOv2 ViT-S/14, SSL4EO-S12 13-band, and SSL4EO-S12 RGB; all four outputs compared byte-for-byte equal to the committed files in `docs/results/` |
+| TerraMind reproduction | Re-run against `artifacts/eurosat-v1-terramind-tiny.npz`; aggregate and per-class metrics identical to the `metrics` block of `docs/results/terramind-v1.json`, excluding its recorded MLflow run identifier |
+| ANN contract | `eovr benchmark-faiss` re-run on the real 1,600-vector PCA store; ANN recall@10 identical at every `ef_search` (0.9295, 0.96475, 0.9815, 0.99075). Latency and memory differ from the published record, as expected for a separate run on a different Python and NumPy |
+
+### Guards added
+
+- `vectors.l2_normalize` rejects rows whose float32 norm overflows to infinity. Such rows are
+  finite on input, so the existing finite check passed them, and `matrix / inf` then returned a
+  silently zeroed row that the zero-length guard could not see because it runs before the division.
+- `ExactCosineIndex` now normalizes through that same shared rule instead of a second copy of it,
+  so a NaN index row or NaN query is rejected rather than ranked. A NaN norm is not `== 0`, so the
+  previous guard admitted it, and NaN scores make `argsort` ordering arbitrary without error.
+- `embeddings.encode.embed_query_image` rejects a PCA projection whose recorded manifest digest
+  disagrees with the store's. Matching shapes never established a shared coordinate system.
+
+### Boundary
+
+A CLI query holds no corpus images, so it cannot repeat the served catalog's numerical
+re-projection check; the recorded manifest digest is the binding available offline. Projections
+saved before that digest was recorded are still accepted, and no claim is made that their basis
+was verified. Reproduction above covers the recorded EuroSAT stores on this machine; it is not a
+claim about other corpora or hardware.
+
 ## Project checkpoint revision — 2026-09-04
 
 Executed on Windows. This revision changed validation boundaries, serving checks, packaging tests,

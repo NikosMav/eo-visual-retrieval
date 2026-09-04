@@ -190,9 +190,11 @@ existing EuroSAT stores and is independent of that transfer.
 
 Remaining work:
 
-1. Address the CLI projection-binding and numerical-validation gaps in a separately validated
-   change, preserving the published EuroSAT rankings. Recover and pin DINOv2 code provenance
-   before the next inference run; track the unresolved optional Lightning advisory.
+1. Recover and pin DINOv2 code provenance before the next inference run; track the unresolved
+   optional Lightning advisory. The CLI projection-binding and numerical-validation gaps are
+   closed: the shared normalizer, exact ranker, and new-image query path now reject the inputs
+   the served catalog already refused, and every published EuroSAT result was reproduced from the
+   existing stores. See [validation](validation.md).
 2. Select a hosting destination and validate deployment of the local explorer. The container
    definition uses read-only runtime mounts; it does not package data into Git or the image.
 3. Resume BigEarthNet acquisition only after explicit operator authorization and a viable transfer

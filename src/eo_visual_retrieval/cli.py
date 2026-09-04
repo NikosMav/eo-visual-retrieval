@@ -709,7 +709,8 @@ def build_parser() -> argparse.ArgumentParser:
         "--projection",
         type=Path,
         help="fitted PCA basis from embed-pca --projection-output; required with --image "
-        "when the store was built by the pca backend",
+        "when the store was built by the pca backend, and rejected when it was fitted "
+        "on a different manifest",
     )
     query.add_argument("--device", default="auto")
     query.add_argument("--k", type=int, default=5)
