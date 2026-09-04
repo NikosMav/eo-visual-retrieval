@@ -24,6 +24,38 @@ The first three boxes record different kinds of evidence; passing one does not i
 See [Understanding the benchmarks](learning-benchmarks.md) for the evidence ladder and the exact
 training boundary.
 
+## Container execution — 2026-09-04
+
+Executed on Docker Engine 29.7.2 (linux/amd64) under Windows 11, replacing the earlier check where
+the engine failed to start. The image was built from the committed `Dockerfile` and run through the
+committed `compose.yaml` against the real EuroSAT v1 corpus and all five prepared stores.
+
+| Check | Executed evidence |
+|---|---|
+| Build | 386 MB image from `python:3.12-slim` with `uv sync --locked --no-dev --extra app --no-editable` |
+| Installed set | fastapi 0.141.1, starlette 1.6.0, uvicorn 0.52.4, jinja2 3.1.6, numpy 2.5.2, pillow 12.3.0, eo-visual-retrieval 0.1.0. torch, torchvision, terratorch, scikit-learn, faiss, mlflow, rasterio, and lightning are all absent |
+| Startup | Container started 16:41:18.60Z, application startup complete 16:42:29.25Z: 70.7 s, most of it verifying 2,000 image hashes and re-projecting the PCA vectors across a Windows bind mount. The same checks take 19.0 s directly on the host |
+| Catalog | All five stores loaded, 400 queries, `upload_available: true`; the health check reported healthy at its first probe after the start period |
+| Hardening | uid/gid 10001; `ReadonlyRootfs=true`; `CapDrop=[ALL]`; `no-new-privileges:true`. Writing to `/app` and `/stores` raised `OSError: [Errno 30] Read-only file system`; the bounded `/tmp` tmpfs was writable |
+| Routes | `/healthz` 200; `/` 200; `/compare` 200 for two different stored queries with different rankings; unknown item 404; `/thumbnail` 200 `image/jpeg` |
+| Path containment | `../../etc/passwd`, `/etc/passwd`, and `C:\Windows\win.ini` as `item_id` each returned 404 |
+| Upload | A 64 × 64 RGB PNG returned 200 with five ranked PCA results; a malformed image returned 400; 8.5 MB and 9 MiB uploads returned 413 `upload exceeds size limit`, as did a request declaring an oversized `Content-Length` without a body |
+| Restart | `docker compose restart` returned to healthy and served `/` 200; restart count 0, no OOM kill, steady memory 139.9 MiB |
+
+Twenty requests at concurrency ten all returned 200 in 1,031 ms wall clock. That is a smoke check
+that concurrent requests do not error. It is **not** a load measurement, and no throughput,
+latency, or capacity claim follows from it.
+
+### Deviation and boundary
+
+The host port was published on 8001 instead of 8000, because the developer's local explorer held
+8000 during the check. This was done with a scratch override outside the repository; the container
+port, command, mounts, and hardening were the committed ones. Nothing in `compose.yaml` changed.
+
+This establishes that the container builds and serves correctly on one engine and one machine. It
+is not a deployment: no host is selected, and TLS, public exposure, upload traffic policy, cost,
+and behavior under real load remain unmeasured.
+
 ## Lightning advisory reachability — 2026-09-04
 
 Executed on Windows 11. Dependabot alert #4 reports
