@@ -531,6 +531,101 @@ def _temporal_corpus(args: argparse.Namespace) -> None:
     )
 
 
+def _temporal_resplit(args: argparse.Namespace) -> None:
+    """Re-partition an existing corpus. Reads local chips; downloads nothing."""
+
+    from eo_visual_retrieval.temporal import day_gap_to_index, guarded_split
+
+    records = read_jsonl(args.manifest)
+    by_place: dict[str, dict[str, Any]] = {}
+    for record in records:
+        place = record.metadata.get("place_id")
+        day = record.metadata.get("acquisition_day")
+        if place is None or day is None:
+            raise ValueError(
+                f"record {record.item_id} has no place_id or acquisition_day; "
+                "this command re-splits a temporal corpus"
+            )
+        by_place.setdefault(place, {})[day] = record
+
+    kept: list[Any] = []
+    report = []
+    for place, days in sorted(by_place.items()):
+        split = guarded_split(
+            list(days),
+            anchor=args.query_anchor,
+            query_count=args.query_dates,
+            min_day_gap=args.min_day_gap,
+        )
+        report.append(
+            {
+                "place_id": place,
+                "available_days": len(days),
+                "queries": list(split.queries),
+                "index_days": len(split.index),
+                "excluded_days": len(split.excluded),
+                "observed_min_gap_days": split.observed_min_gap,
+                "usable": split.usable,
+            }
+        )
+        if not split.usable:
+            continue
+        for day in split.queries:
+            metadata = dict(days[day].metadata)
+            metadata["day_gap_to_nearest_index"] = day_gap_to_index(day, list(split.index))
+            kept.append(replace(days[day], split="query", metadata=metadata))
+        for day in split.index:
+            metadata = dict(days[day].metadata)
+            metadata.pop("day_gap_to_nearest_index", None)
+            kept.append(replace(days[day], split="index", metadata=metadata))
+
+    if not kept:
+        raise ValueError(
+            f"no place survives a {args.min_day_gap}-day guard; lower it or add acquisitions"
+        )
+    kept.sort(key=lambda record: record.item_id)
+    write_jsonl(kept, args.output)
+    gaps = [
+        record.metadata["day_gap_to_nearest_index"]
+        for record in kept
+        if record.split == "query"
+    ]
+    summary = {
+        "corpus": "temporal-place-v1-guarded",
+        "source_manifest_sha256": file_sha256(args.manifest),
+        "manifest_sha256": file_sha256(args.output),
+        "query_anchor": args.query_anchor,
+        "query_dates_per_place": args.query_dates,
+        "min_day_gap": args.min_day_gap,
+        "relevance": "same place, different acquisition date",
+        "places": sum(1 for row in report if row["usable"]),
+        "places_dropped": sum(1 for row in report if not row["usable"]),
+        "images": len(kept),
+        "index_items": sum(1 for record in kept if record.split == "index"),
+        "query_items": len(gaps),
+        "query_gap_days": {
+            "minimum": min(gaps),
+            "median": sorted(gaps)[len(gaps) // 2],
+            "maximum": max(gaps),
+        },
+        "results": report,
+    }
+    payload = json.dumps(summary, indent=2, sort_keys=True) + "\n"
+    args.report.parent.mkdir(parents=True, exist_ok=True)
+    args.report.write_text(payload, encoding="utf-8", newline="\n")
+    print(
+        json.dumps(
+            {
+                "output": str(args.output),
+                "places": summary["places"],
+                "images": summary["images"],
+                "query_gap_days": summary["query_gap_days"],
+            },
+            indent=2,
+        )
+    )
+
+
 def _analyze_retrieval(args: argparse.Namespace) -> None:
     from eo_visual_retrieval.analysis import analyze
     from eo_visual_retrieval.evaluation import evaluate_queries
@@ -952,6 +1047,28 @@ def build_parser() -> argparse.ArgumentParser:
     corpus.add_argument("--signer", choices=("none", "planetary-computer"),
                         default="planetary-computer")
     corpus.set_defaults(handler=_temporal_corpus)
+
+    resplit = commands.add_parser(
+        "temporal-resplit",
+        help="re-partition an existing temporal corpus behind a day-gap guard",
+    )
+    resplit.add_argument("--manifest", type=Path, required=True)
+    resplit.add_argument("--output", type=Path, required=True)
+    resplit.add_argument("--report", type=Path, required=True)
+    resplit.add_argument(
+        "--query-anchor",
+        default="2024-07-15",
+        help="queries are the acquisitions nearest this date, so the excluded "
+        "zone is one contiguous season rather than scattered gaps",
+    )
+    resplit.add_argument("--query-dates", type=int, default=2)
+    resplit.add_argument(
+        "--min-day-gap",
+        type=int,
+        default=90,
+        help="index acquisitions closer than this to any query are excluded",
+    )
+    resplit.set_defaults(handler=_temporal_resplit)
 
     analyze = commands.add_parser(
         "analyze-retrieval",

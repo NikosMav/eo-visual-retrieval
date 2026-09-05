@@ -242,6 +242,68 @@ def day_gap_to_index(query_day: str, index_days: Sequence[str]) -> int:
     return min(abs(_ordinal(day) - target) for day in index_days)
 
 
+@dataclass(frozen=True)
+class GuardedSplit:
+    """A split where every query is provably far in time from every answer."""
+
+    queries: tuple[str, ...]
+    index: tuple[str, ...]
+    excluded: tuple[str, ...]
+    observed_min_gap: int
+
+    @property
+    def usable(self) -> bool:
+        return bool(self.queries) and bool(self.index)
+
+
+def guarded_split(
+    days: Sequence[str],
+    *,
+    anchor: str,
+    query_count: int,
+    min_day_gap: int,
+) -> GuardedSplit:
+    """Hold out queries from one season and exclude index acquisitions near them.
+
+    Spreading queries through a timeline measures the gap to their nearest
+    answer; it does not create one. With acquisitions roughly a fortnight apart,
+    a spread query still sits beside a near-identical neighbour, so the retrieval
+    succeeds on similar sun and similar vegetation rather than on the place.
+
+    Anchoring the queries to one part of the year instead puts the excluded zone
+    in a single contiguous block, which leaves a large index while guaranteeing
+    every query is at least ``min_day_gap`` days from every image that could
+    answer it. This is the temporal counterpart of the benchmark's 5 km spatial
+    guard band, which excludes rather than merely records.
+    """
+
+    if query_count < 1:
+        raise ValueError("query_count must be positive")
+    if min_day_gap < 0:
+        raise ValueError("min_day_gap must not be negative")
+    ordered = sorted(set(days))
+    if len(ordered) < 2:
+        return GuardedSplit((), (), tuple(ordered), 0)
+
+    target = _ordinal(anchor)
+    queries = sorted(
+        sorted(ordered, key=lambda day: (abs(_ordinal(day) - target), day))[:query_count]
+    )
+    index, excluded = [], []
+    for day in ordered:
+        if day in queries:
+            continue
+        if day_gap_to_index(day, queries) >= min_day_gap:
+            index.append(day)
+        else:
+            excluded.append(day)
+
+    observed = (
+        min(day_gap_to_index(query, index) for query in queries) if index else 0
+    )
+    return GuardedSplit(tuple(queries), tuple(index), tuple(excluded), observed)
+
+
 def survey_places(
     places: Sequence[Place],
     *,
