@@ -40,6 +40,23 @@ flowchart LR
 This distinction is explained step by step in
 [Understanding training, retrieval, and the benchmarks](learning-benchmarks.md).
 
+## RemoteCLIP text/image baseline
+
+The optional search surface uses frozen RemoteCLIP ViT-B/32 with aligned text and RGB towers.
+Both produce normalized 512-dimensional vectors. A new store is required: PCA or DINOv2 vectors
+cannot be compared with RemoteCLIP text. Weight revision/digest, OpenCLIP version, preprocessing,
+and dimensionality form the shared-space identity; incompatible stores are refused.
+
+Text-only and image-only use exact cosine. Hybrid uses an explicit weighted sum of the two cosine
+scores in this same space, with each contribution reported. These scores are not calibrated
+probabilities, and the 0.5 default weight has not been tuned. Geography, collection, UTC date
+intervals and scene cloud percentages are hard prefilters, not inferred embedding properties.
+
+This adds a product experiment, not a new BigEarthNet confirmatory model. No caption-level or
+hybrid relevance score is established by the existing class or same-place evaluation. The
+[research decision](decisions/0012-multimodal-search.md) records alternatives and the required
+judged-query evaluation. [The search guide](multimodal-search.md) documents the interface.
+
 ## PCA baseline
 
 Principal Component Analysis learns orthogonal directions that explain the greatest variance in a

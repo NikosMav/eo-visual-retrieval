@@ -1,0 +1,50 @@
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Findings · EO Visual Retrieval</title>
+<link rel="stylesheet" href="/static/search.css"><link rel="stylesheet" href="/static/product.css">
+</head><body><a class="skip" href="#main">Skip to findings</a>
+<header><a href="/" class="brand">EO / VISUAL RETRIEVAL</a><span>Evidence notebook</span></header>
+{% include "product_nav.html" %}<main id="main">
+<div class="intro"><p class="eyebrow">MEASURE · QUESTION · IMPROVE</p><h1>What the evidence says.</h1>
+<p>Recorded experiments, their limits, and the questions they leave open. Search similarities and benchmark quality are different measurements.</p></div>
+{% if not evidence.sources %}<p class="evidence-section">No evidence reports were supplied to this deployment. Start with a results directory to see measured findings.</p>{% endif %}
+{% if evidence.eurosat %}
+<section class="evidence-section"><span class="badge">Measured / development benchmark</span><h2>Recognizing the same kind of scene</h2>
+<p>EuroSAT v1 · 1,600 index images · 400 queries · 10 land-cover classes. Relevance means the same class, which is a broad proxy for usefulness. These data informed model selection and are a regression reference.</p>
+<div class="tablewrap"><table><caption>Exact cosine retrieval, k = 10. Higher is better for each metric.</caption>
+<thead><tr><th>Representation</th><th>mAP@10</th><th>nDCG@10</th><th>Precision@10</th><th>Queries</th></tr></thead><tbody>
+{% for row in evidence.eurosat %}<tr><th><a href="/evidence/{{ row.source }}">{{ row.model }}</a></th><td>{{ '%.3f'|format(row.map_at_k) }}</td><td>{{ '%.3f'|format(row.ndcg_at_k) }}</td><td>{{ '%.3f'|format(row.precision_at_k) }}</td><td>{{ row.evaluated_queries }}</td></tr>{% endfor %}
+</tbody></table></div><p class="hint">Scores apply to this fixed corpus and split, not to arbitrary uploaded images or prompts. RGB and 13-band models have different inputs and pretrained weights; this comparison alone cannot isolate the effect of spectral bands.</p></section>
+{% endif %}
+{% if evidence.temporal %}
+<section class="evidence-section"><span class="badge">Measured / development diagnostic</span><h2>Finding the same place across dates</h2>
+<p>Guarded temporal v1 · 61 index images · 36 queries at 12 places · 2024. Each query is at least 90 days from every indexed acquisition of its place. No fine-tuning was performed for these results.</p>
+<div class="tablewrap"><table><caption>Top-1 accuracy: fraction of queries whose first result is the same place.</caption><thead><tr><th>Frozen representation</th><th>Top-1</th><th>Queries</th></tr></thead><tbody>
+{% for row in evidence.temporal %}<tr><th><a href="/evidence/{{ row.source }}">{{ row.model }}</a></th><td>{{ '%.1f%%'|format(row.precision_at_k * 100) }}</td><td>{{ row.evaluated_queries }}</td></tr>{% endfor %}
+</tbody></table></div>
+<p>Text alignment and image matching across seasons are different capabilities. Use this comparison to question model choice for image search; it does not score text or hybrid relevance.</p>
+<details><summary>Inspect all places and sample counts</summary><div class="tablewrap"><table><thead><tr><th>Place</th>{% for row in evidence.temporal %}<th>{{ row.model }} / top-1 (n)</th>{% endfor %}</tr></thead><tbody>
+{% for place in evidence.places %}<tr><th>{{ place }}</th>{% for row in evidence.temporal %}<td>{% if place in row.per_class %}{{ '%.0f%%'|format(row.per_class[place].precision_at_k * 100) }} ({{ row.per_class[place].evaluated_queries }}){% else %}Unavailable{% endif %}</td>{% endfor %}</tr>{% endfor %}
+</tbody></table></div></details>
+<p class="hint">Three queries per place are correlated; per-place accuracy moves in steps of 33 percentage points. These are descriptive results, not a significance test or proof of geographic generalization. Snow and vegetation changes remain hypotheses without annotations.</p></section>
+{% endif %}
+{% if evidence.analysis %}
+<section class="evidence-section"><span class="badge">Measured / regrouped existing results</span><h2>Beyond the leaderboard</h2>
+<div class="metric-grid"><div class="metric"><strong>{{ '%.1f'|format(evidence.analysis.overlap_max * evidence.analysis.k) }} / {{ evidence.analysis.k }}</strong><span>highest mean shared results between any pair of representations</span></div>
+<div class="metric"><strong>{{ '%.1f%%'|format(evidence.analysis.top_one.all_stores_correct / evidence.analysis.queries * 100) }}</strong><span>queries with a same-class top result from every model</span></div>
+<div class="metric"><strong>{{ evidence.analysis.universally_hard.count }}</strong><span>queries with no correct top result across the five models</span></div></div>
+<p>The existing analysis explores model disagreement, geographic consistency, recurring confusion pairs, distance to same-class examples, and acquisition availability. Low overlap can coexist with correct class labels.</p>
+<a href="/findings/analysis">Explore the charts and detailed findings →</a></section>
+{% endif %}
+<section class="evidence-section"><h2>Read the metrics correctly</h2><dl>
+<dt>Cosine similarity</dt><dd>Proximity between normalized vectors. A retrieval score, not confidence, correctness, or a percentage.</dd>
+<dt>Precision@k</dt><dd>Fraction of retrieved results matching the benchmark relevance rule.</dd>
+<dt>mAP@k</dt><dd>Average precision rewards relevant results near the top; averaged over queries. This project divides each AP by min(total relevant index items, retrieved count).</dd>
+<dt>nDCG@k</dt><dd>Rewards placing relevant results early, normalized against an ideal ranking. Here relevance is binary.</dd>
+<dt>Overlap@k</dt><dd>Fraction of result IDs shared by two models. Agreement is not correctness.</dd>
+<dt>Engine time</dt><dd>Time spent handling one search in the engine, including queueing. Excludes upload, decoding, model startup, and browser rendering.</dd></dl>
+<p>Text/hybrid relevance, robustness to paraphrases, and judged usefulness are <strong>not yet benchmarked</strong>. The initial 50% hybrid weight is an adjustable default, not a tuned optimum.</p></section>
+<section class="evidence-section"><h2>Evidence you can inspect</h2><p>Reports are read at startup. Downloads preserve the exact bytes behind this session; hashes identify them. These are local research artifacts, not a live catalogue feed.</p>
+<details><summary>Source reports and SHA-256 identities</summary><ul class="source-list">{% for source in evidence.sources %}<li><a href="/evidence/{{ source.name }}">{{ source.name }}</a><br><code>{{ source.sha256 }}</code></li>{% endfor %}</ul></details></section>
+<footer>Measurements belong to their dataset, split, representation, and relevance rule. <a href="/research">See the next experiments.</a></footer>
+</main></body></html>

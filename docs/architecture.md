@@ -71,6 +71,14 @@ learning-oriented explanation.
 
 ## Components
 
+The optional multimodal surface adds `search_plan.py` (visible prompt defaults and metadata
+constraints), `embeddings/remoteclip.py` (pinned aligned RGB/text inference), `multimodal.py`
+(corpus validation, exact scoring and fusion), and `app/search.py` (HTTP only). `search_cli.py`
+registers its commands. It supports index-only corpora as well as index/query manifests; only
+index rows can be returned. Model identity, corpus identity, and declared image hashes are checked
+before serving. See [ADR 0012](decisions/0012-multimodal-search.md) and the
+[search guide](multimodal-search.md).
+
 | Component | Responsibility | Main module |
 |---|---|---|
 | Content digests | Produce one streaming SHA-256/MD5 identity for every artifact | `hashing.py` |
@@ -235,9 +243,16 @@ The byte RGB file is the model input. It does not replace the reflectance artifa
   without it can still be queried by item ID, but not with a new image.
 - Exact search is intentionally linear in corpus size.
 - HNSW is benchmarked but is not the current default query path.
-- The interactive viewer serves precomputed vectors only. There is still no serving database or
+- The comparison viewer serves precomputed vectors only. There is still no serving database or
   job runner, and uploads are embedded with PCA alone, because the other representations would
   require a model framework in the served process.
   Optional local MLflow SQLite stores experiment metrics, not the serving corpus.
+- The optional `serve-search` process loads RemoteCLIP for text and uploaded-image queries.
+  It requires the optional model runtime and cached weights. Its prompt helper covers a small
+  documented vocabulary; unrestricted geocoding and language interpretation are not implemented.
+  It can mount the existing comparison application at `/models`, with routes respecting that
+  prefix. `app/evidence.py` snapshots allowlisted public JSON reports for the Findings pages and
+  downloads; it imports no evaluator and computes no retrieval rankings. The Data & experiments
+  page reports the current search corpus separately from the saved benchmark contexts.
 
 These constraints define the roadmap rather than hidden production claims.

@@ -1,0 +1,13 @@
+{
+  "evidence_role": "development image-to-image same-place proxy; no text judgments",
+  "store_sha256": "fa848bb567872952d1d6ad0f340a4241d50a672c98052e7aa1fbe6c11ecb1ba6",
+  "manifest_sha256": "2e101658cc954f855fe6e64e5b652ce8afc580966a15924e494b777b7dc99656",
+  "model": "RemoteCLIP-ViT-B-32",
+  "checkpoint_sha256": "60014e395d930a3f2963d1d89c8522bf4ad56775571e4356e866864789af85c4",
+  "training": "Frozen checkpoint; no fine-tuning or hyperparameter selection",
+  "limitations": [
+    "36 queries at 12 places in 2024; queries within a place are correlated",
+    "Not a semantic text or hybrid relevance benchmark",
+    "Not an unseen-place or change-detection evaluation"
+  ]
+}

@@ -24,6 +24,75 @@ The first three boxes record different kinds of evidence; passing one does not i
 See [Understanding the benchmarks](learning-benchmarks.md) for the evidence ladder and the exact
 training boundary.
 
+## Unified product and transparent results — 2026-09-05
+
+Executed after connecting Search, Compare models, Findings, and Data & experiments:
+
+| Check | Executed evidence |
+|---|---|
+| Code health | Ruff and Mypy passed; 96 source files checked in the lightweight environment. |
+| Model environment | Non-browser suite: 438 passed, 85.52% coverage. |
+| Lightweight environment | 436 passed, 4 optional-path skips, 85.08% coverage, including the evidence snapshot reducer refactor. |
+| Packaged surface | Wheel rebuilt and installed in an isolated environment without model dependencies; all 9 browser checks passed. |
+| Transparency | Hand-computable vectors verify score contributions, full-pool component ranks, independent filter pass/fail/missing counts, example exclusion, and provenance binding. Browser checks cover explanations and JSON export. |
+| Product integration | API tests check mounted comparison forms, thumbnails and static routes; source-report allowlisting, immutable download snapshots, missing-report states, findings charts, and all four pages. Browser navigation and 390-pixel layout passed. |
+| Existing/new metric reproduction | All 16 recorded retrieval reports reproduced exactly from local stores using `scripts/verify_retrieval_results.py`. Earlier result files were not rewritten. |
+| New development finding | `scripts/evaluate_multimodal_baseline.py` evaluated frozen RemoteCLIP on 61 index / 36 query images from 12 places under the existing temporal guard: top-1 0.4166667, mAP@5 0.4274846. |
+| Real local product | Port 8002 loaded RemoteCLIP plus the five-model EuroSAT comparison, rendered evidence tables and report links, and served a real selected-image/text hybrid query. |
+
+The [new finding](results/multimodal-temporal.md) is an image-to-image same-place diagnostic,
+not a text relevance or fine-tuning result. No new data acquisition or model training occurred in
+this extension. Visual sensitivity maps, multi-year generalization and semantic relevance remain
+unvalidated. The earlier note on separating unit and Playwright test processes still applies.
+
+## Text, image and hybrid search — 2026-09-05
+
+Executed on Windows with Python 3.11.5. This is an implementation and real-model smoke record,
+not a prompt-relevance benchmark. Research and model selection are in
+[ADR 0012](decisions/0012-multimodal-search.md).
+
+| Check | Executed evidence |
+|---|---|
+| Code health | Ruff and Mypy passed; Mypy checked 94 source files. `uv pip check` passed for the 113-package CPU/model environment. |
+| Locked lightweight CI profile | 432 passed, 4 skipped, 84.92% package coverage; the skips cover optional model/browser paths. The 75% floor passed. |
+| Model environment, non-browser suite | 434 passed, 85.36% coverage using `--ignore=tests/browser`. Includes 28 new deterministic ranking/plan/API tests. |
+| Packaged browser surface | Wheel built and installed in a separate environment; all 8 browser tests passed against the installed distribution, including 3 new scene-search tests. |
+| Browser behavior | Text, selected-example hybrid, image upload, example replacement, visible filters, empty results, invalid bounds, and rendering untrusted IDs as text. A 390 × 844 viewport had no horizontal overflow. |
+| Existing metric reproduction | All 14 recorded label-retrieval reports reproduced exactly using `scripts/verify_retrieval_results.py`, including four EuroSAT baselines, TerraMind, and original/guarded temporal reports. No timing experiments were rerun and no old reports were rewritten. |
+| Real embeddings | Frozen, hash-verified RemoteCLIP ViT-B/32 embedded all 97 chips from the guarded temporal manifest into 512-dimensional vectors: 61 index and 36 query rows. |
+| New-image consistency | Maximum absolute difference from the saved vector was 5.960464477539063e-08. Upload decoding and the direct image path produced identical vectors. |
+| Three real query modes | Text-only, uploaded-image-only, and hybrid each returned five results. The 0.65/0.35 score formula and stored-example/image ranking agreement were verified. A real hybrid CLI command also returned five results. |
+| Metadata contract | The recent Athens example returned zero matches. An explicit historical date/bounding-box query returned six candidates, all inside the requested center bounds with scene cloud cover ≤10%. Missing metadata is excluded in unit tests. |
+| Real browser inspection | Local FastAPI service on port 8002 served text and hybrid results with RGB thumbnails and separate component scores. |
+
+The [machine-readable smoke record](results/multimodal-v1-smoke.json) contains the model revision,
+checkpoint/store/manifest hashes, metadata coverage, and numerical checks. Reproduce it with:
+
+```powershell
+python scripts/smoke_multimodal.py `
+  --manifest data/temporal-v1/manifest-guarded.jsonl --image-root data/temporal-v1/images `
+  --embeddings artifacts/temporal-v1g-remoteclip-vit-b32.npz `
+  --output artifacts/multimodal-smoke-rerun.json
+```
+
+The historical smoke box is `[23.4, 38.4, 23.8, 38.7]`; it is an explicit test region and is not
+the Athens convenience box. The corpus's place labels do not substitute for geographic metadata.
+The query-plan reference date in this reproducibility smoke is fixed to 2026-09-05; the service
+uses the actual UTC date. No current imagery was acquired by this change.
+
+Test-environment boundary: running unit tests and session-scoped Playwright fixtures in one
+process produced five `asyncio.run` conflicts in the pre-existing middleware tests. Validation
+therefore uses the repository's separate lightweight CI and wheel/browser profiles, as above.
+In an environment with the browser extra installed, run the non-browser suite with
+`--ignore=tests/browser` and browser tests in a separate invocation. This is a test-runner
+interaction, not an observed service failure.
+
+The first Hugging Face Xet transfer stalled; the successful download used
+`HF_HUB_DISABLE_XET=1` and still passed the pinned SHA-256 check. No credentials were required.
+The CPU runtime used OpenCLIP 3.3.0, PyTorch 2.13.0+cpu, torchvision 0.28.0+cpu, NumPy 2.4.6,
+and Pillow 12.3.0. No GPU, throughput, concurrent-load, text-relevance, urban-expansion, or
+production-deployment claim is made. Images, weights, uploads and vectors remain outside Git.
+
 ## Container execution — 2026-09-04
 
 Executed on Docker Engine 29.7.2 (linux/amd64) under Windows 11, replacing the earlier check where

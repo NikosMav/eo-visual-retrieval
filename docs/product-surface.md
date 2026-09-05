@@ -1,4 +1,70 @@
-# Representation explorer
+# Product surface
+
+The local product brings four areas together under `eovr serve-search`:
+
+| Page | Purpose | Current evidence boundary |
+|---|---|---|
+| Search (`/`) | Text, uploaded/selected image, and hybrid retrieval; visible constraints and explanations | Frozen RemoteCLIP; text/hybrid relevance not yet benchmarked |
+| Compare models (`/models/`) | Inspect the same EuroSAT query across supplied representations | Saved vectors; same-class proxy; PCA-only upload in this viewer |
+| Findings (`/findings`) | Metrics, definitions, sample counts, per-place slices, and downloadable evidence | Development results, not confirmatory generalization |
+| Data & experiments (`/research`) | Search corpus coverage, model identity, and staged research plan | Acquisition and training stages are plans, not running jobs |
+
+The detailed existing charts are available at `/findings/analysis`. Navigation connects all four
+areas while retaining the lightweight standalone `eovr serve` comparison viewer below.
+
+## Launch the combined product
+
+Prepare the optional [RemoteCLIP runtime and store](multimodal-search.md) and the EuroSAT stores.
+From the repository root, using that Python environment:
+
+```powershell
+python -m eo_visual_retrieval.cli serve-search `
+  --manifest data/temporal-v1/manifest-guarded.jsonl `
+  --image-root data/temporal-v1/images `
+  --embeddings artifacts/temporal-v1g-remoteclip-vit-b32.npz `
+  --results-dir docs/results `
+  --comparison-manifest data/eurosat-v1/manifest.jsonl `
+  --comparison-image-root data/eurosat-v1/images `
+  --comparison-store artifacts/eurosat-v1-pca-64.npz `
+  --comparison-store artifacts/eurosat-v1-dinov2-vits14.npz `
+  --comparison-store artifacts/eurosat-v1-ssl4eo-s12-rgb-moco-resnet50.npz `
+  --comparison-store artifacts/eurosat-v1-ssl4eo-s12-moco-resnet50.npz `
+  --comparison-store artifacts/eurosat-v1-terramind-tiny.npz `
+  --comparison-projection artifacts/eurosat-v1-pca-64-projection.npz
+```
+
+Open `http://127.0.0.1:8002/`. Comparison stores may be omitted; the page then explains that they
+are not configured. Missing evidence is shown as unavailable, never replaced by example scores.
+An explicit results directory must exist. Public report names are allowlisted; downloads use the
+same startup byte snapshot and SHA-256 identity as the displayed metrics. No arbitrary directory
+is exposed through HTTP. Changes to reports require a restart.
+
+## Transparency contract
+
+Each search shows the original prompt and interpreted filters; independent pass/fail/missing
+counts for every constraint; total exclusions and candidate counts; and engine wall time.
+Independent filter counts overlap and are not a sequential funnel. Metadata checks drive both
+eligibility and explanations through one function.
+
+Each result shows the text and image cosines, weighted contributions, combined rank, component
+ranks over the same eligible pool, date/cloud/collection/center metadata, and filter outcomes.
+Stable corpus order breaks ties. These explanations describe arithmetic and metadata; no generated
+object explanation, confidence estimate, or causal interpretation is implied. Model revision,
+checkpoint/preprocessing identity, manifest digest, query inputs and results can be exported in a
+JSON search record. Uploaded pixels are not included in the export or added to the corpus.
+
+Timing includes inference queueing but excludes HTTP upload/decoding, model startup and rendering.
+The 50% weight is an untuned numerical blend; it does not guarantee equal ranking influence because
+text and image score distributions can differ. A single scene cannot verify urban expansion.
+
+## Research direction
+
+See [the multimodal temporal finding](results/multimodal-temporal.md) and
+[the research plan](research-roadmap.md). Priority is judged semantic relevance, independent data,
+and frozen-model/ranking comparisons before fine-tuning. Retrieval quality must determine the
+model choice separately for each task.
+
+## Standalone representation explorer
 
 The explorer makes the EuroSAT comparison interactive: choose a scene class and query, then
 inspect the nearest images returned by every supplied representation. Every result names its

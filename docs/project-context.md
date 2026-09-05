@@ -20,6 +20,8 @@ The intended learning outcomes are:
 The repository currently contains:
 
 - a typed Python package and `eovr` command-line interface;
+- an optional RemoteCLIP text/image/hybrid search surface with visible prompt defaults,
+  exact score fusion, and location/date/cloud constraints; see [multimodal search](multimodal-search.md);
 - an interactive representation explorer over EuroSAT, with PCA uploads and model provenance;
 - a bounded, tested BigEarthNet S2 downloader; full acquisition is paused;
 - provider-neutral STAC discovery with sanitized JSONL manifests;
@@ -172,6 +174,18 @@ the requirements this project declines to state are recorded in
 metric and its evaluation set is not usable here.
 
 ## Next work
+
+The prompt-search product experiment is implemented separately from the frozen evaluation roster.
+Its local surface now connects Search, Compare models, Findings, and Data & experiments.
+Search explains arithmetic, per-component ranks, metadata exclusions and provenance; recorded
+findings and report downloads are visible alongside it. The new frozen RemoteCLIP temporal
+diagnostic reached 41.7% top-1 on the existing 36-query guarded development split, below DINOv2
+(80.6%) and PCA-32 (66.7%). This motivates a separate visual-branch experiment, not a claim
+about semantic relevance. See [research stages](research-roadmap.md).
+Its next quality gate is a judged text/image/hybrid query set with development and final separation,
+comparison against GeoRSCLIP and SigLIP 2, and development-only weight selection. The current
+prompt helper is bounded and explicit, not general geocoding or change detection. See
+[ADR 0012](decisions/0012-multimodal-search.md).
 
 The [2026-09-04 checkpoint review](project-review.md) records the code audit, remediations,
 third-party options, and remaining risks. The local surface now validates source hashes and PCA

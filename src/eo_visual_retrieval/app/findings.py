@@ -68,6 +68,11 @@ def build_payload(results_dir: Path) -> dict[str, Any]:
 
     analysis = _read(results_dir / ANALYSIS_FILE)
     availability = _read(results_dir / AVAILABILITY_FILE)
+    return reduce_reports(analysis, availability)
+
+
+def reduce_reports(analysis: dict[str, Any], availability: dict[str, Any]) -> dict[str, Any]:
+    """Reduce already-snapshotted reports without re-reading mutable files."""
 
     for section in ("aggregate", "agreement", "geographic", "distance", "failures"):
         if section not in analysis:

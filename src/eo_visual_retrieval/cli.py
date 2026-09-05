@@ -848,8 +848,11 @@ def _serve(args: argparse.Namespace) -> None:
 
 
 def build_parser() -> argparse.ArgumentParser:
+    from eo_visual_retrieval.search_cli import register_search_commands
+
     parser = argparse.ArgumentParser(prog="eovr", description="EO visual retrieval workflow")
     commands = parser.add_subparsers(dest="command", required=True)
+    register_search_commands(commands)
 
     manifest = commands.add_parser("manifest-build", help="build a deterministic image manifest")
     manifest.add_argument("--images", type=Path, required=True)

@@ -105,7 +105,8 @@ class ContentLengthLimitMiddleware:
 
 
 def create_app(
-    catalog: Catalog, *, k: int = 5, findings: dict[str, Any] | None = None
+    catalog: Catalog, *, k: int = 5, findings: dict[str, Any] | None = None,
+    product_navigation: bool = False,
 ) -> FastAPI:
     """Build the application around one already-validated catalog."""
 
@@ -148,6 +149,8 @@ def create_app(
                 "k": k,
                 "error": error,
                 "findings_available": findings is not None,
+                "product_navigation": product_navigation,
+                "active": "models",
             },
         )
 

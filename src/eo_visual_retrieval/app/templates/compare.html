@@ -1,3 +1,4 @@
+{% set base = request.scope.get("root_path", "") %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -5,17 +6,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Compare RGB and multispectral retrieval of satellite imagery from EuroSAT.">
 <title>EO Visual Retrieval · Compare satellite imagery</title>
-<link rel="stylesheet" href="/static/explorer.css">
+<link rel="stylesheet" href="{{ base }}/static/explorer.css">
+{% if product_navigation %}<link rel="stylesheet" href="/static/product.css">{% endif %}
 </head>
 <body>
 <a class="skip" href="#results">Skip to results</a>
 <header>
 <div class="masthead">
-<a class="brand" href="/">EO Visual Retrieval</a>
+<a class="brand" href="{{ base }}/">EO Visual Retrieval</a>
 <span class="dataset">EuroSAT v1 / Representation explorer</span>
-{% if findings_available %}<a class="dataset findings-link" href="/findings">What the averages hid &rarr;</a>{% endif %}
+{% if findings_available %}<a class="dataset findings-link" href="{{ base }}/findings">What the averages hid &rarr;</a>{% endif %}
 </div>
 </header>
+{% if product_navigation %}{% include "product_nav.html" %}{% endif %}
 <main>
 <div class="intro">
 <h1>Satellite image retrieval comparison</h1>
@@ -23,12 +26,12 @@
 </div>
 {% if error %}<div class="notice error" role="alert">
 <strong>That query could not be completed.</strong>
-<br>{{ error }} <a href="/">Return to the explorer</a>
+<br>{{ error }} <a href="{{ base }}/">Return to the explorer</a>
 </div>{% endif %}
 <div class="workspace">
 <aside aria-label="Choose a query">
 <h2>Your query</h2>
-<form method="get" action="/compare">
+<form method="get" action="{{ base }}/compare">
 <div id="class-filter" hidden>
 <label for="scene-class">Scene class</label>
 <select id="scene-class">
@@ -49,12 +52,12 @@
 </select>
 <button type="submit">Compare representations</button>
 </form>
-{% if query_id %}<img class="query-image" src="/thumbnail?item_id={{ query_id | urlencode }}" alt="Selected satellite query: {{ query_label or 'unlabelled' }}">
+{% if query_id %}<img class="query-image" src="{{ base }}/thumbnail?item_id={{ query_id | urlencode }}" alt="Selected satellite query: {{ query_label or 'unlabelled' }}">
 <strong>{{ query_label or 'Unlabelled query' }}</strong>
 <div class="identifier">{{ query_id }}</div>{% elif is_upload %}<p class="note">Uploaded image selected. Its pixels are resized for the saved PCA projection.</p>{% endif %}
 <details class="upload" {% if is_upload %}open{% endif %}>
 <summary>Try your own image</summary>
-{% if upload_available %}<form method="post" action="/compare/upload" enctype="multipart/form-data">
+{% if upload_available %}<form method="post" action="{{ base }}/compare/upload" enctype="multipart/form-data">
 <p class="note" id="upload-help">Use an RGB satellite chip. Uploads search with PCA only; no class label or relevance score is assigned. Maximum request size: 8 MiB.</p>
 <label for="image">Image file</label>
 <input type="file" name="image" id="image" accept="image/*" required aria-describedby="upload-help">
@@ -84,7 +87,7 @@
 </div>
 <ol class="tiles">
 {% for result in ranking.results %}<li class="tile {% if result.relevant is none %}unknown{% elif result.relevant %}hit{% else %}miss{% endif %}">
-<img src="/thumbnail?item_id={{ result.item_id | urlencode }}" alt="Rank {{ loop.index }}: {{ result.label or 'unlabelled satellite image' }}" width="192" height="192" loading="lazy">
+<img src="{{ base }}/thumbnail?item_id={{ result.item_id | urlencode }}" alt="Rank {{ loop.index }}: {{ result.label or 'unlabelled satellite image' }}" width="192" height="192" loading="lazy">
 <strong>{{ result.label or 'Unlabelled' }}</strong>
 <div class="cap">#{{ loop.index }} / Cosine {{ "%.3f"|format(result.score) }}</div>
 <div class="relevance">{% if result.relevant is none %}Unknown relevance{% elif result.relevant %}Same class{% else %}Different class{% endif %}</div>
@@ -113,7 +116,7 @@
 <p>Imagery: <a href="https://doi.org/10.5281/zenodo.7711810">EuroSAT, Zenodo record 7711810</a>, MIT licence. <a href="https://github.com/NikosMav/eo-visual-retrieval">Source, methods &amp; recorded results</a>.</p>
 </footer>
 </main>
-<script src="/static/explorer.js" defer>
+<script src="{{ base }}/static/explorer.js" defer>
 </script>
 </body>
 </html>

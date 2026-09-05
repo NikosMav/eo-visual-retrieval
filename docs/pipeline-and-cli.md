@@ -1,5 +1,9 @@
 # Pipeline and CLI
 
+Text, image, and hybrid search use `embed-remoteclip`, `search`, and `serve-search`.
+The [multimodal search guide](multimodal-search.md) covers their complete workflow, metadata
+filters, model setup, and API. Existing `query` commands remain available for image-only stores.
+
 ## Mental model
 
 The command-line workflow moves through a sequence of durable, inspectable artifacts:

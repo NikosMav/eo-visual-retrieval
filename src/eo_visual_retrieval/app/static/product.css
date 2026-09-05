@@ -1,0 +1,18 @@
+:root{--paper:#f4f3ed;--ink:#20382f;--muted:#5b6b62;--line:#ccd2c5}
+.intro h1{font-family:Georgia,serif;font-weight:400}
+.product-nav{display:flex;gap:8px;flex-wrap:wrap;padding:12px 4vw;border-bottom:1px solid #ccd2c5;background:#fffef9;font:14px/1.5 "Segoe UI",sans-serif;color:#20382f}
+.product-nav a{padding:8px 14px;text-decoration:none;border-radius:3px}
+.product-nav a[aria-current=page]{background:#20382f;color:white}
+.product-nav a:hover{box-shadow:inset 0 -2px #799477}
+.evidence-section{margin:32px 0;padding:24px;background:#fffef9;border:1px solid #ccd2c5}
+.evidence-section h2{font:28px/1.2 Georgia,serif;margin:8px 0 18px}
+.tablewrap{overflow-x:auto;max-width:100%}table{border-collapse:collapse;width:100%;font-size:14px}
+caption{text-align:left;margin-bottom:12px;color:#5b6b62}th,td{text-align:left;padding:12px;border-bottom:1px solid #ccd2c5;vertical-align:top}thead{background:#e8ede2}th{font-weight:650}
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin:24px 0}
+.metric{padding:20px;background:#e8ede2}.metric strong{font:36px Georgia,serif;display:block}.metric span{font-size:13px}
+.evidence-section p{max-width:90ch}.badge{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#51634f;font-weight:700}
+.source-list{font-size:12px;padding-left:18px}.source-list code,.provenance-json{overflow-wrap:anywhere;white-space:pre-wrap;font-size:11px}
+#diagnostics{padding:16px;background:#e8ede2;margin:18px 0;font-size:13px}#diagnostics p{margin:6px 0}#export{margin:0 0 20px}
+.result details{font-size:12px;margin-top:12px;padding-top:10px}.result details p{overflow-wrap:anywhere}
+.roadmap{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px}.roadmap article{padding:20px;border:1px solid #ccd2c5}.roadmap h3{margin-top:8px}
+@media(max-width:600px){.product-nav{gap:0;padding:8px 3vw}.product-nav a{padding:8px 10px;font-size:12px}.evidence-section{padding:16px}dl{grid-template-columns:1fr}dd{margin-bottom:10px}.metric-grid{grid-template-columns:1fr 1fr}.metric{padding:14px}}

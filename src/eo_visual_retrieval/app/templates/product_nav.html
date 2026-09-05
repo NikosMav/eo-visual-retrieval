@@ -1,0 +1,5 @@
+<nav class="product-nav" aria-label="Product">
+{% for key, href, title in [('search', '/', 'Search'), ('models', '/models/', 'Compare models'), ('findings', '/findings', 'Findings'), ('research', '/research', 'Data & experiments')] %}
+<a href="{{ href }}" {% if active == key %}aria-current="page"{% endif %}>{{ title }}</a>
+{% endfor %}
+</nav>

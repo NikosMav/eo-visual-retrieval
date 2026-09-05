@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scene search · EO Visual Retrieval</title>
+  <link rel="stylesheet" href="/static/search.css">
+  <link rel="stylesheet" href="/static/product.css">
+  <script src="/static/search.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#search-form">Skip to search</a>
+<header><a href="/" class="brand">EO / VISUAL RETRIEVAL</a><span>Local research explorer</span></header>
+{% include "product_nav.html" %}
+<main>
+  <section class="intro">
+    <p class="eyebrow">TEXT + IMAGE + PLACE</p>
+    <h1>Find a scene.<br>Follow an idea.</h1>
+    <p>Describe what you see, bring an example, or combine both.</p>
+    <p class="corpus">{{ corpus.index_items }} indexed scenes · {{ corpus.model }} · RGB</p>
+    <p class="muted">Acquisition dates: {% if corpus.date_range %}{{ corpus.date_range[0] }} to {{ corpus.date_range[1] }}{% else %}unknown{% endif %}.
+      Cloud metadata: {{ corpus.metadata_coverage.cloud_cover }} of {{ corpus.index_items }} scenes.</p>
+  </section>
+  <div class="workspace">
+    <form id="search-form">
+      <label for="text">Describe the scene</label>
+      <textarea id="text" name="text" rows="4" maxlength="1000" placeholder="Dense residential buildings beside agricultural fields"></textarea>
+      <p class="hint">Text searches appearance. Place, time and cloud requirements use the filters below.</p>
+      <fieldset><legend>Example image <span class="muted">/ optional</span></legend>
+        <label for="image">Upload an RGB image</label>
+        <input type="file" id="image" accept="image/png,image/jpeg,image/tiff,image/webp">
+        <p class="hint">Up to 8 MiB per request and 16 megapixels. Use an RGB derivative of multispectral imagery.</p>
+        <label for="item-id">Or select a corpus example</label>
+        <select id="item-id"><option value="">No example</option>
+        {% for example in corpus.examples %}<option value="{{ example.item_id }}">{{ example.item_id }}</option>{% endfor %}</select>
+        <img id="example-preview" alt="Selected example image" hidden>
+      </fieldset>
+      <label for="weight">Text influence <output id="weight-value" for="weight">50%</output></label>
+      <input id="weight" type="range" min="0" max="1" step="0.05" value="0.5" aria-describedby="weight-help">
+      <p class="hint" id="weight-help">For hybrid search: 0% follows the image, 100% follows the text. This is an untuned score weight; 50% need not give equal ranking influence.</p>
+      <details><summary>Place, date and cloud filters</summary>
+        <label class="check"><input id="interpret" type="checkbox" checked> Interpret supported prompt defaults</label>
+        <p class="hint">Supports “near Athens” (Greece), “recent” (90 days), “low cloud coverage” (≤10%) and “Sentinel imagery” (Sentinel-2 L2A). Review the applied filters. Turn this off to use only the controls.</p>
+        <label for="bbox">WGS84 bounding box</label><input id="bbox" placeholder="west, south, east, north" aria-describedby="bbox-help">
+        <p class="hint" id="bbox-help">Matches chip centers. Athens example: 23.4, 37.7, 24.1, 38.2</p>
+        <div class="dates"><div><label for="start-date">From (UTC)</label><input id="start-date" type="date"></div>
+        <div><label for="end-date">Through (UTC)</label><input id="end-date" type="date"></div></div>
+        <label for="cloud">Maximum scene cloud cover (%)</label><input id="cloud" type="number" min="0" max="100" step="0.1" placeholder="Any">
+        <label for="collection">Collection</label><input id="collection" placeholder="Any · e.g. sentinel-2-l2a">
+        <p class="hint">Explicit controls override prompt defaults. Unknown metadata never satisfies a filter.</p>
+      </details>
+      <div class="actions"><button type="submit" id="submit">Search scenes <span aria-hidden="true">↗</span></button>
+      <button type="button" id="review" class="secondary">Review filters</button></div>
+    </form>
+    <section class="results-panel" aria-label="Search results">
+      <p id="status" role="status" aria-label="Search progress" aria-live="polite">Start with a description or an example image.</p>
+      <section id="plan" hidden aria-label="Interpreted query"><h2>Applied filters</h2><dl id="filters"></dl><ul id="notes"></ul></section>
+      <p class="hint" id="score-help" hidden>Scores are similarities, not probabilities. Hybrid score = text weight × text cosine + image weight × image cosine. Semantic relevance has not yet been benchmarked.</p>
+      <section id="diagnostics" hidden aria-label="Query diagnostics"></section>
+      <button type="button" class="secondary" id="export" hidden>Export search record (JSON)</button>
+      <div id="results"></div>
+    </section>
+  </div>
+  <footer>Search runs locally on prepared RGB imagery. Single-scene similarity does not establish urban expansion or other change over time.</footer>
+</main>
+</body></html>

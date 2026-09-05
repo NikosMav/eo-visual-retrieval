@@ -35,6 +35,12 @@ geo = [
 ]
 bigearthnet = ["pyarrow>=25.0.1,<26", "zstandard>=0.25,<1"]
 pca = ["scikit-learn>=1.4,<2"]
+multimodal = [
+  "open-clip-torch==3.3.0",
+  "huggingface-hub>=0.34,<2",
+  "torch>=2.13,<2.14",
+  "torchvision>=0.28,<0.29",
+]
 ml = [
   "scikit-learn>=1.4,<2",
   "torch>=2.13,<2.14",
@@ -129,6 +135,8 @@ warn_unused_configs = true
 # failure of this repository's own annotations.
 [[tool.mypy.overrides]]
 module = [
+  "open_clip.*",
+  "huggingface_hub.*",
   "faiss.*",
   "mlflow.*",
   "planetary_computer.*",

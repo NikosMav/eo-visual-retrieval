@@ -22,6 +22,8 @@ established.
 - Persists the fitted PCA basis so images outside the original manifest can be embedded.
 - Provides an experimental pinned, frozen TerraMind-Tiny S2L1C embedding adapter.
 - Ranks images with exact cosine similarity, for a stored item or a new local RGB image.
+- Supports local text, image, and hybrid search with a pinned RemoteCLIP RGB/text model,
+  adjustable weighting, visible prompt defaults, and strict metadata filters.
 - Serves a browser comparison across prepared representations, with class filtering, provenance,
   and PCA queries from uploaded RGB chips.
 - Benchmarks Faiss HNSW recall, latency, construction time, and storage against exact search.
@@ -63,6 +65,21 @@ quantitative retrieval claims.
 See [Architecture](docs/architecture.md) for the components, boundaries, and design decisions.
 
 ## Explore the product surface
+
+The [combined product](docs/product-surface.md) connects **Search**, **Compare models**,
+**Findings**, and **Data & experiments**. Inspect query/filter decisions, weighted score
+contributions, component ranks, model provenance and engine timing; export search records as JSON.
+Findings includes the existing charts, metric definitions, sample sizes and downloadable reports.
+The [research roadmap](docs/research-roadmap.md) separates proposed data and fine-tuning work
+from executed experiments.
+
+For prompt-based search, RGB uploads, selected examples, or text + image queries, use the new
+[multimodal search guide](docs/multimodal-search.md). `embed-remoteclip` prepares the shared
+image/text space and `serve-search` launches the local interface. Location, dates and cloud
+coverage are metadata constraints; semantic similarity cannot establish urban expansion.
+The model is an experimental baseline, with no prompt-relevance benchmark claim. A new
+[guarded temporal diagnostic](docs/results/multimodal-temporal.md) measured RemoteCLIP image
+retrieval at 41.7% top-1 versus DINOv2's 80.6% on 36 queries; model choice depends on the task.
 
 The local explorer compares the same query across PCA, DINOv2, SSL4EO-S12 RGB, SSL4EO-S12
 13-band, and TerraMind-Tiny stores. Inspect class labels, cosine scores, and model provenance,

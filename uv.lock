@@ -738,6 +738,16 @@ ml = [
     { name = "torchvision", version = "0.28.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform != 'darwin' and extra == 'extra-19-eo-visual-retrieval-cpu') or (extra == 'extra-19-eo-visual-retrieval-cpu' and extra == 'extra-19-eo-visual-retrieval-cuda')" },
     { name = "torchvision", version = "0.28.0+cu130", source = { registry = "https://download.pytorch.org/whl/cu130" }, marker = "(sys_platform != 'darwin' and extra == 'extra-19-eo-visual-retrieval-cuda') or (extra == 'extra-19-eo-visual-retrieval-cpu' and extra == 'extra-19-eo-visual-retrieval-cuda')" },
 ]
+multimodal = [
+    { name = "huggingface-hub" },
+    { name = "open-clip-torch" },
+    { name = "torch", version = "2.13.0", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform == 'darwin' or (extra == 'extra-19-eo-visual-retrieval-cpu' and extra == 'extra-19-eo-visual-retrieval-cuda') or (extra != 'extra-19-eo-visual-retrieval-cpu' and extra != 'extra-19-eo-visual-retrieval-cuda')" },
+    { name = "torch", version = "2.13.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform != 'darwin' and extra == 'extra-19-eo-visual-retrieval-cpu') or (extra == 'extra-19-eo-visual-retrieval-cpu' and extra == 'extra-19-eo-visual-retrieval-cuda')" },
+    { name = "torch", version = "2.13.0+cu130", source = { registry = "https://download.pytorch.org/whl/cu130" }, marker = "(sys_platform != 'darwin' and extra == 'extra-19-eo-visual-retrieval-cuda') or (extra == 'extra-19-eo-visual-retrieval-cpu' and extra == 'extra-19-eo-visual-retrieval-cuda')" },
+    { name = "torchvision", version = "0.28.0", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform == 'darwin' or (extra == 'extra-19-eo-visual-retrieval-cpu' and extra == 'extra-19-eo-visual-retrieval-cuda') or (extra != 'extra-19-eo-visual-retrieval-cpu' and extra != 'extra-19-eo-visual-retrieval-cuda')" },
+    { name = "torchvision", version = "0.28.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform != 'darwin' and extra == 'extra-19-eo-visual-retrieval-cpu') or (extra == 'extra-19-eo-visual-retrieval-cpu' and extra == 'extra-19-eo-visual-retrieval-cuda')" },
+    { name = "torchvision", version = "0.28.0+cu130", source = { registry = "https://download.pytorch.org/whl/cu130" }, marker = "(sys_platform != 'darwin' and extra == 'extra-19-eo-visual-retrieval-cuda') or (extra == 'extra-19-eo-visual-retrieval-cpu' and extra == 'extra-19-eo-visual-retrieval-cuda')" },
+]
 pca = [
     { name = "scikit-learn" },
 ]
@@ -756,10 +766,12 @@ requires-dist = [
     { name = "faiss-cpu", marker = "extra == 'search'", specifier = ">=1.15,<2" },
     { name = "fastapi", marker = "extra == 'app'", specifier = ">=0.115,<1" },
     { name = "httpx", marker = "extra == 'dev'", specifier = ">=0.27,<1" },
+    { name = "huggingface-hub", marker = "extra == 'multimodal'", specifier = ">=0.34,<2" },
     { name = "jinja2", marker = "extra == 'app'", specifier = ">=3.1,<4" },
     { name = "mlflow", marker = "extra == 'experiments'", specifier = ">=3,<4" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.11,<2" },
     { name = "numpy", specifier = ">=1.26,<3" },
+    { name = "open-clip-torch", marker = "extra == 'multimodal'", specifier = "==3.3.0" },
     { name = "pillow", specifier = ">=10,<13" },
     { name = "planetary-computer", marker = "extra == 'stac'", specifier = ">=1.0,<2" },
     { name = "psutil", marker = "extra == 'search'", specifier = ">=7,<8" },
@@ -782,15 +794,17 @@ requires-dist = [
     { name = "torch", marker = "sys_platform != 'darwin' and extra == 'cpu'", specifier = ">=2.13,<2.14", index = "https://download.pytorch.org/whl/cpu", conflict = { package = "eo-visual-retrieval", extra = "cpu" } },
     { name = "torch", marker = "sys_platform != 'darwin' and extra == 'cuda'", specifier = ">=2.13,<2.14", index = "https://download.pytorch.org/whl/cu130", conflict = { package = "eo-visual-retrieval", extra = "cuda" } },
     { name = "torch", marker = "extra == 'ml'", specifier = ">=2.13,<2.14" },
+    { name = "torch", marker = "extra == 'multimodal'", specifier = ">=2.13,<2.14" },
     { name = "torchvision", marker = "sys_platform == 'darwin' and extra == 'cpu'", specifier = ">=0.28,<0.29" },
     { name = "torchvision", marker = "sys_platform == 'darwin' and extra == 'cuda'", specifier = ">=0.28,<0.29" },
     { name = "torchvision", marker = "sys_platform != 'darwin' and extra == 'cpu'", specifier = ">=0.28,<0.29", index = "https://download.pytorch.org/whl/cpu", conflict = { package = "eo-visual-retrieval", extra = "cpu" } },
     { name = "torchvision", marker = "sys_platform != 'darwin' and extra == 'cuda'", specifier = ">=0.28,<0.29", index = "https://download.pytorch.org/whl/cu130", conflict = { package = "eo-visual-retrieval", extra = "cuda" } },
     { name = "torchvision", marker = "extra == 'ml'", specifier = ">=0.28,<0.29" },
+    { name = "torchvision", marker = "extra == 'multimodal'", specifier = ">=0.28,<0.29" },
     { name = "uvicorn", marker = "extra == 'app'", specifier = ">=0.30,<1" },
     { name = "zstandard", marker = "extra == 'bigearthnet'", specifier = ">=0.25,<1" },
 ]
-provides-extras = ["stac", "geo", "bigearthnet", "pca", "ml", "cpu", "cuda", "experiments", "foundation", "search", "app", "browser", "dev"]
+provides-extras = ["stac", "geo", "bigearthnet", "pca", "multimodal", "ml", "cpu", "cuda", "experiments", "foundation", "search", "app", "browser", "dev"]
 
 [[package]]
 name = "faiss-cpu"
@@ -945,6 +959,18 @@ wheels = [
 [package.optional-dependencies]
 http = [
     { name = "aiohttp" },
+]
+
+[[package]]
+name = "ftfy"
+version = "6.3.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "wcwidth" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/a5/d3/8650919bc3c7c6e90ee3fa7fd618bf373cbbe55dff043bd67353dbb20cd8/ftfy-6.3.1.tar.gz", hash = "sha256:9b3c3d90f84fb267fe64d375a07b7f8912d817cf86009ae134aa03e1819506ec", size = 308927, upload-time = "2024-10-26T00:50:35.149Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ab/6e/81d47999aebc1b155f81eca4477a616a70f238a2549848c38983f3c22a82/ftfy-6.3.1-py3-none-any.whl", hash = "sha256:7c70eb532015cd2f9adb53f101fb6c7945988d023a085d127d1573dc49dd0083", size = 44821, upload-time = "2024-10-26T00:50:33.425Z" },
 ]
 
 [[package]]
@@ -2111,6 +2137,29 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/ce/3d/e4b57b8d9008c6ebe0d5eff901f91d5700cf7bdb8c8863df817463a7fd5e/omegaconf-2.3.1.tar.gz", hash = "sha256:e5e7de64aeebeddaf8e6d3f7a783b32ac2a01c0fbd9c878012caecb891a1f42a", size = 3298472, upload-time = "2026-06-11T05:05:12.885Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a4/0e/152509871bf30df6fc38569f52a2db9b55dd41aae957adae50a053ac7778/omegaconf-2.3.1-py3-none-any.whl", hash = "sha256:3d701d14e9a8828f1edd28bb70b725908b34277cdd72cf7d6a83f94dadc6b6a0", size = 79502, upload-time = "2026-06-11T05:05:09.954Z" },
+]
+
+[[package]]
+name = "open-clip-torch"
+version = "3.3.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "ftfy" },
+    { name = "huggingface-hub" },
+    { name = "regex" },
+    { name = "safetensors" },
+    { name = "timm" },
+    { name = "torch", version = "2.13.0", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform == 'darwin' or (extra == 'extra-19-eo-visual-retrieval-cpu' and extra == 'extra-19-eo-visual-retrieval-cuda') or (extra != 'extra-19-eo-visual-retrieval-cpu' and extra != 'extra-19-eo-visual-retrieval-cuda')" },
+    { name = "torch", version = "2.13.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform != 'darwin' and extra == 'extra-19-eo-visual-retrieval-cpu') or (extra == 'extra-19-eo-visual-retrieval-cpu' and extra == 'extra-19-eo-visual-retrieval-cuda')" },
+    { name = "torch", version = "2.13.0+cu130", source = { registry = "https://download.pytorch.org/whl/cu130" }, marker = "(sys_platform != 'darwin' and extra == 'extra-19-eo-visual-retrieval-cuda') or (extra == 'extra-19-eo-visual-retrieval-cpu' and extra == 'extra-19-eo-visual-retrieval-cuda')" },
+    { name = "torchvision", version = "0.28.0", source = { registry = "https://pypi.org/simple" }, marker = "sys_platform == 'darwin' or (extra == 'extra-19-eo-visual-retrieval-cpu' and extra == 'extra-19-eo-visual-retrieval-cuda') or (extra != 'extra-19-eo-visual-retrieval-cpu' and extra != 'extra-19-eo-visual-retrieval-cuda')" },
+    { name = "torchvision", version = "0.28.0+cpu", source = { registry = "https://download.pytorch.org/whl/cpu" }, marker = "(sys_platform != 'darwin' and extra == 'extra-19-eo-visual-retrieval-cpu') or (extra == 'extra-19-eo-visual-retrieval-cpu' and extra == 'extra-19-eo-visual-retrieval-cuda')" },
+    { name = "torchvision", version = "0.28.0+cu130", source = { registry = "https://download.pytorch.org/whl/cu130" }, marker = "(sys_platform != 'darwin' and extra == 'extra-19-eo-visual-retrieval-cuda') or (extra == 'extra-19-eo-visual-retrieval-cpu' and extra == 'extra-19-eo-visual-retrieval-cuda')" },
+    { name = "tqdm" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/4a/1f/2bc9795047fa2c1ad2567ef78ce6dfc9a7b763fa534acee09a94da2a5b8f/open_clip_torch-3.3.0.tar.gz", hash = "sha256:904b1a9f909df8281bb3de60ab95491cd2994a509177ea4f9d6292a84fe24d6d", size = 1503380, upload-time = "2026-02-27T00:32:46.74Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/37/b5/41c315ccd94ca332ead3e832e83eee343ab245005c3e43d9d3e75eae34eb/open_clip_torch-3.3.0-py3-none-any.whl", hash = "sha256:c549ad5ed6bfc119cc11105033c0a2b9d7a2a4afeb40a58a09aab3da1a0043ce", size = 1547268, upload-time = "2026-02-27T00:32:44.902Z" },
 ]
 
 [[package]]
