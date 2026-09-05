@@ -1,0 +1,177 @@
+{
+  "corpus": "temporal-place-v1-guarded",
+  "images": 97,
+  "index_items": 61,
+  "manifest_sha256": "2e101658cc954f855fe6e64e5b652ce8afc580966a15924e494b777b7dc99656",
+  "min_day_gap": 90,
+  "places": 12,
+  "places_dropped": 0,
+  "query_anchor": "2024-07-15",
+  "query_dates_per_place": 3,
+  "query_gap_days": {
+    "maximum": 198,
+    "median": 110,
+    "minimum": 90
+  },
+  "query_items": 36,
+  "relevance": "same place, different acquisition date",
+  "results": [
+    {
+      "available_days": 20,
+      "excluded_days": 8,
+      "index_days": 9,
+      "observed_min_gap_days": 90,
+      "place_id": "andalusia-guadalquivir",
+      "queries": [
+        "2024-07-04",
+        "2024-07-19",
+        "2024-08-08"
+      ],
+      "usable": true
+    },
+    {
+      "available_days": 20,
+      "excluded_days": 11,
+      "index_days": 6,
+      "observed_min_gap_days": 90,
+      "place_id": "attica-thriasio",
+      "queries": [
+        "2024-07-08",
+        "2024-07-16",
+        "2024-07-28"
+      ],
+      "usable": true
+    },
+    {
+      "available_days": 6,
+      "excluded_days": 2,
+      "index_days": 1,
+      "observed_min_gap_days": 170,
+      "place_id": "beauce-orleans",
+      "queries": [
+        "2024-08-05",
+        "2024-08-12",
+        "2024-08-22"
+      ],
+      "usable": true
+    },
+    {
+      "available_days": 13,
+      "excluded_days": 7,
+      "index_days": 3,
+      "observed_min_gap_days": 110,
+      "place_id": "brandenburg-spreewald",
+      "queries": [
+        "2024-06-26",
+        "2024-07-21",
+        "2024-08-13"
+      ],
+      "usable": true
+    },
+    {
+      "available_days": 20,
+      "excluded_days": 9,
+      "index_days": 8,
+      "observed_min_gap_days": 90,
+      "place_id": "crete-messara",
+      "queries": [
+        "2024-07-03",
+        "2024-07-23",
+        "2024-08-12"
+      ],
+      "usable": true
+    },
+    {
+      "available_days": 7,
+      "excluded_days": 2,
+      "index_days": 2,
+      "observed_min_gap_days": 150,
+      "place_id": "flevoland-polder",
+      "queries": [
+        "2024-06-25",
+        "2024-07-20",
+        "2024-08-12"
+      ],
+      "usable": true
+    },
+    {
+      "available_days": 13,
+      "excluded_days": 8,
+      "index_days": 2,
+      "observed_min_gap_days": 127,
+      "place_id": "jutland-viborg",
+      "queries": [
+        "2024-06-27",
+        "2024-07-20",
+        "2024-07-30"
+      ],
+      "usable": true
+    },
+    {
+      "available_days": 19,
+      "excluded_days": 11,
+      "index_days": 5,
+      "observed_min_gap_days": 97,
+      "place_id": "lapland-rovaniemi",
+      "queries": [
+        "2024-06-23",
+        "2024-06-28",
+        "2024-07-21"
+      ],
+      "usable": true
+    },
+    {
+      "available_days": 20,
+      "excluded_days": 12,
+      "index_days": 5,
+      "observed_min_gap_days": 90,
+      "place_id": "ostrobothnia-vaasa",
+      "queries": [
+        "2024-06-26",
+        "2024-07-19",
+        "2024-08-07"
+      ],
+      "usable": true
+    },
+    {
+      "available_days": 20,
+      "excluded_days": 6,
+      "index_days": 11,
+      "observed_min_gap_days": 90,
+      "place_id": "po-valley-cremona",
+      "queries": [
+        "2024-07-11",
+        "2024-07-16",
+        "2024-07-21"
+      ],
+      "usable": true
+    },
+    {
+      "available_days": 17,
+      "excluded_days": 8,
+      "index_days": 6,
+      "observed_min_gap_days": 95,
+      "place_id": "smaland-vaxjo",
+      "queries": [
+        "2024-05-25",
+        "2024-06-21",
+        "2024-08-20"
+      ],
+      "usable": true
+    },
+    {
+      "available_days": 18,
+      "excluded_days": 12,
+      "index_days": 3,
+      "observed_min_gap_days": 102,
+      "place_id": "uppland-uppsala",
+      "queries": [
+        "2024-06-26",
+        "2024-06-29",
+        "2024-08-13"
+      ],
+      "usable": true
+    }
+  ],
+  "source_manifest_sha256": "9872a52061db32c9c9d16a4aa9ce05c49a415a701599a510f14e09fa31f8bd82"
+}

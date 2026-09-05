@@ -1,0 +1,95 @@
+{
+  "evaluated_queries": 48,
+  "k": 1,
+  "map_at_k": 0.9375,
+  "ndcg_at_k": 0.9375,
+  "per_class": {
+    "andalusia-guadalquivir": {
+      "evaluated_queries": 4,
+      "map_at_k": 1.0,
+      "ndcg_at_k": 1.0,
+      "precision_at_k": 1.0,
+      "recall_at_k": 0.0625
+    },
+    "attica-thriasio": {
+      "evaluated_queries": 4,
+      "map_at_k": 1.0,
+      "ndcg_at_k": 1.0,
+      "precision_at_k": 1.0,
+      "recall_at_k": 0.0625
+    },
+    "beauce-orleans": {
+      "evaluated_queries": 4,
+      "map_at_k": 0.75,
+      "ndcg_at_k": 0.75,
+      "precision_at_k": 0.75,
+      "recall_at_k": 0.375
+    },
+    "brandenburg-spreewald": {
+      "evaluated_queries": 4,
+      "map_at_k": 1.0,
+      "ndcg_at_k": 1.0,
+      "precision_at_k": 1.0,
+      "recall_at_k": 0.1111111111111111
+    },
+    "crete-messara": {
+      "evaluated_queries": 4,
+      "map_at_k": 1.0,
+      "ndcg_at_k": 1.0,
+      "precision_at_k": 1.0,
+      "recall_at_k": 0.0625
+    },
+    "flevoland-polder": {
+      "evaluated_queries": 4,
+      "map_at_k": 1.0,
+      "ndcg_at_k": 1.0,
+      "precision_at_k": 1.0,
+      "recall_at_k": 0.3333333333333333
+    },
+    "jutland-viborg": {
+      "evaluated_queries": 4,
+      "map_at_k": 0.75,
+      "ndcg_at_k": 0.75,
+      "precision_at_k": 0.75,
+      "recall_at_k": 0.08333333333333333
+    },
+    "lapland-rovaniemi": {
+      "evaluated_queries": 4,
+      "map_at_k": 0.75,
+      "ndcg_at_k": 0.75,
+      "precision_at_k": 0.75,
+      "recall_at_k": 0.05
+    },
+    "ostrobothnia-vaasa": {
+      "evaluated_queries": 4,
+      "map_at_k": 1.0,
+      "ndcg_at_k": 1.0,
+      "precision_at_k": 1.0,
+      "recall_at_k": 0.0625
+    },
+    "po-valley-cremona": {
+      "evaluated_queries": 4,
+      "map_at_k": 1.0,
+      "ndcg_at_k": 1.0,
+      "precision_at_k": 1.0,
+      "recall_at_k": 0.0625
+    },
+    "smaland-vaxjo": {
+      "evaluated_queries": 4,
+      "map_at_k": 1.0,
+      "ndcg_at_k": 1.0,
+      "precision_at_k": 1.0,
+      "recall_at_k": 0.07692307692307693
+    },
+    "uppland-uppsala": {
+      "evaluated_queries": 4,
+      "map_at_k": 1.0,
+      "ndcg_at_k": 1.0,
+      "precision_at_k": 1.0,
+      "recall_at_k": 0.07142857142857142
+    }
+  },
+  "precision_at_k": 0.9375,
+  "recall_at_k": 0.11780245217745218,
+  "skipped_queries": 0
+}

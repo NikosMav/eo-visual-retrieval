@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+from datetime import date
 
 import pytest
 
@@ -187,3 +188,62 @@ def test_day_gap_records_the_temporal_guard() -> None:
     assert day_gap_to_index("2024-06-15", ["2024-12-15"]) == 183
     with pytest.raises(ValueError, match="at least one index acquisition"):
         day_gap_to_index("2024-06-15", [])
+
+
+def test_guard_excludes_neighbours_rather_than_only_measuring_them() -> None:
+    """Spreading queries measures the gap; only excluding acquisitions enforces it."""
+
+    from eo_visual_retrieval.temporal import guarded_split
+
+    days = [f"2024-{month:02d}-10" for month in range(1, 13)]
+    split = guarded_split(days, anchor="2024-07-15", query_count=2, min_day_gap=90)
+
+    assert split.usable
+    assert set(split.queries) <= set(days)
+    assert not set(split.queries) & set(split.index)
+    assert not set(split.index) & set(split.excluded)
+    assert set(split.queries) | set(split.index) | set(split.excluded) == set(days)
+    # Every retained answer is at least the guard away from every query.
+    for query in split.queries:
+        for kept in split.index:
+            assert abs(
+                date.fromisoformat(kept).toordinal() - date.fromisoformat(query).toordinal()
+            ) >= 90
+    assert split.observed_min_gap >= 90
+
+
+def test_queries_are_anchored_to_one_season() -> None:
+    """A contiguous excluded block leaves a usable index; scattered gaps do not."""
+
+    from eo_visual_retrieval.temporal import guarded_split
+
+    days = [f"2024-{month:02d}-10" for month in range(1, 13)]
+    split = guarded_split(days, anchor="2024-07-15", query_count=3, min_day_gap=60)
+
+    months = sorted(int(day[5:7]) for day in split.queries)
+    assert months == [6, 7, 8], "queries should cluster around the anchor"
+    assert split.index, "an anchored guard must still leave answers"
+
+
+def test_a_place_without_a_distant_acquisition_is_dropped() -> None:
+    from eo_visual_retrieval.temporal import guarded_split
+
+    clustered = ["2024-07-01", "2024-07-08", "2024-07-15"]
+    split = guarded_split(clustered, anchor="2024-07-15", query_count=1, min_day_gap=90)
+
+    assert not split.usable
+    assert not split.index
+    assert len(split.excluded) == 2
+
+
+def test_guard_rejects_impossible_settings() -> None:
+    from eo_visual_retrieval.temporal import guarded_split
+
+    days = ["2024-01-01", "2024-07-01"]
+    with pytest.raises(ValueError, match="query_count must be positive"):
+        guarded_split(days, anchor="2024-07-15", query_count=0, min_day_gap=10)
+    with pytest.raises(ValueError, match="min_day_gap must not be negative"):
+        guarded_split(days, anchor="2024-07-15", query_count=1, min_day_gap=-1)
+    # One acquisition cannot be both a query and its own answer.
+    single = guarded_split(["2024-07-01"], anchor="2024-07-15", query_count=1, min_day_gap=0)
+    assert not single.usable
