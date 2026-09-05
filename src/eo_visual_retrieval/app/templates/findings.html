@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="What the aggregate retrieval scores concealed: agreement, consistency, failure structure and clear-sky availability.">
+<title>EO Visual Retrieval · What the averages hid</title>
+<link rel="stylesheet" href="/static/explorer.css">
+<link rel="stylesheet" href="/static/findings.css">
+</head>
+<body>
+<a class="skip" href="#finding-1">Skip to findings</a>
+<header>
+<div class="masthead">
+<a class="brand" href="/">EO Visual Retrieval</a>
+<span class="dataset">EuroSAT v1 / Findings</span>
+</div>
+</header>
+<main class="findings">
+
+<div class="intro">
+<h1>What the averages hid</h1>
+<p class="lede">Five ways of turning a satellite image into numbers, scored on the same {{ findings.queries }} queries. The leaderboard ranked them cleanly. Regrouping the same per-query results four ways shows that most of what separates them never reaches the average.</p>
+</div>
+
+<div class="statrow">
+  <div><span class="n">{{ headline.best_overlap }}</span><span class="k">highest share of results any two representations agree on</span></div>
+  <div><span class="n">{{ headline.all_correct_pct }}%</span><span class="k">of queries all five answer correctly</span></div>
+  <div><span class="n">{{ findings.universally_hard.count }}</span><span class="k">queries none of the five gets right</span></div>
+  <div><span class="n">640 m</span><span class="k">of ground inside one 64 × 64 pixel chip</span></div>
+  <div><span class="n">{{ headline.days_max }} : {{ headline.days_min }}</span><span class="k">clear days per year, best place vs worst</span></div>
+</div>
+
+<section id="finding-1">
+  <span class="eyebrow">Agreement · overlap@{{ findings.k }} over {{ findings.queries }} queries</span>
+  <h2>They almost never retrieve the same images</h2>
+  <div class="col">
+    <p>Each representation answered the same queries and returned its closest matches. The reasonable assumption is that the good ones broadly agree. They do not.</p>
+    <p>The strongest agreement anywhere is {{ headline.best_overlap }} — and that is between the two SSL4EO variants, which share an architecture and a pretraining corpus and differ only in which Sentinel-2 bands they read.</p>
+  </div>
+  <figure>
+    <div class="plot">
+      <svg viewBox="0 0 700 290" role="img" aria-label="Matrix of mean overlap between each pair of representations. The table below the chart lists the same values."><g id="heat"></g></svg>
+    </div>
+    <figcaption>Mean share of each query's {{ findings.k }} results that both representations returned. The diagonal is omitted. Darker means more shared results, on a scale that stops at {{ '%.2f'|format(findings.overlap_max) }} rather than 1.</figcaption>
+  </figure>
+  <div class="pull">
+    With 160 index images per class, a great many different answer sets are all correct. Class-label scoring measures whether you got back the right <em>kind</em> of place. It is blind to whether you got the right <em>one</em>.
+  </div>
+  <div class="col">
+    <p style="margin-top:22px">Of {{ findings.queries }} queries, all five agree on only {{ findings.top_one.all_stores_correct }} ({{ headline.all_correct_pct }}%); {{ findings.top_one.disputed }} are disputed, and {{ findings.top_one.exactly_one_store_correct }} are answered by exactly one representation.</p>
+  </div>
+</section>
+
+<section>
+  <span class="eyebrow">Consistency · spread across spatial cells</span>
+  <h2>Consistency is a separate axis from quality</h2>
+  <div class="col">
+    <p>An average hides how evenly a representation works from place to place. Splitting queries into the geographic cells they came from, and reading the spread of per-cell scores rather than the mean, separates two qualities a leaderboard fuses into one.</p>
+  </div>
+  <figure>
+    <div class="plot">
+      <svg viewBox="0 0 700 360" role="img" aria-label="Quality against variability across cells for each representation. The table below lists the same values."><g id="scatter"></g></svg>
+    </div>
+    <figcaption>Up is better overall; left is steadier from place to place. The upper-left is where you want to be — good everywhere, rather than good on average.</figcaption>
+    <details>
+      <summary>Show the numbers</summary>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Representation</th><th>mAP@{{ findings.k }}</th><th>Spread (SD)</th><th>Worst cell</th><th>Median cell</th></tr></thead>
+        <tbody id="series-rows"></tbody>
+      </table></div>
+    </details>
+  </figure>
+  <div class="col">
+    <p style="margin-top:22px">The best representation wins twice: highest scoring and least variable. The interesting case is the one that scores in the middle while varying the most — excellent in some places and poor in others. Ranked by predictability rather than headline accuracy, the order changes.</p>
+  </div>
+</section>
+
+<section>
+  <span class="eyebrow">Failure · what comes back when a result is wrong</span>
+  <h2>Failure has a structure, and it separates two kinds of system</h2>
+  <div class="col">
+    <p>A wrong answer is not a uniform event. Which class arrives instead says whether a representation confused two genuinely similar surfaces or simply matched on brightness.</p>
+  </div>
+  <div class="cols2">
+    <div>
+      <h3>Learned representations fail coherently</h3>
+      <ul>
+        <li>Highway retrieves River, and River retrieves Highway</li>
+        <li>PermanentCrop retrieves AnnualCrop</li>
+        <li>HerbaceousVegetation retrieves Pasture</li>
+      </ul>
+      <p class="muted" style="font-size:.85rem;margin-top:9px">Roads and rivers are both narrow linear features; the crop classes are genuinely similar surfaces. Defensible mistakes.</p>
+    </div>
+    <div>
+      <h3>PCA fails photometrically</h3>
+      <ul>
+        <li>Residential retrieves SeaLake</li>
+        <li>Highway retrieves Forest</li>
+        <li>River retrieves SeaLake</li>
+      </ul>
+      <p class="muted" style="font-size:.85rem;margin-top:9px">Those pairs share brightness statistics, not content. A colour histogram wearing a retrieval system's clothes.</p>
+    </div>
+  </div>
+  <div class="col">
+    <p style="margin-top:24px">The {{ findings.universally_hard.count }} queries that defeat every representation are almost all linear features ({{ findings.universally_hard.examples|join(', ') }}). At 10 m resolution a 64 × 64 patch covers 640 metres of ground, so a road is a thin ribbon crossing a square that is mostly the landscape around it, and the label describes a minority of the pixels. That is a labelling-granularity failure, not a model failure.</p>
+  </div>
+</section>
+
+<section>
+  <span class="eyebrow">Geography · distance to the nearest same-class image</span>
+  <h2>Proximity is not what makes the benchmark work</h2>
+  <div class="col">
+    <p>The worry with a geographic benchmark is that it succeeds by finding nearby images rather than by learning what a class looks like. Measured against distance to the nearest index image of any class, every representation is flat — corpus density is not driving the result. Measured against distance to the nearest image <em>of the same class</em>, the picture changes.</p>
+  </div>
+  <figure>
+    <div class="plot">
+      <ul class="legend" id="legend-slope"></ul>
+      <svg viewBox="0 0 700 350" role="img" aria-label="Quality by quartile of distance to the nearest same-class index image, for each representation."><g id="slope"></g></svg>
+    </div>
+    <figcaption>Queries split into four equal groups by how far the nearest same-class index image sits. Not a clean decay — the peak is often Q2 or Q3 — but every representation is at or near its worst in the far quartile, and the size of the drop differs sharply.</figcaption>
+  </figure>
+  <div class="col">
+    <p style="margin-top:22px">That difference is between generalizing across geography and leaning on a nearby example of the same thing — between learning a class and memorising a place. It appears in no aggregate.</p>
+  </div>
+</section>
+
+<section>
+  <span class="eyebrow">Availability · {{ findings.availability.collection }} · {{ findings.availability.datetime }} · cloud ≤ {{ findings.availability.max_cloud_cover }}%</span>
+  <h2>Your cloud budget, not the satellite, decides how much data you get</h2>
+  <div class="col">
+    <p>EuroSAT carries no acquisition dates, so it cannot answer anything seasonal. Building a corpus that can means pulling places on many dates, which depends on those dates existing. Before downloading anything, we asked the catalogue how many near-cloud-free scenes each of {{ findings.places|length }} European locations actually had.</p>
+    <p>The intuition is that further north means cloudier. The intuition is wrong.</p>
+  </div>
+  <figure>
+    <div class="plot">
+      <svg viewBox="0 0 700 400" role="img" aria-label="Clear-sky acquisition days by place, ordered south to north. The table below lists the same values."><g id="bars"></g></svg>
+    </div>
+    <figcaption>Distinct acquisition days at or below the cloud ceiling, ordered south to north. Tiles from one overpass count once. Sentinel-2's revisit interval is roughly uniform across this whole area, so the spread is weather, not orbit.</figcaption>
+    <details>
+      <summary>Show the numbers</summary>
+      <div class="tablewrap"><table>
+        <thead><tr><th>Place</th><th>Latitude</th><th>Clear days</th></tr></thead>
+        <tbody id="place-rows"></tbody>
+      </table></div>
+    </details>
+  </figure>
+  <div class="pull">
+    Europe's worst optical coverage is not the Arctic. It is the temperate maritime band around 48–53° N, where one location yielded {{ headline.days_min }} usable days in a year — while a place inside the Arctic Circle yielded more, and the Mediterranean yielded {{ headline.days_max }}.
+  </div>
+  <div class="col">
+    <p style="margin-top:22px">Anyone sizing a corpus from &ldquo;Sentinel-2 revisits every five days, so roughly seventy images per place per year&rdquo; would be wrong by more than a factor of ten, in exactly the part of Europe most likely to be picked for a first experiment. It also rules out a balanced corpus: levelling every place down to the scarcest would discard most of the richest.</p>
+  </div>
+</section>
+
+<section>
+  <span class="eyebrow">Boundaries</span>
+  <h2>What none of this shows</h2>
+  <div class="cols2">
+    <div>
+      <h3>Not evidence of generalization</h3>
+      <ul>
+        <li>EuroSAT v1 selected the model roster, so no score on it can also prove the roster generalizes.</li>
+        <li>Preparing it consumed 725 of 845 spatial cells. It is permanently a regression benchmark.</li>
+        <li>Nothing here has been tested on a second dataset.</li>
+      </ul>
+    </div>
+    <div>
+      <h3>Not causal, not universal</h3>
+      <ul>
+        <li>That the 13-band variant is steadier is a measurement, not proof that non-visible bands caused it.</li>
+        <li>Availability is one provider, one year, one cloud ceiling. Scene cloud cover describes a whole tile, not the window.</li>
+        <li>Slices with very few queries are flagged in the source report and are not results.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<p class="provenance">Every figure on this page is read at startup from the committed evidence reports, not written into the page: <code>eurosat-v1-analysis.json</code> and <code>temporal-availability-2024.json</code>, produced by <code>eovr analyze-retrieval</code> and <code>eovr temporal-survey</code>. Pooling any slice reproduces the released aggregate exactly for all five representations. <a href="/">Return to the explorer</a>.</p>
+
+</main>
+<div id="tip" role="status" aria-live="polite"></div>
+<script id="findings-data" type="application/json">{{ findings_json | safe }}</script>
+<script src="/static/findings.js"></script>
+</body>
+</html>

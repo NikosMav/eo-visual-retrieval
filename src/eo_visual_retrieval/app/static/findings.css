@@ -1,0 +1,256 @@
+/* Findings page. Chrome inherits the explorer's tokens; only the data colours
+   are new. The five series colours are a validated categorical set: on this
+   surface four of them fall below 3:1 contrast, so every series is directly
+   labelled and every chart carries a table view. Identity never rests on colour
+   alone. */
+:root {
+  --s1: #2a78d6;
+  --s2: #eb6834;
+  --s3: #1baf7a;
+  --s4: #eda100;
+  --s5: #e87ba4;
+  --r1: #e7eff9;
+  --r2: #c6dbf4;
+  --r3: #8ebbe9;
+  --r4: #5497dd;
+  --r5: #2a78d6;
+  --grid: #dde7ed;
+  --card: #ffffff;
+}
+
+.findings {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 20px 72px;
+}
+.findings .lede {
+  max-width: 68ch;
+  font-size: 1.12rem;
+  color: var(--muted);
+}
+.findings section {
+  margin-top: 60px;
+}
+.findings section > p,
+.findings section > .col {
+  max-width: 68ch;
+}
+.findings h2 {
+  font-size: 1.4rem;
+  margin: 6px 0 14px;
+  line-height: 1.2;
+}
+.findings h3 {
+  font-size: 1rem;
+  margin: 0 0 8px;
+}
+.eyebrow {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.statrow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  margin-top: 34px;
+}
+.statrow > div {
+  background: var(--card);
+  padding: 15px 16px;
+}
+.statrow .n {
+  display: block;
+  font-size: 1.72rem;
+  font-weight: 600;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.statrow .k {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin-top: 3px;
+  line-height: 1.35;
+}
+
+.plot {
+  background: var(--card);
+  border: 1px solid var(--line);
+  padding: 18px 16px 12px;
+  margin-top: 26px;
+}
+.plot svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+figure {
+  margin: 0;
+}
+figcaption {
+  margin-top: 10px;
+  font-size: 0.83rem;
+  color: var(--muted);
+  max-width: 78ch;
+  line-height: 1.5;
+}
+.tick {
+  font-size: 10.5px;
+  fill: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.axlab {
+  font-size: 10px;
+  fill: var(--muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.dlab {
+  font-size: 11px;
+  fill: var(--ink);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.dlab-s {
+  font-size: 11.5px;
+  fill: var(--ink);
+}
+.gridline {
+  stroke: var(--grid);
+  stroke-width: 1;
+}
+.axis {
+  stroke: var(--line);
+  stroke-width: 1;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+}
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.81rem;
+  color: var(--muted);
+}
+.legend .swatch {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  flex: none;
+}
+
+.findings details {
+  margin-top: 12px;
+}
+.findings summary {
+  cursor: pointer;
+  font-size: 0.82rem;
+  color: var(--blue);
+}
+.tablewrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  margin-top: 10px;
+}
+.findings table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.84rem;
+  background: var(--card);
+}
+.findings th,
+.findings td {
+  padding: 7px 12px;
+  text-align: right;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.findings th:first-child,
+.findings td:first-child {
+  text-align: left;
+}
+.findings thead th {
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-weight: 600;
+}
+.findings tbody tr:last-child td {
+  border-bottom: none;
+}
+.findings td.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.pull {
+  margin-top: 28px;
+  padding: 16px 20px;
+  background: var(--card);
+  border-left: 3px solid var(--blue);
+  border-top: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  max-width: 72ch;
+}
+.cols2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+.cols2 > div {
+  background: var(--card);
+  border: 1px solid var(--line);
+  padding: 15px 17px;
+}
+.cols2 ul {
+  margin: 0;
+  padding-left: 17px;
+  font-size: 0.87rem;
+  color: var(--muted);
+}
+.cols2 li + li {
+  margin-top: 4px;
+}
+.provenance {
+  margin-top: 44px;
+  padding-top: 14px;
+  border-top: 1px solid var(--line);
+  font-size: 0.82rem;
+  color: var(--muted);
+  max-width: 78ch;
+}
+
+#tip {
+  position: fixed;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, -130%);
+  background: var(--ink);
+  color: #fff;
+  padding: 6px 9px;
+  font-size: 11.5px;
+  line-height: 1.4;
+  white-space: pre;
+  z-index: 40;
+  border-radius: 3px;
+}
+[data-tip] {
+  cursor: crosshair;
+}

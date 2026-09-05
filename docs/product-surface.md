@@ -59,6 +59,15 @@ later filesystem edits.
 - Bad images and unknown queries show an error with a route back to the explorer. Oversized
   requests return HTTP 413 before parsing. `/healthz` reports readiness after catalog startup.
 
+## Findings page
+
+`--results-dir docs/results` adds a `/findings` route alongside the explorer, linked from its
+header. The page presents what the published analysis found — agreement between representations,
+consistency across places, failure structure, and clear-sky availability — with every figure read
+from the committed reports at startup rather than written into the template. A deployment that
+supplies no directory serves no findings page; a directory missing a required section is refused
+at startup rather than rendering a chart with holes in it.
+
 ## Container launch
 
 The Dockerfile installs only the locked core and `app` dependencies and runs as an unprivileged

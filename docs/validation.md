@@ -56,6 +56,39 @@ This establishes that the container builds and serves correctly on one engine an
 is not a deployment: no host is selected, and TLS, public exposure, upload traffic policy, cost,
 and behavior under real load remain unmeasured.
 
+## Sentinel-2 chip cost and the findings page — 2026-09-05
+
+Executed on Windows 11 against Microsoft Planetary Computer, with no account.
+
+### Chip cost, measured before committing to a corpus
+
+Five chips over one place (`po-valley-cremona`, a 2,560 m window), each from a
+different acquisition, materialized with `eovr stac-chip --signer planetary-computer`.
+
+| Measure | Value |
+|---|---|
+| Wall time per chip | 5.2 s to 7.5 s, mean **6.3 s** sequential |
+| Bytes per chip | 538 KB reflectance + 164 KB RGB = **702 KB** |
+| Pixel grid | 261 x 260 at 10 m, EPSG:32632, aligned to the raster's own grid |
+| Recorded per chip | acquisition datetime, processing baseline, reflectance scale/offset, SCL masked classes, and a SHA-256 for each written file |
+
+Projecting the 303 acquisition days the [availability survey](results/temporal-availability-2024.md)
+found across twelve places gives roughly **32 minutes and 213 MB** for the full corpus, sequential.
+That is a projection from five chips on one connection, not a measured full run.
+
+### Findings page
+
+`eovr serve --results-dir docs/results` adds a `/findings` route. Its figures are read from the
+committed reports at startup and embedded as one JSON payload, so a served figure cannot disagree
+with the recorded evidence; supplying no directory serves no findings rather than a page of
+placeholder numbers. Verified in a browser against the real five-store catalogue: all charts
+render, and the page states 3 of 10 for the strongest agreement, 24.8% for unanimous top-1
+correctness, and 71 : 6 for the clear-day extremes, each derived rather than written in.
+
+One defect was found and fixed during that check: template autoescaping turned the embedded
+payload into HTML entities, so every chart failed to parse it. A regression test now asserts the
+embedded block is valid JSON with only `<` escaped.
+
 ## Copernicus Data Space STAC discovery — 2026-09-04
 
 Executed against ESA's own Sentinel-2 distribution, testing whether this project's

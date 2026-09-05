@@ -5,6 +5,9 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 UV_NO_CACHE=1
 WORKDIR /app
 COPY pyproject.toml uv.lock README.md LICENSE.md ./
 COPY src ./src
+# The findings page reads these committed reports at startup; they are
+# evidence, not runtime data, so they belong in the image rather than a mount.
+COPY docs/results ./docs/results
 RUN uv sync --locked --no-dev --extra app --no-editable \
     && useradd --uid 10001 --create-home eovr
 USER 10001

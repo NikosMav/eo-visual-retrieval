@@ -580,6 +580,7 @@ def _serve(args: argparse.Namespace) -> None:
         import uvicorn
 
         from eo_visual_retrieval.app.catalog import Catalog
+        from eo_visual_retrieval.app.findings import load_findings
         from eo_visual_retrieval.app.main import create_app
     except ImportError as error:
         message = 'the serve command is optional; install with pip install -e ".[app]"'
@@ -591,18 +592,22 @@ def _serve(args: argparse.Namespace) -> None:
         stores=args.store,
         projection=args.projection,
     )
+    findings = load_findings(args.results_dir)
     print(
         json.dumps(
             {
                 "stores": [str(path) for path in args.store],
                 "queries": len(catalog.query_ids),
                 "upload_available": catalog.upload_available,
+                "findings_available": findings is not None,
                 "url": f"http://{args.host}:{args.port}",
             },
             indent=2,
         )
     )
-    uvicorn.run(create_app(catalog, k=args.k), host=args.host, port=args.port)
+    uvicorn.run(
+        create_app(catalog, k=args.k, findings=findings), host=args.host, port=args.port
+    )
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -884,6 +889,12 @@ def build_parser() -> argparse.ArgumentParser:
         type=Path,
         help="PCA basis from embed-pca --projection-output; without it the upload "
         "path is disabled",
+    )
+    serve.add_argument(
+        "--results-dir",
+        type=Path,
+        help="directory holding the published evidence reports; supplying it adds the "
+        "findings page, which reads its figures from those files",
     )
     serve.add_argument("--host", default="127.0.0.1")
     serve.add_argument("--port", type=int, default=8000)
