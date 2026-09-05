@@ -1,6 +1,6 @@
 # ADR 0007: Bounded BigEarthNet imagery acquisition
 
-- Status: proposed; footprint/selection gates passed, full S2 streaming remains unimplemented
+- Status: accepted; streaming implemented and tested, full acquisition not yet executed
 - Date: 2026-09-03
 - Scope: reduce local disk use while preserving source integrity
 
@@ -89,5 +89,22 @@ holdout sizes and makes no benchmark-quality claim.
 
 - [x] Validate a compact, source-georeferenced footprint inventory.
 - [x] Freeze and audit the spatial/temporal acquisition selection with sufficient label coverage.
-- [ ] Implement and test bounded streaming, complete-source integrity, failure cleanup, and budgets.
+- [x] Implement and test bounded streaming, complete-source integrity, failure cleanup, and budgets.
+      `datasets/bigearthnet_s2.py` provides ranged streaming, an acquisition lock, budget
+      checkpointing, `--resume`, integrity verification, and a completion marker, under 18 tests
+      in `tests/test_bigearthnet_s2.py`. A [120-second sample](../validation.md) executed the path
+      against the real source at 1.1802 MiB/s.
 - [ ] Execute full acquisition only after these gates; then audit all selected S2 files.
+      Not started. Paused by operator decision, not blocked by missing code.
+
+### Correcting this record
+
+Until 2026-09-05 the status line above read "full S2 streaming remains unimplemented" and the
+third gate was unchecked, both of which the code had already overtaken. That stale text was read
+as current and produced a recommendation against acquisition on the grounds that its restart
+strategy did not exist. It does: resume replays the compressed stream from zero, which is costly
+after an interruption but is a strategy, and the implementation says so about itself.
+
+A plan document that outlives its own implementation is a hazard, because it is quoted with the
+authority of a decision record. The gate list is the thing to check against the code, not the
+status line.
