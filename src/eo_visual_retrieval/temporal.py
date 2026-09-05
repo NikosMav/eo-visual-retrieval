@@ -16,6 +16,7 @@ from __future__ import annotations
 import math
 from collections.abc import Sequence
 from dataclasses import dataclass
+from datetime import date
 from typing import Any
 
 from eo_visual_retrieval.models import StacItemRecord
@@ -175,6 +176,70 @@ def summarize_place(place: Place, records: Sequence[StacItemRecord]) -> dict[str
 def _cloud(record: StacItemRecord) -> float:
     value = record.properties.get("eo:cloud_cover")
     return float(value) if isinstance(value, (int, float)) else float("inf")
+
+
+def _ordinal(day: str) -> int:
+    return date(int(day[0:4]), int(day[5:7]), int(day[8:10])).toordinal()
+
+
+def select_dates(days: Sequence[str], *, max_dates: int) -> list[str]:
+    """Choose up to ``max_dates`` acquisitions spread across the calendar.
+
+    Taking the first N would cluster on whichever months happened to be clear,
+    which is exactly the seasonal variation this corpus exists to contain. Each
+    slot instead takes the available day closest to an evenly spaced target
+    between the first and last acquisition.
+    """
+
+    if max_dates < 1:
+        raise ValueError("max_dates must be positive")
+    ordered = sorted(set(days))
+    if len(ordered) <= max_dates:
+        return ordered
+
+    first, last = _ordinal(ordered[0]), _ordinal(ordered[-1])
+    chosen: list[str] = []
+    for slot in range(max_dates):
+        target = first + (last - first) * slot / (max_dates - 1)
+        remaining = [day for day in ordered if day not in chosen]
+        chosen.append(min(remaining, key=lambda day: abs(_ordinal(day) - target)))
+    return sorted(chosen)
+
+
+def choose_queries(days: Sequence[str], *, count: int) -> list[str]:
+    """Hold out query acquisitions spread through a place's own timeline.
+
+    Holding out consecutive dates would leave every query beside a neighbour
+    taken days earlier, and retrieving a near-identical image says nothing about
+    whether a representation survives a change of season.
+    """
+
+    ordered = sorted(set(days))
+    if count < 1:
+        raise ValueError("count must be positive")
+    if count >= len(ordered):
+        raise ValueError(
+            f"cannot hold out {count} of {len(ordered)} dates and still leave an index"
+        )
+    positions = sorted(
+        {int((slot + 0.5) * len(ordered) / count) for slot in range(count)}
+    )
+    return [ordered[min(position, len(ordered) - 1)] for position in positions]
+
+
+def day_gap_to_index(query_day: str, index_days: Sequence[str]) -> int:
+    """Days from a query acquisition to the closest index acquisition of its place.
+
+    The temporal counterpart of the benchmark's spatial guard band. It is
+    recorded rather than enforced, so results can be read against it: a score
+    earned three days apart is a different claim from one earned six months
+    apart.
+    """
+
+    if not index_days:
+        raise ValueError("a query needs at least one index acquisition")
+    target = _ordinal(query_day)
+    return min(abs(_ordinal(day) - target) for day in index_days)
 
 
 def survey_places(

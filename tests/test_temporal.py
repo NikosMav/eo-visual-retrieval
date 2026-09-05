@@ -133,3 +133,57 @@ def test_missing_cloud_cover_sorts_last_rather_than_crashing() -> None:
 
     assert summary["distinct_days"] == 1
     assert summary["observations"][0]["item_id"] == "with-cloud"
+
+
+def test_selected_dates_spread_across_the_calendar() -> None:
+    """Taking the first N would cluster on whichever months happened to be clear."""
+
+    from eo_visual_retrieval.temporal import select_dates
+
+    days = [f"2024-{month:02d}-{day:02d}" for month in range(1, 13) for day in (5, 12, 19)]
+    chosen = select_dates(days, max_dates=4)
+
+    assert len(chosen) == 4
+    assert chosen == sorted(chosen)
+    months = {day[5:7] for day in chosen}
+    assert len(months) == 4, "four picks should land in four different months"
+    assert chosen[0] == days[0] and chosen[-1] == days[-1]
+
+
+def test_selecting_more_dates_than_exist_returns_them_all() -> None:
+    from eo_visual_retrieval.temporal import select_dates
+
+    days = ["2024-03-01", "2024-07-01"]
+
+    assert select_dates(days, max_dates=10) == days
+    assert select_dates(["2024-03-01", "2024-03-01"], max_dates=5) == ["2024-03-01"]
+    with pytest.raises(ValueError, match="max_dates must be positive"):
+        select_dates(days, max_dates=0)
+
+
+def test_held_out_queries_are_spread_and_leave_an_index() -> None:
+    from eo_visual_retrieval.temporal import choose_queries
+
+    days = [f"2024-{month:02d}-10" for month in range(1, 13)]
+    queries = choose_queries(days, count=3)
+
+    assert len(queries) == 3
+    assert set(queries) < set(days)
+    assert len(days) - len(queries) >= 1
+    # Spread through the timeline rather than taken consecutively.
+    positions = sorted(days.index(day) for day in queries)
+    assert positions[-1] - positions[0] >= len(days) // 2
+
+    with pytest.raises(ValueError, match="still leave an index"):
+        choose_queries(["2024-01-01", "2024-02-01"], count=2)
+
+
+def test_day_gap_records_the_temporal_guard() -> None:
+    """A score earned three days apart is a different claim from six months apart."""
+
+    from eo_visual_retrieval.temporal import day_gap_to_index
+
+    assert day_gap_to_index("2024-06-15", ["2024-06-12", "2024-01-01"]) == 3
+    assert day_gap_to_index("2024-06-15", ["2024-12-15"]) == 183
+    with pytest.raises(ValueError, match="at least one index acquisition"):
+        day_gap_to_index("2024-06-15", [])
