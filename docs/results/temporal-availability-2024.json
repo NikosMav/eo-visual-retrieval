@@ -1,0 +1,2904 @@
+{
+  "api_url": "https://planetarycomputer.microsoft.com/api/stac/v1",
+  "collection": "sentinel-2-l2a",
+  "datetime": "2024-01-01/2024-12-31",
+  "distinct_days": {
+    "maximum": 71,
+    "median": 19,
+    "minimum": 6,
+    "total": 303
+  },
+  "limit_per_place": 80,
+  "max_cloud_cover": 10.0,
+  "note": "one entry per acquisition day; tiles from the same overpass are collapsed, keeping the least cloudy. No imagery was downloaded.",
+  "places": 12,
+  "results": [
+    {
+      "distinct_days": 71,
+      "first_day": "2024-01-05",
+      "items_returned": 71,
+      "last_day": "2024-12-17",
+      "latitude": 35.05,
+      "longitude": 24.95,
+      "note": "35-40N; Mediterranean agricultural plain with strong dry-season contrast",
+      "observations": [
+        {
+          "acquisition_day": "2024-01-05",
+          "datetime": "2024-01-05T09:12:59.024000+00:00",
+          "eo:cloud_cover": 7.070914,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20240105T091259_R050_T35SLU_20240105T120830",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-01-17",
+          "datetime": "2024-01-17T09:03:11.024000+00:00",
+          "eo:cloud_cover": 4.021022,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240117T090311_R007_T35SLU_20240117T131428",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-01-27",
+          "datetime": "2024-01-27T09:02:31.024000+00:00",
+          "eo:cloud_cover": 5.856539,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240127T090231_R007_T35SLU_20240127T131409",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-02-09",
+          "datetime": "2024-02-09T09:11:31.024000+00:00",
+          "eo:cloud_cover": 8.308201,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240209T091131_R050_T35SLU_20240209T131729",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-02-19",
+          "datetime": "2024-02-19T09:10:21.024000+00:00",
+          "eo:cloud_cover": 0.069721,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240219T091021_R050_T35SLU_20240219T141309",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-02-24",
+          "datetime": "2024-02-24T09:08:59.024000+00:00",
+          "eo:cloud_cover": 2.82804,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20240224T090859_R050_T35SLU_20240224T122302",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-03-07",
+          "datetime": "2024-03-07T08:58:21.024000+00:00",
+          "eo:cloud_cover": 5.292541,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240307T085821_R007_T35SLU_20240307T132503",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-03-10",
+          "datetime": "2024-03-10T09:08:01.024000+00:00",
+          "eo:cloud_cover": 7.650423,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240310T090801_R050_T35SLU_20240311T112219",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-03-22",
+          "datetime": "2024-03-22T08:56:29.024000+00:00",
+          "eo:cloud_cover": 0.788712,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20240322T085629_R007_T35SLU_20240322T132121",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-03-27",
+          "datetime": "2024-03-27T08:56:01.024000+00:00",
+          "eo:cloud_cover": 0.061214,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240327T085601_R007_T35SLU_20240330T011047",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-03-30",
+          "datetime": "2024-03-30T09:05:51.024000+00:00",
+          "eo:cloud_cover": 0.011159,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240330T090551_R050_T35SLU_20240330T155746",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-04-01",
+          "datetime": "2024-04-01T08:55:59.024000+00:00",
+          "eo:cloud_cover": 2.525357,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20240401T085559_R007_T35SLU_20240401T132441",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-04-04",
+          "datetime": "2024-04-04T09:05:49.024000+00:00",
+          "eo:cloud_cover": 0.004759,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20240404T090549_R050_T35SLU_20240404T140836",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-04-06",
+          "datetime": "2024-04-06T08:55:51.024000+00:00",
+          "eo:cloud_cover": 2.258736,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240406T085551_R007_T35SLU_20240406T144216",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-04-09",
+          "datetime": "2024-04-09T09:05:51.024000+00:00",
+          "eo:cloud_cover": 3.653084,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240409T090551_R050_T35SLU_20240410T183454",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-04-14",
+          "datetime": "2024-04-14T09:05:59.024000+00:00",
+          "eo:cloud_cover": 0.001108,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20240414T090559_R050_T35SLU_20240414T120601",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-04-21",
+          "datetime": "2024-04-21T08:55:59.024000+00:00",
+          "eo:cloud_cover": 3.254913,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20240421T085559_R007_T35SLU_20240421T123449",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-04-26",
+          "datetime": "2024-04-26T08:56:01.024000+00:00",
+          "eo:cloud_cover": 0.769961,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240426T085601_R007_T35SLU_20240426T144840",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-04-29",
+          "datetime": "2024-04-29T09:06:01.024000+00:00",
+          "eo:cloud_cover": 0.001678,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240429T090601_R050_T35SLU_20240429T141300",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-04",
+          "datetime": "2024-05-04T09:05:59.024000+00:00",
+          "eo:cloud_cover": 3.798732,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20240504T090559_R050_T35SLU_20240504T121229",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-06",
+          "datetime": "2024-05-06T08:56:01.024000+00:00",
+          "eo:cloud_cover": 1.372942,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240506T085601_R007_T35SLU_20240506T144453",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-16",
+          "datetime": "2024-05-16T08:56:01.024000+00:00",
+          "eo:cloud_cover": 0.004313,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240516T085601_R007_T35SLU_20240516T161135",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-29",
+          "datetime": "2024-05-29T09:06:41.024000+00:00",
+          "eo:cloud_cover": 2.474606,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240529T090641_R050_T35SLU_20240529T162018",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-31",
+          "datetime": "2024-05-31T08:55:59.024000+00:00",
+          "eo:cloud_cover": 0.005992,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20240531T085559_R007_T35SLU_20240531T143713",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-05",
+          "datetime": "2024-06-05T08:56:01.024000+00:00",
+          "eo:cloud_cover": 0.000932,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240605T085601_R007_T35SLU_20240605T161505",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-10",
+          "datetime": "2024-06-10T08:55:59.024000+00:00",
+          "eo:cloud_cover": 0.001171,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20240610T085559_R007_T35SLU_20240610T123746",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-15",
+          "datetime": "2024-06-15T08:56:01.024000+00:00",
+          "eo:cloud_cover": 0.041509,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240615T085601_R007_T35SLU_20240615T162734",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-25",
+          "datetime": "2024-06-25T08:56:01.024000+00:00",
+          "eo:cloud_cover": 0.004413,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240625T085601_R007_T35SLU_20240625T144548",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-28",
+          "datetime": "2024-06-28T09:06:01.024000+00:00",
+          "eo:cloud_cover": 0.373069,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240628T090601_R050_T35SLU_20240628T150348",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-30",
+          "datetime": "2024-06-30T08:55:59.024000+00:00",
+          "eo:cloud_cover": 1.478028,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20240630T085559_R007_T35SLU_20240701T183700",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-03",
+          "datetime": "2024-07-03T09:05:59.024000+00:00",
+          "eo:cloud_cover": 9.797931,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20240703T090559_R050_T35SLU_20240703T124335",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-10",
+          "datetime": "2024-07-10T08:55:59.024000+00:00",
+          "eo:cloud_cover": 0.011254,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20240710T085559_R007_T35SLU_20240710T141223",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-15",
+          "datetime": "2024-07-15T08:56:01.024000+00:00",
+          "eo:cloud_cover": 0.022628,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240715T085601_R007_T35SLU_20240715T143523",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-20",
+          "datetime": "2024-07-20T08:55:59.024000+00:00",
+          "eo:cloud_cover": 0.130408,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20240720T085559_R007_T35SLU_20240720T123729",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-23",
+          "datetime": "2024-07-23T09:05:59.024000+00:00",
+          "eo:cloud_cover": 6.361026,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20240723T090559_R050_T35SLU_20240723T120201",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-25",
+          "datetime": "2024-07-25T08:56:01.024000+00:00",
+          "eo:cloud_cover": 0.0292,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240725T085601_R007_T35SLU_20240725T170054",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-28",
+          "datetime": "2024-07-28T09:06:01.024000+00:00",
+          "eo:cloud_cover": 0.050355,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240728T090601_R050_T35SLU_20240728T152859",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-30",
+          "datetime": "2024-07-30T08:55:59.024000+00:00",
+          "eo:cloud_cover": 0.004552,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20240730T085559_R007_T35SLU_20240730T115948",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-02",
+          "datetime": "2024-08-02T09:05:59.024000+00:00",
+          "eo:cloud_cover": 7.347712,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20240802T090559_R050_T35SLU_20240802T103527",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-04",
+          "datetime": "2024-08-04T08:56:01.024000+00:00",
+          "eo:cloud_cover": 0.027372,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240804T085601_R007_T35SLU_20240804T154051",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-07",
+          "datetime": "2024-08-07T09:05:51.024000+00:00",
+          "eo:cloud_cover": 0.000966,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240807T090551_R050_T35SLU_20240807T153203",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-09",
+          "datetime": "2024-08-09T08:55:59.024000+00:00",
+          "eo:cloud_cover": 0.166668,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20240809T085559_R007_T35SLU_20240809T120033",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-12",
+          "datetime": "2024-08-12T09:05:59.024000+00:00",
+          "eo:cloud_cover": 0.002192,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20240812T090559_R050_T35SLU_20240812T121111",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-14",
+          "datetime": "2024-08-14T08:56:01.024000+00:00",
+          "eo:cloud_cover": 0.023099,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240814T085601_R007_T35SLU_20240814T133149",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-17",
+          "datetime": "2024-08-17T09:05:51.024000+00:00",
+          "eo:cloud_cover": 0.000466,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240817T090551_R050_T35SLU_20240817T134550",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-19",
+          "datetime": "2024-08-19T08:55:59.024000+00:00",
+          "eo:cloud_cover": 0.18125,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20240819T085559_R007_T35SLU_20240819T122007",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-24",
+          "datetime": "2024-08-24T08:55:51.024000+00:00",
+          "eo:cloud_cover": 0.002113,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240824T085551_R007_T35SLU_20240824T151452",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-27",
+          "datetime": "2024-08-27T09:05:51.024000+00:00",
+          "eo:cloud_cover": 6.963061,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240827T090551_R050_T35SLU_20240827T133907",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-29",
+          "datetime": "2024-08-29T08:55:59.024000+00:00",
+          "eo:cloud_cover": 0.005647,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20240829T085559_R007_T35SLU_20240829T115546",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-03",
+          "datetime": "2024-09-03T08:56:01.024000+00:00",
+          "eo:cloud_cover": 3.709888,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240903T085601_R007_T35SLU_20240903T152051",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-06",
+          "datetime": "2024-09-06T09:05:51.024000+00:00",
+          "eo:cloud_cover": 0.0005,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240906T090551_R050_T35SLU_20240906T131750",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-26",
+          "datetime": "2024-09-26T09:07:31.024000+00:00",
+          "eo:cloud_cover": 0.000627,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20240926T090731_R050_T35SLU_20240926T152806",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-28",
+          "datetime": "2024-09-28T08:56:49.024000+00:00",
+          "eo:cloud_cover": 0.007273,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20240928T085649_R007_T35SLU_20240928T123522",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-01",
+          "datetime": "2024-10-01T09:07:09.024000+00:00",
+          "eo:cloud_cover": 6.738435,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20241001T090709_R050_T35SLU_20241001T120335",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-03",
+          "datetime": "2024-10-03T08:58:21.024000+00:00",
+          "eo:cloud_cover": 7.151572,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20241003T085821_R007_T35SLU_20241003T121854",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-08",
+          "datetime": "2024-10-08T08:57:59.024000+00:00",
+          "eo:cloud_cover": 6.7066,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20241008T085759_R007_T35SLU_20241008T115031",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-11",
+          "datetime": "2024-10-11T09:08:19.024000+00:00",
+          "eo:cloud_cover": 0.065422,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20241011T090819_R050_T35SLU_20241011T123047",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-13",
+          "datetime": "2024-10-13T08:59:21.024000+00:00",
+          "eo:cloud_cover": 3.784705,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20241013T085921_R007_T35SLU_20241013T135753",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-16",
+          "datetime": "2024-10-16T09:09:41.024000+00:00",
+          "eo:cloud_cover": 0.003876,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20241016T090941_R050_T35SLU_20241016T122451",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-18",
+          "datetime": "2024-10-18T08:59:09.024000+00:00",
+          "eo:cloud_cover": 3.095531,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20241018T085909_R007_T35SLU_20241018T115322",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-21",
+          "datetime": "2024-10-21T09:09:29.024000+00:00",
+          "eo:cloud_cover": 0.002163,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20241021T090929_R050_T35SLU_20241021T111444",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-23",
+          "datetime": "2024-10-23T09:00:31.024000+00:00",
+          "eo:cloud_cover": 3.910286,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20241023T090031_R007_T35SLU_20241023T122451",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-26",
+          "datetime": "2024-10-26T09:10:51.024000+00:00",
+          "eo:cloud_cover": 0.005915,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20241026T091051_R050_T35SLU_20241026T122806",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-28",
+          "datetime": "2024-10-28T09:00:09.024000+00:00",
+          "eo:cloud_cover": 2.834115,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20241028T090009_R007_T35SLU_20241028T104832",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-11-02",
+          "datetime": "2024-11-02T09:01:31.024000+00:00",
+          "eo:cloud_cover": 1.290888,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20241102T090131_R007_T35SLU_20241102T122054",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-11-05",
+          "datetime": "2024-11-05T09:11:51.024000+00:00",
+          "eo:cloud_cover": 0.265139,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20241105T091151_R050_T35SLU_20241105T122155",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-11-07",
+          "datetime": "2024-11-07T09:00:59.024000+00:00",
+          "eo:cloud_cover": 5.16773,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20241107T090059_R007_T35SLU_20241107T103454",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-11-10",
+          "datetime": "2024-11-10T09:11:19.024000+00:00",
+          "eo:cloud_cover": 5.967456,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20241110T091119_R050_T35SLU_20241110T104442",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-11-25",
+          "datetime": "2024-11-25T09:13:21.024000+00:00",
+          "eo:cloud_cover": 0.037784,
+          "grid:code": "35SLU",
+          "item_id": "S2A_MSIL2A_20241125T091321_R050_T35SLU_20241125T120954",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-11-27",
+          "datetime": "2024-11-27T09:02:29.024000+00:00",
+          "eo:cloud_cover": 5.01567,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20241127T090229_R007_T35SLU_20241127T101310",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-12-17",
+          "datetime": "2024-12-17T09:03:09.024000+00:00",
+          "eo:cloud_cover": 1.898756,
+          "grid:code": "35SLU",
+          "item_id": "S2B_MSIL2A_20241217T090309_R007_T35SLU_20241217T113946",
+          "sat:relative_orbit": 7,
+          "view:sun_elevation": null
+        }
+      ],
+      "place_id": "crete-messara",
+      "usable": true
+    },
+    {
+      "distinct_days": 43,
+      "first_day": "2024-05-22",
+      "items_returned": 80,
+      "last_day": "2024-12-18",
+      "latitude": 38.53,
+      "longitude": 23.58,
+      "note": "35-40N; mixed peri-urban and agricultural land east of Athens",
+      "observations": [
+        {
+          "acquisition_day": "2024-05-22",
+          "datetime": "2024-05-22T09:20:31.024000+00:00",
+          "eo:cloud_cover": 0.725363,
+          "grid:code": "34SGH",
+          "item_id": "S2A_MSIL2A_20240522T092031_R093_T34SGH_20240522T151709",
+          "sat:relative_orbit": 93,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-24",
+          "datetime": "2024-05-24T09:05:59.024000+00:00",
+          "eo:cloud_cover": 8.598239,
+          "grid:code": "35SKC",
+          "item_id": "S2B_MSIL2A_20240524T090559_R050_T35SKC_20240524T131211",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-01",
+          "datetime": "2024-06-01T09:20:31.024000+00:00",
+          "eo:cloud_cover": 6.105065,
+          "grid:code": "34SGH",
+          "item_id": "S2A_MSIL2A_20240601T092031_R093_T34SGH_20240601T143211",
+          "sat:relative_orbit": 93,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-08",
+          "datetime": "2024-06-08T09:06:01.024000+00:00",
+          "eo:cloud_cover": 0.825469,
+          "grid:code": "35SKC",
+          "item_id": "S2A_MSIL2A_20240608T090601_R050_T35SKC_20240608T132546",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-18",
+          "datetime": "2024-06-18T09:06:01.024000+00:00",
+          "eo:cloud_cover": 0.078437,
+          "grid:code": "34SGH",
+          "item_id": "S2A_MSIL2A_20240618T090601_R050_T34SGH_20240618T134524",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-21",
+          "datetime": "2024-06-21T09:20:31.025000+00:00",
+          "eo:cloud_cover": 1.065752,
+          "grid:code": "34SGH",
+          "item_id": "S2A_MSIL2A_20240621T092031_R093_T34SGH_20240621T131208",
+          "sat:relative_orbit": 93,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-23",
+          "datetime": "2024-06-23T09:05:59.024000+00:00",
+          "eo:cloud_cover": 0.025438,
+          "grid:code": "34SGH",
+          "item_id": "S2B_MSIL2A_20240623T090559_R050_T34SGH_20240623T132126",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-26",
+          "datetime": "2024-06-26T09:15:59.024000+00:00",
+          "eo:cloud_cover": 5.14018,
+          "grid:code": "35SKC",
+          "item_id": "S2B_MSIL2A_20240626T091559_R093_T35SKC_20240626T143420",
+          "sat:relative_orbit": 93,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-28",
+          "datetime": "2024-06-28T09:06:01.024000+00:00",
+          "eo:cloud_cover": 5.067093,
+          "grid:code": "35SKC",
+          "item_id": "S2A_MSIL2A_20240628T090601_R050_T35SKC_20240628T152412",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-08",
+          "datetime": "2024-07-08T09:06:01.024000+00:00",
+          "eo:cloud_cover": 0.018168,
+          "grid:code": "34SGH",
+          "item_id": "S2A_MSIL2A_20240708T090601_R050_T34SGH_20240708T132042",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-11",
+          "datetime": "2024-07-11T09:20:31.024000+00:00",
+          "eo:cloud_cover": 6.905314,
+          "grid:code": "35SKC",
+          "item_id": "S2A_MSIL2A_20240711T092031_R093_T35SKC_20240711T152257",
+          "sat:relative_orbit": 93,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-13",
+          "datetime": "2024-07-13T09:05:59.024000+00:00",
+          "eo:cloud_cover": 0.004768,
+          "grid:code": "34SGH",
+          "item_id": "S2B_MSIL2A_20240713T090559_R050_T34SGH_20240713T124351",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-16",
+          "datetime": "2024-07-16T09:15:59.024000+00:00",
+          "eo:cloud_cover": 0.75322,
+          "grid:code": "34SGH",
+          "item_id": "S2B_MSIL2A_20240716T091559_R093_T34SGH_20240716T121438",
+          "sat:relative_orbit": 93,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-18",
+          "datetime": "2024-07-18T09:05:51.024000+00:00",
+          "eo:cloud_cover": 0.012369,
+          "grid:code": "35SKC",
+          "item_id": "S2A_MSIL2A_20240718T090551_R050_T35SKC_20240718T134722",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-21",
+          "datetime": "2024-07-21T09:20:31.024000+00:00",
+          "eo:cloud_cover": 1.013126,
+          "grid:code": "35SKC",
+          "item_id": "S2A_MSIL2A_20240721T092031_R093_T35SKC_20240721T161629",
+          "sat:relative_orbit": 93,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-23",
+          "datetime": "2024-07-23T09:05:59.024000+00:00",
+          "eo:cloud_cover": 0.113676,
+          "grid:code": "35SKC",
+          "item_id": "S2B_MSIL2A_20240723T090559_R050_T35SKC_20240723T120201",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-26",
+          "datetime": "2024-07-26T09:15:59.024000+00:00",
+          "eo:cloud_cover": 0.182722,
+          "grid:code": "35SKC",
+          "item_id": "S2B_MSIL2A_20240726T091559_R093_T35SKC_20240726T122410",
+          "sat:relative_orbit": 93,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-28",
+          "datetime": "2024-07-28T09:06:01.024000+00:00",
+          "eo:cloud_cover": 1.666979,
+          "grid:code": "35SKC",
+          "item_id": "S2A_MSIL2A_20240728T090601_R050_T35SKC_20240728T152859",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-31",
+          "datetime": "2024-07-31T09:20:31.024000+00:00",
+          "eo:cloud_cover": 0.234567,
+          "grid:code": "35SKC",
+          "item_id": "S2A_MSIL2A_20240731T092031_R093_T35SKC_20240731T132944",
+          "sat:relative_orbit": 93,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-02",
+          "datetime": "2024-08-02T09:05:59.024000+00:00",
+          "eo:cloud_cover": 0.031291,
+          "grid:code": "34SGH",
+          "item_id": "S2B_MSIL2A_20240802T090559_R050_T34SGH_20240802T103527",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-05",
+          "datetime": "2024-08-05T09:15:59.024000+00:00",
+          "eo:cloud_cover": 8.015408,
+          "grid:code": "34SGH",
+          "item_id": "S2B_MSIL2A_20240805T091559_R093_T34SGH_20240805T134825",
+          "sat:relative_orbit": 93,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-07",
+          "datetime": "2024-08-07T09:05:51.024000+00:00",
+          "eo:cloud_cover": 0.091174,
+          "grid:code": "35SKC",
+          "item_id": "S2A_MSIL2A_20240807T090551_R050_T35SKC_20240807T153203",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-10",
+          "datetime": "2024-08-10T09:20:31.024000+00:00",
+          "eo:cloud_cover": 3.188189,
+          "grid:code": "34SGH",
+          "item_id": "S2A_MSIL2A_20240810T092031_R093_T34SGH_20240810T141351",
+          "sat:relative_orbit": 93,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-12",
+          "datetime": "2024-08-12T09:05:59.024000+00:00",
+          "eo:cloud_cover": 1.55387,
+          "grid:code": "34SGH",
+          "item_id": "S2B_MSIL2A_20240812T090559_R050_T34SGH_20240812T121111",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-15",
+          "datetime": "2024-08-15T09:15:59.024000+00:00",
+          "eo:cloud_cover": 0.006318,
+          "grid:code": "34SGH",
+          "item_id": "S2B_MSIL2A_20240815T091559_R093_T34SGH_20240815T120839",
+          "sat:relative_orbit": 93,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-17",
+          "datetime": "2024-08-17T09:05:51.024000+00:00",
+          "eo:cloud_cover": 0.129545,
+          "grid:code": "34SGH",
+          "item_id": "S2A_MSIL2A_20240817T090551_R050_T34SGH_20240817T134550",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-22",
+          "datetime": "2024-08-22T09:05:49.024000+00:00",
+          "eo:cloud_cover": 1.867827,
+          "grid:code": "35SKC",
+          "item_id": "S2B_MSIL2A_20240822T090549_R050_T35SKC_20240822T134558",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-25",
+          "datetime": "2024-08-25T09:15:49.024000+00:00",
+          "eo:cloud_cover": 0.003894,
+          "grid:code": "35SKC",
+          "item_id": "S2B_MSIL2A_20240825T091549_R093_T35SKC_20240826T145644",
+          "sat:relative_orbit": 93,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-04",
+          "datetime": "2024-09-04T09:15:59.024000+00:00",
+          "eo:cloud_cover": 1.71025,
+          "grid:code": "35SKC",
+          "item_id": "S2B_MSIL2A_20240904T091559_R093_T35SKC_20240904T124722",
+          "sat:relative_orbit": 93,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-06",
+          "datetime": "2024-09-06T09:05:51.024000+00:00",
+          "eo:cloud_cover": 0.663959,
+          "grid:code": "35SKC",
+          "item_id": "S2A_MSIL2A_20240906T090551_R050_T35SKC_20240906T131750",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-09",
+          "datetime": "2024-09-09T09:20:31.024000+00:00",
+          "eo:cloud_cover": 5.235517,
+          "grid:code": "34SGH",
+          "item_id": "S2A_MSIL2A_20240909T092031_R093_T34SGH_20240909T141649",
+          "sat:relative_orbit": 93,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-26",
+          "datetime": "2024-09-26T09:07:31.024000+00:00",
+          "eo:cloud_cover": 0.9221,
+          "grid:code": "35SKC",
+          "item_id": "S2A_MSIL2A_20240926T090731_R050_T35SKC_20240926T152806",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-29",
+          "datetime": "2024-09-29T09:20:31.024000+00:00",
+          "eo:cloud_cover": 0.976004,
+          "grid:code": "35SKC",
+          "item_id": "S2A_MSIL2A_20240929T092031_R093_T35SKC_20240929T122650",
+          "sat:relative_orbit": 93,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-01",
+          "datetime": "2024-10-01T09:07:09.024000+00:00",
+          "eo:cloud_cover": 3.399727,
+          "grid:code": "35SKC",
+          "item_id": "S2B_MSIL2A_20241001T090709_R050_T35SKC_20241001T104121",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-04",
+          "datetime": "2024-10-04T09:20:29.024000+00:00",
+          "eo:cloud_cover": 0.018583,
+          "grid:code": "35SKC",
+          "item_id": "S2B_MSIL2A_20241004T092029_R093_T35SKC_20241004T121058",
+          "sat:relative_orbit": 93,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-09",
+          "datetime": "2024-10-09T09:20:31.024000+00:00",
+          "eo:cloud_cover": 9.989952,
+          "grid:code": "34SGH",
+          "item_id": "S2A_MSIL2A_20241009T092031_R093_T34SGH_20241009T135549",
+          "sat:relative_orbit": 93,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-16",
+          "datetime": "2024-10-16T09:09:41.024000+00:00",
+          "eo:cloud_cover": 2.009781,
+          "grid:code": "35SKC",
+          "item_id": "S2A_MSIL2A_20241016T090941_R050_T35SKC_20241016T122451",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-26",
+          "datetime": "2024-10-26T09:10:51.024000+00:00",
+          "eo:cloud_cover": 2.684171,
+          "grid:code": "34SGH",
+          "item_id": "S2A_MSIL2A_20241026T091051_R050_T34SGH_20241026T122806",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-29",
+          "datetime": "2024-10-29T09:21:11.024000+00:00",
+          "eo:cloud_cover": 0.005254,
+          "grid:code": "35SKC",
+          "item_id": "S2A_MSIL2A_20241029T092111_R093_T35SKC_20241029T123853",
+          "sat:relative_orbit": 93,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-11-20",
+          "datetime": "2024-11-20T09:12:09.024000+00:00",
+          "eo:cloud_cover": 2.033112,
+          "grid:code": "34SGH",
+          "item_id": "S2B_MSIL2A_20241120T091209_R050_T34SGH_20241120T115657",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-11-25",
+          "datetime": "2024-11-25T09:13:21.024000+00:00",
+          "eo:cloud_cover": 9.88871,
+          "grid:code": "34SGH",
+          "item_id": "S2A_MSIL2A_20241125T091321_R050_T34SGH_20241125T120954",
+          "sat:relative_orbit": 50,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-11-28",
+          "datetime": "2024-11-28T09:23:31.024000+00:00",
+          "eo:cloud_cover": 2.765176,
+          "grid:code": "35SKC",
+          "item_id": "S2A_MSIL2A_20241128T092331_R093_T35SKC_20241128T122153",
+          "sat:relative_orbit": 93,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-12-18",
+          "datetime": "2024-12-18T09:24:11.024000+00:00",
+          "eo:cloud_cover": 0.011394,
+          "grid:code": "35SKC",
+          "item_id": "S2A_MSIL2A_20241218T092411_R093_T35SKC_20241218T133205",
+          "sat:relative_orbit": 93,
+          "view:sun_elevation": null
+        }
+      ],
+      "place_id": "attica-thriasio",
+      "usable": true
+    },
+    {
+      "distinct_days": 28,
+      "first_day": "2024-01-21",
+      "items_returned": 52,
+      "last_day": "2024-12-31",
+      "latitude": 37.55,
+      "longitude": -5.55,
+      "note": "35-40N; irrigated river valley, the hardest latitude band on EuroSAT v1",
+      "observations": [
+        {
+          "acquisition_day": "2024-01-21",
+          "datetime": "2024-01-21T11:12:59.024000+00:00",
+          "eo:cloud_cover": 0.472459,
+          "grid:code": "29SQB",
+          "item_id": "S2B_MSIL2A_20240121T111259_R137_T29SQB_20240121T164511",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-02-20",
+          "datetime": "2024-02-20T11:10:09.024000+00:00",
+          "eo:cloud_cover": 0.001155,
+          "grid:code": "30STG",
+          "item_id": "S2B_MSIL2A_20240220T111009_R137_T30STG_20240220T151316",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-03-01",
+          "datetime": "2024-03-01T11:08:59.025000+00:00",
+          "eo:cloud_cover": 0.035411,
+          "grid:code": "30STG",
+          "item_id": "S2B_MSIL2A_20240301T110859_R137_T30STG_20240301T151822",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-03-11",
+          "datetime": "2024-03-11T11:07:49.024000+00:00",
+          "eo:cloud_cover": 9.826881,
+          "grid:code": "29SQB",
+          "item_id": "S2B_MSIL2A_20240311T110749_R137_T29SQB_20240311T154724",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-04-15",
+          "datetime": "2024-04-15T11:06:21.024000+00:00",
+          "eo:cloud_cover": 0.048129,
+          "grid:code": "30STG",
+          "item_id": "S2A_MSIL2A_20240415T110621_R137_T30STG_20240415T192122",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-10",
+          "datetime": "2024-05-10T11:06:19.024000+00:00",
+          "eo:cloud_cover": 4.222023,
+          "grid:code": "29SQB",
+          "item_id": "S2B_MSIL2A_20240510T110619_R137_T29SQB_20240510T141543",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-20",
+          "datetime": "2024-05-20T11:06:19.024000+00:00",
+          "eo:cloud_cover": 6.426276,
+          "grid:code": "30STG",
+          "item_id": "S2B_MSIL2A_20240520T110619_R137_T30STG_20240520T151707",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-25",
+          "datetime": "2024-05-25T11:06:21.024000+00:00",
+          "eo:cloud_cover": 0.002236,
+          "grid:code": "30STG",
+          "item_id": "S2A_MSIL2A_20240525T110621_R137_T30STG_20240525T181018",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-30",
+          "datetime": "2024-05-30T11:06:19.024000+00:00",
+          "eo:cloud_cover": 0.001755,
+          "grid:code": "30STG",
+          "item_id": "S2B_MSIL2A_20240530T110619_R137_T30STG_20240530T152953",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-04",
+          "datetime": "2024-06-04T11:06:21.024000+00:00",
+          "eo:cloud_cover": 0.236854,
+          "grid:code": "30STG",
+          "item_id": "S2A_MSIL2A_20240604T110621_R137_T30STG_20240604T181511",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-14",
+          "datetime": "2024-06-14T11:06:21.024000+00:00",
+          "eo:cloud_cover": 0.00224,
+          "grid:code": "30STG",
+          "item_id": "S2A_MSIL2A_20240614T110621_R137_T30STG_20240614T193633",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-24",
+          "datetime": "2024-06-24T11:06:41.024000+00:00",
+          "eo:cloud_cover": 0.003862,
+          "grid:code": "29SQB",
+          "item_id": "S2A_MSIL2A_20240624T110641_R137_T29SQB_20240624T162206",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-04",
+          "datetime": "2024-07-04T11:06:21.024000+00:00",
+          "eo:cloud_cover": 0.002697,
+          "grid:code": "29SQB",
+          "item_id": "S2A_MSIL2A_20240704T110621_R137_T29SQB_20240705T234637",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-09",
+          "datetime": "2024-07-09T11:06:19.024000+00:00",
+          "eo:cloud_cover": 0.003543,
+          "grid:code": "30STG",
+          "item_id": "S2B_MSIL2A_20240709T110619_R137_T30STG_20240709T142034",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-14",
+          "datetime": "2024-07-14T11:06:21.024000+00:00",
+          "eo:cloud_cover": 0.004831,
+          "grid:code": "30STG",
+          "item_id": "S2A_MSIL2A_20240714T110621_R137_T30STG_20240714T184128",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-19",
+          "datetime": "2024-07-19T11:06:19.025000+00:00",
+          "eo:cloud_cover": 0.005352,
+          "grid:code": "30STG",
+          "item_id": "S2B_MSIL2A_20240719T110619_R137_T30STG_20240719T162951",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-24",
+          "datetime": "2024-07-24T11:06:21.024000+00:00",
+          "eo:cloud_cover": 0.265241,
+          "grid:code": "29SQB",
+          "item_id": "S2A_MSIL2A_20240724T110621_R137_T29SQB_20240724T201752",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-03",
+          "datetime": "2024-08-03T11:06:21.024000+00:00",
+          "eo:cloud_cover": 0.001802,
+          "grid:code": "30STG",
+          "item_id": "S2A_MSIL2A_20240803T110621_R137_T30STG_20240803T183551",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-08",
+          "datetime": "2024-08-08T11:06:19.024000+00:00",
+          "eo:cloud_cover": 0.002837,
+          "grid:code": "30STG",
+          "item_id": "S2B_MSIL2A_20240808T110619_R137_T30STG_20240808T125104",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-23",
+          "datetime": "2024-08-23T11:06:21.024000+00:00",
+          "eo:cloud_cover": 0.030063,
+          "grid:code": "30STG",
+          "item_id": "S2A_MSIL2A_20240823T110621_R137_T30STG_20240823T172700",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-28",
+          "datetime": "2024-08-28T11:06:19.024000+00:00",
+          "eo:cloud_cover": 9.417012,
+          "grid:code": "30STG",
+          "item_id": "S2B_MSIL2A_20240828T110619_R137_T30STG_20240828T125746",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-02",
+          "datetime": "2024-09-02T11:06:21.024000+00:00",
+          "eo:cloud_cover": 0.002734,
+          "grid:code": "30STG",
+          "item_id": "S2A_MSIL2A_20240902T110621_R137_T30STG_20240902T173346",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-22",
+          "datetime": "2024-10-22T11:11:21.024000+00:00",
+          "eo:cloud_cover": 8.180872,
+          "grid:code": "29SQB",
+          "item_id": "S2A_MSIL2A_20241022T111121_R137_T29SQB_20241022T153359",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-11-06",
+          "datetime": "2024-11-06T11:11:49.025000+00:00",
+          "eo:cloud_cover": 0.003115,
+          "grid:code": "30STG",
+          "item_id": "S2B_MSIL2A_20241106T111149_R137_T30STG_20241106T123759",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-11-11",
+          "datetime": "2024-11-11T11:13:11.024000+00:00",
+          "eo:cloud_cover": 0.001835,
+          "grid:code": "30STG",
+          "item_id": "S2A_MSIL2A_20241111T111311_R137_T30STG_20241111T151952",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-12-21",
+          "datetime": "2024-12-21T11:15:01.024000+00:00",
+          "eo:cloud_cover": 0.001184,
+          "grid:code": "30STG",
+          "item_id": "S2A_MSIL2A_20241221T111501_R137_T30STG_20241221T152107",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-12-26",
+          "datetime": "2024-12-26T11:14:09.024000+00:00",
+          "eo:cloud_cover": 0.001838,
+          "grid:code": "30STG",
+          "item_id": "S2B_MSIL2A_20241226T111409_R137_T30STG_20241226T132743",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-12-31",
+          "datetime": "2024-12-31T11:14:51.024000+00:00",
+          "eo:cloud_cover": 0.041825,
+          "grid:code": "29SQB",
+          "item_id": "S2A_MSIL2A_20241231T111451_R137_T29SQB_20241231T152446",
+          "sat:relative_orbit": 137,
+          "view:sun_elevation": null
+        }
+      ],
+      "place_id": "andalusia-guadalquivir",
+      "usable": true
+    },
+    {
+      "distinct_days": 33,
+      "first_day": "2024-01-11",
+      "items_returned": 53,
+      "last_day": "2024-12-31",
+      "latitude": 45.14,
+      "longitude": 10.02,
+      "note": "40-45N; intensive irrigated cropland with a pronounced growing season",
+      "observations": [
+        {
+          "acquisition_day": "2024-01-11",
+          "datetime": "2024-01-11T10:24:01.024000+00:00",
+          "eo:cloud_cover": 1.332467,
+          "grid:code": "32TNR",
+          "item_id": "S2A_MSIL2A_20240111T102401_R065_T32TNR_20240111T153545",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-01-23",
+          "datetime": "2024-01-23T10:12:29.024000+00:00",
+          "eo:cloud_cover": 0.02971,
+          "grid:code": "32TNR",
+          "item_id": "S2B_MSIL2A_20240123T101229_R022_T32TNR_20240123T132916",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-02-02",
+          "datetime": "2024-02-02T10:11:39.024000+00:00",
+          "eo:cloud_cover": 2.840429,
+          "grid:code": "32TNQ",
+          "item_id": "S2B_MSIL2A_20240202T101139_R022_T32TNQ_20240202T133809",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-02-05",
+          "datetime": "2024-02-05T10:21:29.024000+00:00",
+          "eo:cloud_cover": 1.846396,
+          "grid:code": "32TNR",
+          "item_id": "S2B_MSIL2A_20240205T102129_R065_T32TNR_20240205T141923",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-02-20",
+          "datetime": "2024-02-20T10:20:51.024000+00:00",
+          "eo:cloud_cover": 2.730437,
+          "grid:code": "32TNQ",
+          "item_id": "S2A_MSIL2A_20240220T102051_R065_T32TNQ_20240220T153049",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-03-16",
+          "datetime": "2024-03-16T10:16:49.024000+00:00",
+          "eo:cloud_cover": 4.728442,
+          "grid:code": "32TNR",
+          "item_id": "S2B_MSIL2A_20240316T101649_R065_T32TNR_20240316T151011",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-04-02",
+          "datetime": "2024-04-02T10:05:49.024000+00:00",
+          "eo:cloud_cover": 0.750772,
+          "grid:code": "32TNR",
+          "item_id": "S2B_MSIL2A_20240402T100549_R022_T32TNR_20240402T152952",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-04-12",
+          "datetime": "2024-04-12T10:05:59.026000+00:00",
+          "eo:cloud_cover": 0.000967,
+          "grid:code": "32TNQ",
+          "item_id": "S2B_MSIL2A_20240412T100559_R022_T32TNQ_20240412T141715",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-01",
+          "datetime": "2024-06-01T10:05:59.024000+00:00",
+          "eo:cloud_cover": 6.014852,
+          "grid:code": "32TNR",
+          "item_id": "S2B_MSIL2A_20240601T100559_R022_T32TNR_20240601T141155",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-19",
+          "datetime": "2024-06-19T10:20:31.024000+00:00",
+          "eo:cloud_cover": 7.753886,
+          "grid:code": "32TNQ",
+          "item_id": "S2A_MSIL2A_20240619T102031_R065_T32TNQ_20240619T221224",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-11",
+          "datetime": "2024-07-11T10:05:59.024000+00:00",
+          "eo:cloud_cover": 0.006762,
+          "grid:code": "32TNQ",
+          "item_id": "S2B_MSIL2A_20240711T100559_R022_T32TNQ_20240711T155356",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-16",
+          "datetime": "2024-07-16T10:06:01.024000+00:00",
+          "eo:cloud_cover": 0.951466,
+          "grid:code": "32TNQ",
+          "item_id": "S2A_MSIL2A_20240716T100601_R022_T32TNQ_20240716T180537",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-21",
+          "datetime": "2024-07-21T10:05:59.024000+00:00",
+          "eo:cloud_cover": 6.100191,
+          "grid:code": "32TNQ",
+          "item_id": "S2B_MSIL2A_20240721T100559_R022_T32TNQ_20240721T144024",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-29",
+          "datetime": "2024-07-29T10:20:21.025000+00:00",
+          "eo:cloud_cover": 2.519696,
+          "grid:code": "32TNQ",
+          "item_id": "S2A_MSIL2A_20240729T102021_R065_T32TNQ_20240729T194952",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-31",
+          "datetime": "2024-07-31T10:05:59.024000+00:00",
+          "eo:cloud_cover": 6.563164,
+          "grid:code": "32TNR",
+          "item_id": "S2B_MSIL2A_20240731T100559_R022_T32TNR_20240731T125141",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-10",
+          "datetime": "2024-08-10T10:05:59.024000+00:00",
+          "eo:cloud_cover": 7.233024,
+          "grid:code": "32TNQ",
+          "item_id": "S2B_MSIL2A_20240810T100559_R022_T32TNQ_20240810T133141",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-13",
+          "datetime": "2024-08-13T10:15:59.024000+00:00",
+          "eo:cloud_cover": 1.220719,
+          "grid:code": "32TNQ",
+          "item_id": "S2B_MSIL2A_20240813T101559_R065_T32TNQ_20240813T133715",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-23",
+          "datetime": "2024-08-23T10:15:59.024000+00:00",
+          "eo:cloud_cover": 2.517613,
+          "grid:code": "32TNQ",
+          "item_id": "S2B_MSIL2A_20240823T101559_R065_T32TNQ_20240823T145151",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-25",
+          "datetime": "2024-08-25T10:05:51.024000+00:00",
+          "eo:cloud_cover": 4.912538,
+          "grid:code": "32TNQ",
+          "item_id": "S2A_MSIL2A_20240825T100551_R022_T32TNQ_20240825T162201",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-28",
+          "datetime": "2024-08-28T10:20:21.024000+00:00",
+          "eo:cloud_cover": 3.443071,
+          "grid:code": "32TNR",
+          "item_id": "S2A_MSIL2A_20240828T102021_R065_T32TNR_20240828T150452",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-30",
+          "datetime": "2024-08-30T10:05:59.024000+00:00",
+          "eo:cloud_cover": 2.865682,
+          "grid:code": "32TNR",
+          "item_id": "S2B_MSIL2A_20240830T100559_R022_T32TNR_20240830T134009",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-09",
+          "datetime": "2024-09-09T10:05:59.024000+00:00",
+          "eo:cloud_cover": 5.595751,
+          "grid:code": "32TNR",
+          "item_id": "S2B_MSIL2A_20240909T100559_R022_T32TNR_20240909T134240",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-29",
+          "datetime": "2024-10-29T10:10:39.024000+00:00",
+          "eo:cloud_cover": 4.446829,
+          "grid:code": "32TNR",
+          "item_id": "S2B_MSIL2A_20241029T101039_R022_T32TNR_20241029T112818",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-11-01",
+          "datetime": "2024-11-01T10:20:59.025000+00:00",
+          "eo:cloud_cover": 3.486004,
+          "grid:code": "32TNQ",
+          "item_id": "S2B_MSIL2A_20241101T102059_R065_T32TNQ_20241101T125340",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-11-11",
+          "datetime": "2024-11-11T10:21:49.024000+00:00",
+          "eo:cloud_cover": 5.528446,
+          "grid:code": "32TNQ",
+          "item_id": "S2B_MSIL2A_20241111T102149_R065_T32TNQ_20241113T140508",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-11-13",
+          "datetime": "2024-11-13T10:12:51.024000+00:00",
+          "eo:cloud_cover": 0.016631,
+          "grid:code": "32TNR",
+          "item_id": "S2A_MSIL2A_20241113T101251_R022_T32TNR_20241113T142853",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-11-23",
+          "datetime": "2024-11-23T10:13:41.024000+00:00",
+          "eo:cloud_cover": 0.069982,
+          "grid:code": "32TNQ",
+          "item_id": "S2A_MSIL2A_20241123T101341_R022_T32TNQ_20241123T122900",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-12-11",
+          "datetime": "2024-12-11T10:23:39.024000+00:00",
+          "eo:cloud_cover": 5.331539,
+          "grid:code": "32TNQ",
+          "item_id": "S2B_MSIL2A_20241211T102339_R065_T32TNQ_20241211T140605",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-12-21",
+          "datetime": "2024-12-21T10:23:39.024000+00:00",
+          "eo:cloud_cover": 0.025385,
+          "grid:code": "32TNR",
+          "item_id": "S2B_MSIL2A_20241221T102339_R065_T32TNR_20241221T142404",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-12-23",
+          "datetime": "2024-12-23T10:14:31.024000+00:00",
+          "eo:cloud_cover": 0.197514,
+          "grid:code": "32TNQ",
+          "item_id": "S2A_MSIL2A_20241223T101431_R022_T32TNQ_20241223T121855",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-12-26",
+          "datetime": "2024-12-26T10:24:41.024000+00:00",
+          "eo:cloud_cover": 0.01067,
+          "grid:code": "32TNR",
+          "item_id": "S2A_MSIL2A_20241226T102441_R065_T32TNR_20241226T143749",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-12-28",
+          "datetime": "2024-12-28T10:13:39.024000+00:00",
+          "eo:cloud_cover": 0.005857,
+          "grid:code": "32TNQ",
+          "item_id": "S2B_MSIL2A_20241228T101339_R022_T32TNQ_20241228T123245",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-12-31",
+          "datetime": "2024-12-31T10:23:39.024000+00:00",
+          "eo:cloud_cover": 0.004114,
+          "grid:code": "32TNR",
+          "item_id": "S2B_MSIL2A_20241231T102339_R065_T32TNR_20241231T130720",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        }
+      ],
+      "place_id": "po-valley-cremona",
+      "usable": true
+    },
+    {
+      "distinct_days": 6,
+      "first_day": "2024-02-17",
+      "items_returned": 6,
+      "last_day": "2024-10-24",
+      "latitude": 48.05,
+      "longitude": 1.85,
+      "note": "45-50N; open-field cereal plain, near-total seasonal cover change",
+      "observations": [
+        {
+          "acquisition_day": "2024-02-17",
+          "datetime": "2024-02-17T11:00:19.024000+00:00",
+          "eo:cloud_cover": 1.399854,
+          "grid:code": "31UDP",
+          "item_id": "S2B_MSIL2A_20240217T110019_R094_T31UDP_20240217T140755",
+          "sat:relative_orbit": 94,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-05",
+          "datetime": "2024-08-05T10:56:19.024000+00:00",
+          "eo:cloud_cover": 0.013048,
+          "grid:code": "31UDP",
+          "item_id": "S2B_MSIL2A_20240805T105619_R094_T31UDP_20240805T143427",
+          "sat:relative_orbit": 94,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-12",
+          "datetime": "2024-08-12T10:46:29.024000+00:00",
+          "eo:cloud_cover": 6.680797,
+          "grid:code": "31UDP",
+          "item_id": "S2B_MSIL2A_20240812T104629_R051_T31UDP_20240812T134520",
+          "sat:relative_orbit": 51,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-22",
+          "datetime": "2024-08-22T10:46:19.024000+00:00",
+          "eo:cloud_cover": 0.0029,
+          "grid:code": "31UDP",
+          "item_id": "S2B_MSIL2A_20240822T104619_R051_T31UDP_20240822T151147",
+          "sat:relative_orbit": 51,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-04",
+          "datetime": "2024-10-04T10:58:19.024000+00:00",
+          "eo:cloud_cover": 0.425871,
+          "grid:code": "31UDP",
+          "item_id": "S2B_MSIL2A_20241004T105819_R094_T31UDP_20241004T134001",
+          "sat:relative_orbit": 94,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-24",
+          "datetime": "2024-10-24T11:00:39.024000+00:00",
+          "eo:cloud_cover": 0.003162,
+          "grid:code": "31UDP",
+          "item_id": "S2B_MSIL2A_20241024T110039_R094_T31UDP_20241024T133810",
+          "sat:relative_orbit": 94,
+          "view:sun_elevation": null
+        }
+      ],
+      "place_id": "beauce-orleans",
+      "usable": true
+    },
+    {
+      "distinct_days": 7,
+      "first_day": "2024-01-10",
+      "items_returned": 7,
+      "last_day": "2024-09-21",
+      "latitude": 52.52,
+      "longitude": 5.55,
+      "note": "50-55N; reclaimed polder, geometric parcels and permanent water nearby",
+      "observations": [
+        {
+          "acquisition_day": "2024-01-10",
+          "datetime": "2024-01-10T10:54:21.024000+00:00",
+          "eo:cloud_cover": 0.729814,
+          "grid:code": "31UFU",
+          "item_id": "S2A_MSIL2A_20240110T105421_R051_T31UFU_20240110T161344",
+          "sat:relative_orbit": 51,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-01-27",
+          "datetime": "2024-01-27T10:43:11.024000+00:00",
+          "eo:cloud_cover": 7.219418,
+          "grid:code": "31UFU",
+          "item_id": "S2A_MSIL2A_20240127T104311_R008_T31UFU_20240127T161532",
+          "sat:relative_orbit": 8,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-14",
+          "datetime": "2024-05-14T10:46:19.024000+00:00",
+          "eo:cloud_cover": 0.180351,
+          "grid:code": "31UFU",
+          "item_id": "S2B_MSIL2A_20240514T104619_R051_T31UFU_20240514T151702",
+          "sat:relative_orbit": 51,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-25",
+          "datetime": "2024-06-25T10:36:31.024000+00:00",
+          "eo:cloud_cover": 5.993297,
+          "grid:code": "31UFU",
+          "item_id": "S2A_MSIL2A_20240625T103631_R008_T31UFU_20240625T182832",
+          "sat:relative_orbit": 8,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-20",
+          "datetime": "2024-07-20T10:36:29.024000+00:00",
+          "eo:cloud_cover": 0.097831,
+          "grid:code": "31UFU",
+          "item_id": "S2B_MSIL2A_20240720T103629_R008_T31UFU_20240720T141203",
+          "sat:relative_orbit": 8,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-12",
+          "datetime": "2024-08-12T10:46:29.024000+00:00",
+          "eo:cloud_cover": 0.009847,
+          "grid:code": "31UFU",
+          "item_id": "S2B_MSIL2A_20240812T104629_R051_T31UFU_20240812T134520",
+          "sat:relative_orbit": 51,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-21",
+          "datetime": "2024-09-21T10:46:29.024000+00:00",
+          "eo:cloud_cover": 5.521455,
+          "grid:code": "31UFU",
+          "item_id": "S2B_MSIL2A_20240921T104629_R051_T31UFU_20240921T135519",
+          "sat:relative_orbit": 51,
+          "view:sun_elevation": null
+        }
+      ],
+      "place_id": "flevoland-polder",
+      "usable": true
+    },
+    {
+      "distinct_days": 13,
+      "first_day": "2024-01-28",
+      "items_returned": 13,
+      "last_day": "2024-12-01",
+      "latitude": 51.88,
+      "longitude": 13.98,
+      "note": "50-55N; mixed forest, wetland and small-parcel agriculture",
+      "observations": [
+        {
+          "acquisition_day": "2024-01-28",
+          "datetime": "2024-01-28T10:13:01.024000+00:00",
+          "eo:cloud_cover": 9.837393,
+          "grid:code": "33UVT",
+          "item_id": "S2A_MSIL2A_20240128T101301_R022_T33UVT_20240128T133346",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-03-08",
+          "datetime": "2024-03-08T10:08:41.024000+00:00",
+          "eo:cloud_cover": 0.030328,
+          "grid:code": "33UVT",
+          "item_id": "S2A_MSIL2A_20240308T100841_R022_T33UVT_20240308T160827",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-03-31",
+          "datetime": "2024-03-31T10:16:01.024000+00:00",
+          "eo:cloud_cover": 1.264271,
+          "grid:code": "33UVT",
+          "item_id": "S2A_MSIL2A_20240331T101601_R065_T33UVT_20240331T173237",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-26",
+          "datetime": "2024-06-26T10:10:31.024000+00:00",
+          "eo:cloud_cover": 0.647002,
+          "grid:code": "33UVT",
+          "item_id": "S2A_MSIL2A_20240626T101031_R022_T33UVT_20240626T191118",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-21",
+          "datetime": "2024-07-21T10:05:59.024000+00:00",
+          "eo:cloud_cover": 2.869775,
+          "grid:code": "33UVT",
+          "item_id": "S2B_MSIL2A_20240721T100559_R022_T33UVT_20240721T142746",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-13",
+          "datetime": "2024-08-13T10:15:59.024000+00:00",
+          "eo:cloud_cover": 0.006858,
+          "grid:code": "33UVT",
+          "item_id": "S2B_MSIL2A_20240813T101559_R065_T33UVT_20240813T133715",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-20",
+          "datetime": "2024-08-20T10:05:59.024000+00:00",
+          "eo:cloud_cover": 3.044303,
+          "grid:code": "33UVT",
+          "item_id": "S2B_MSIL2A_20240820T100559_R022_T33UVT_20240820T143808",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-28",
+          "datetime": "2024-08-28T10:20:21.024000+00:00",
+          "eo:cloud_cover": 1.124568,
+          "grid:code": "33UVT",
+          "item_id": "S2A_MSIL2A_20240828T102021_R065_T33UVT_20240828T150452",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-04",
+          "datetime": "2024-09-04T10:05:51.025000+00:00",
+          "eo:cloud_cover": 0.000644,
+          "grid:code": "33UVT",
+          "item_id": "S2A_MSIL2A_20240904T100551_R022_T33UVT_20240904T175453",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-07",
+          "datetime": "2024-09-07T10:20:21.024000+00:00",
+          "eo:cloud_cover": 1.47742,
+          "grid:code": "33UVT",
+          "item_id": "S2A_MSIL2A_20240907T102021_R065_T33UVT_20240907T143052",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-22",
+          "datetime": "2024-09-22T10:16:29.024000+00:00",
+          "eo:cloud_cover": 0.008917,
+          "grid:code": "33UVT",
+          "item_id": "S2B_MSIL2A_20240922T101629_R065_T33UVT_20240922T144608",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-24",
+          "datetime": "2024-10-24T10:11:01.024000+00:00",
+          "eo:cloud_cover": 4.026997,
+          "grid:code": "33UVT",
+          "item_id": "S2A_MSIL2A_20241024T101101_R022_T33UVT_20241024T122648",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-12-01",
+          "datetime": "2024-12-01T10:23:19.024000+00:00",
+          "eo:cloud_cover": 0.580629,
+          "grid:code": "33UVT",
+          "item_id": "S2B_MSIL2A_20241201T102319_R065_T33UVT_20241201T125242",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        }
+      ],
+      "place_id": "brandenburg-spreewald",
+      "usable": true
+    },
+    {
+      "distinct_days": 13,
+      "first_day": "2024-05-13",
+      "items_returned": 13,
+      "last_day": "2024-12-22",
+      "latitude": 56.45,
+      "longitude": 9.4,
+      "note": "55-60N; northern mixed farmland with a short growing season",
+      "observations": [
+        {
+          "acquisition_day": "2024-05-13",
+          "datetime": "2024-05-13T10:30:31.024000+00:00",
+          "eo:cloud_cover": 0.433899,
+          "grid:code": "32VNH",
+          "item_id": "S2A_MSIL2A_20240513T103031_R108_T32VNH_20240513T171251",
+          "sat:relative_orbit": 108,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-16",
+          "datetime": "2024-05-16T10:40:21.024000+00:00",
+          "eo:cloud_cover": 0.009731,
+          "grid:code": "32VNH",
+          "item_id": "S2A_MSIL2A_20240516T104021_R008_T32VNH_20240516T191807",
+          "sat:relative_orbit": 8,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-18",
+          "datetime": "2024-05-18T10:25:59.024000+00:00",
+          "eo:cloud_cover": 0.009311,
+          "grid:code": "32VNH",
+          "item_id": "S2B_MSIL2A_20240518T102559_R108_T32VNH_20240518T142904",
+          "sat:relative_orbit": 108,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-21",
+          "datetime": "2024-05-21T10:36:19.024000+00:00",
+          "eo:cloud_cover": 0.006092,
+          "grid:code": "32VNH",
+          "item_id": "S2B_MSIL2A_20240521T103619_R008_T32VNH_20240521T135121",
+          "sat:relative_orbit": 8,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-02",
+          "datetime": "2024-06-02T10:26:01.024000+00:00",
+          "eo:cloud_cover": 4.648934,
+          "grid:code": "32VNH",
+          "item_id": "S2A_MSIL2A_20240602T102601_R108_T32VNH_20240602T191719",
+          "sat:relative_orbit": 108,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-27",
+          "datetime": "2024-06-27T10:25:59.025000+00:00",
+          "eo:cloud_cover": 3.430349,
+          "grid:code": "32VNH",
+          "item_id": "S2B_MSIL2A_20240627T102559_R108_T32VNH_20240627T142728",
+          "sat:relative_orbit": 108,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-20",
+          "datetime": "2024-07-20T10:36:29.024000+00:00",
+          "eo:cloud_cover": 0.107986,
+          "grid:code": "32VNH",
+          "item_id": "S2B_MSIL2A_20240720T103629_R008_T32VNH_20240720T140608",
+          "sat:relative_orbit": 8,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-30",
+          "datetime": "2024-07-30T10:36:29.024000+00:00",
+          "eo:cloud_cover": 0.724639,
+          "grid:code": "32VNH",
+          "item_id": "S2B_MSIL2A_20240730T103629_R008_T32VNH_20240730T133131",
+          "sat:relative_orbit": 8,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-05",
+          "datetime": "2024-09-05T10:25:59.024000+00:00",
+          "eo:cloud_cover": 0.005524,
+          "grid:code": "32VNH",
+          "item_id": "S2B_MSIL2A_20240905T102559_R108_T32VNH_20240905T163108",
+          "sat:relative_orbit": 108,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-03",
+          "datetime": "2024-10-03T10:39:01.025000+00:00",
+          "eo:cloud_cover": 0.10067,
+          "grid:code": "32VNH",
+          "item_id": "S2A_MSIL2A_20241003T103901_R008_T32VNH_20241003T151806",
+          "sat:relative_orbit": 8,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-15",
+          "datetime": "2024-10-15T10:29:19.024000+00:00",
+          "eo:cloud_cover": 9.515505,
+          "grid:code": "32VNH",
+          "item_id": "S2B_MSIL2A_20241015T102919_R108_T32VNH_20241015T131014",
+          "sat:relative_orbit": 108,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-12-04",
+          "datetime": "2024-12-04T10:33:29.024000+00:00",
+          "eo:cloud_cover": 0.0,
+          "grid:code": "32VNH",
+          "item_id": "S2B_MSIL2A_20241204T103329_R108_T32VNH_20241204T124517",
+          "sat:relative_orbit": 108,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-12-22",
+          "datetime": "2024-12-22T10:44:41.024000+00:00",
+          "eo:cloud_cover": 9.236197,
+          "grid:code": "32VNH",
+          "item_id": "S2A_MSIL2A_20241222T104441_R008_T32VNH_20241222T145048",
+          "sat:relative_orbit": 8,
+          "view:sun_elevation": null
+        }
+      ],
+      "place_id": "jutland-viborg",
+      "usable": true
+    },
+    {
+      "distinct_days": 17,
+      "first_day": "2024-01-06",
+      "items_returned": 17,
+      "last_day": "2024-11-23",
+      "latitude": 56.88,
+      "longitude": 14.8,
+      "note": "55-60N; boreal forest and lakes, heavy snow contrast in winter",
+      "observations": [
+        {
+          "acquisition_day": "2024-01-06",
+          "datetime": "2024-01-06T10:23:29.024000+00:00",
+          "eo:cloud_cover": 3.872401,
+          "grid:code": "33VVD",
+          "item_id": "S2B_MSIL2A_20240106T102329_R065_T33VVD_20240106T131510",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-01-08",
+          "datetime": "2024-01-08T10:14:01.024000+00:00",
+          "eo:cloud_cover": 1.304222,
+          "grid:code": "33VVD",
+          "item_id": "S2A_MSIL2A_20240108T101401_R022_T33VVD_20240108T133423",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-01-11",
+          "datetime": "2024-01-11T10:24:01.024000+00:00",
+          "eo:cloud_cover": 4.510426,
+          "grid:code": "33VVD",
+          "item_id": "S2A_MSIL2A_20240111T102401_R065_T33VVD_20240111T131655",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-01-16",
+          "datetime": "2024-01-16T10:22:59.024000+00:00",
+          "eo:cloud_cover": 0.601301,
+          "grid:code": "33VVD",
+          "item_id": "S2B_MSIL2A_20240116T102259_R065_T33VVD_20240116T131531",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-01-18",
+          "datetime": "2024-01-18T10:13:31.024000+00:00",
+          "eo:cloud_cover": 0.70964,
+          "grid:code": "33VVD",
+          "item_id": "S2A_MSIL2A_20240118T101331_R022_T33VVD_20240118T151930",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-03-08",
+          "datetime": "2024-03-08T10:08:41.024000+00:00",
+          "eo:cloud_cover": 0.004156,
+          "grid:code": "33VVD",
+          "item_id": "S2A_MSIL2A_20240308T100841_R022_T33VVD_20240308T130838",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-03-18",
+          "datetime": "2024-03-18T10:07:31.024000+00:00",
+          "eo:cloud_cover": 6.066748,
+          "grid:code": "33VVD",
+          "item_id": "S2A_MSIL2A_20240318T100731_R022_T33VVD_20240318T152842",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-07",
+          "datetime": "2024-05-07T10:06:01.024000+00:00",
+          "eo:cloud_cover": 0.000542,
+          "grid:code": "33VVD",
+          "item_id": "S2A_MSIL2A_20240507T100601_R022_T33VVD_20240507T155048",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-17",
+          "datetime": "2024-05-17T10:06:01.024000+00:00",
+          "eo:cloud_cover": 0.002508,
+          "grid:code": "33VVD",
+          "item_id": "S2A_MSIL2A_20240517T100601_R022_T33VVD_20240517T203139",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-20",
+          "datetime": "2024-05-20T10:20:21.024000+00:00",
+          "eo:cloud_cover": 2.953949,
+          "grid:code": "33VVD",
+          "item_id": "S2A_MSIL2A_20240520T102021_R065_T33VVD_20240520T192919",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-22",
+          "datetime": "2024-05-22T10:05:59.024000+00:00",
+          "eo:cloud_cover": 7.119692,
+          "grid:code": "33VVD",
+          "item_id": "S2B_MSIL2A_20240522T100559_R022_T33VVD_20240522T141048",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-25",
+          "datetime": "2024-05-25T10:15:59.024000+00:00",
+          "eo:cloud_cover": 1.369747,
+          "grid:code": "33VVD",
+          "item_id": "S2B_MSIL2A_20240525T101559_R065_T33VVD_20240525T141841",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-21",
+          "datetime": "2024-06-21T10:05:59.025000+00:00",
+          "eo:cloud_cover": 5.838173,
+          "grid:code": "33VVD",
+          "item_id": "S2B_MSIL2A_20240621T100559_R022_T33VVD_20240621T143739",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-20",
+          "datetime": "2024-08-20T10:05:59.024000+00:00",
+          "eo:cloud_cover": 7.645397,
+          "grid:code": "33VVD",
+          "item_id": "S2B_MSIL2A_20240820T100559_R022_T33VVD_20240820T143808",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-04",
+          "datetime": "2024-09-04T10:05:51.025000+00:00",
+          "eo:cloud_cover": 0.002653,
+          "grid:code": "33VVD",
+          "item_id": "S2A_MSIL2A_20240904T100551_R022_T33VVD_20240904T154147",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-17",
+          "datetime": "2024-10-17T10:20:21.024000+00:00",
+          "eo:cloud_cover": 2.40552,
+          "grid:code": "33VVD",
+          "item_id": "S2A_MSIL2A_20241017T102021_R065_T33VVD_20241017T143350",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-11-23",
+          "datetime": "2024-11-23T10:13:41.024000+00:00",
+          "eo:cloud_cover": 0.282271,
+          "grid:code": "33VVD",
+          "item_id": "S2A_MSIL2A_20241123T101341_R022_T33VVD_20241123T122900",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        }
+      ],
+      "place_id": "smaland-vaxjo",
+      "usable": true
+    },
+    {
+      "distinct_days": 18,
+      "first_day": "2024-01-16",
+      "items_returned": 32,
+      "last_day": "2024-11-23",
+      "latitude": 59.86,
+      "longitude": 17.63,
+      "note": "55-60N; forest and farmland mosaic at the edge of reliable optical coverage",
+      "observations": [
+        {
+          "acquisition_day": "2024-01-16",
+          "datetime": "2024-01-16T10:22:59.024000+00:00",
+          "eo:cloud_cover": 1.565821,
+          "grid:code": "33VXG",
+          "item_id": "S2B_MSIL2A_20240116T102259_R065_T33VXG_20240116T131535",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-02-05",
+          "datetime": "2024-02-05T10:21:29.024000+00:00",
+          "eo:cloud_cover": 7.955348,
+          "grid:code": "33VXG",
+          "item_id": "S2B_MSIL2A_20240205T102129_R065_T33VXG_20240205T141956",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-07",
+          "datetime": "2024-05-07T10:06:01.024000+00:00",
+          "eo:cloud_cover": 1.295574,
+          "grid:code": "34VCM",
+          "item_id": "S2A_MSIL2A_20240507T100601_R022_T34VCM_20240507T155642",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-10",
+          "datetime": "2024-05-10T10:20:21.025000+00:00",
+          "eo:cloud_cover": 2.245006,
+          "grid:code": "33VXG",
+          "item_id": "S2A_MSIL2A_20240510T102021_R065_T33VXG_20240510T154807",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-17",
+          "datetime": "2024-05-17T10:06:01.024000+00:00",
+          "eo:cloud_cover": 0.037925,
+          "grid:code": "34VCM",
+          "item_id": "S2A_MSIL2A_20240517T100601_R022_T34VCM_20240517T203658",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-22",
+          "datetime": "2024-05-22T10:05:59.024000+00:00",
+          "eo:cloud_cover": 0.000342,
+          "grid:code": "33VXG",
+          "item_id": "S2B_MSIL2A_20240522T100559_R022_T33VXG_20240522T141307",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-25",
+          "datetime": "2024-05-25T10:15:59.024000+00:00",
+          "eo:cloud_cover": 0.046559,
+          "grid:code": "33VXG",
+          "item_id": "S2B_MSIL2A_20240525T101559_R065_T33VXG_20240525T141839",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-30",
+          "datetime": "2024-05-30T10:20:21.024000+00:00",
+          "eo:cloud_cover": 3.815683,
+          "grid:code": "33VXG",
+          "item_id": "S2A_MSIL2A_20240530T102021_R065_T33VXG_20240530T191159",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-04",
+          "datetime": "2024-06-04T10:15:59.024000+00:00",
+          "eo:cloud_cover": 1.387746,
+          "grid:code": "34VCM",
+          "item_id": "S2B_MSIL2A_20240604T101559_R065_T34VCM_20240604T141608",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-26",
+          "datetime": "2024-06-26T10:10:31.024000+00:00",
+          "eo:cloud_cover": 0.343014,
+          "grid:code": "33VXG",
+          "item_id": "S2A_MSIL2A_20240626T101031_R022_T33VXG_20240626T194237",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-29",
+          "datetime": "2024-06-29T10:20:21.024000+00:00",
+          "eo:cloud_cover": 1.16389,
+          "grid:code": "34VCM",
+          "item_id": "S2A_MSIL2A_20240629T102021_R065_T34VCM_20240629T152312",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-13",
+          "datetime": "2024-08-13T10:15:59.024000+00:00",
+          "eo:cloud_cover": 6.608345,
+          "grid:code": "34VCM",
+          "item_id": "S2B_MSIL2A_20240813T101559_R065_T34VCM_20240813T133715",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-07",
+          "datetime": "2024-09-07T10:20:21.024000+00:00",
+          "eo:cloud_cover": 0.716836,
+          "grid:code": "33VXG",
+          "item_id": "S2A_MSIL2A_20240907T102021_R065_T33VXG_20240907T143052",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-29",
+          "datetime": "2024-09-29T10:07:19.024000+00:00",
+          "eo:cloud_cover": 0.000372,
+          "grid:code": "33VXG",
+          "item_id": "S2B_MSIL2A_20240929T100719_R022_T33VXG_20240929T133706",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-04",
+          "datetime": "2024-10-04T10:08:51.024000+00:00",
+          "eo:cloud_cover": 1.86159,
+          "grid:code": "34VCM",
+          "item_id": "S2A_MSIL2A_20241004T100851_R022_T34VCM_20241004T121647",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-17",
+          "datetime": "2024-10-17T10:20:21.024000+00:00",
+          "eo:cloud_cover": 0.853431,
+          "grid:code": "33VXG",
+          "item_id": "S2A_MSIL2A_20241017T102021_R065_T33VXG_20241017T143350",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-11-08",
+          "datetime": "2024-11-08T10:11:29.024000+00:00",
+          "eo:cloud_cover": 1.343327,
+          "grid:code": "33VXG",
+          "item_id": "S2B_MSIL2A_20241108T101129_R022_T33VXG_20241108T112954",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-11-23",
+          "datetime": "2024-11-23T10:13:41.024000+00:00",
+          "eo:cloud_cover": 0.288018,
+          "grid:code": "33VXG",
+          "item_id": "S2A_MSIL2A_20241123T101341_R022_T33VXG_20241123T112244",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        }
+      ],
+      "place_id": "uppland-uppsala",
+      "usable": true
+    },
+    {
+      "distinct_days": 35,
+      "first_day": "2024-01-16",
+      "items_returned": 52,
+      "last_day": "2024-11-06",
+      "latitude": 63.1,
+      "longitude": 21.85,
+      "note": "60-65N; high-latitude coast, low sun elevation and long winter snow",
+      "observations": [
+        {
+          "acquisition_day": "2024-01-16",
+          "datetime": "2024-01-16T10:22:59.024000+00:00",
+          "eo:cloud_cover": 8.576006,
+          "grid:code": "34VEQ",
+          "item_id": "S2B_MSIL2A_20240116T102259_R065_T34VEQ_20240116T131517",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-01-20",
+          "datetime": "2024-01-20T10:02:39.024000+00:00",
+          "eo:cloud_cover": 6.884103,
+          "grid:code": "34VER",
+          "item_id": "S2B_MSIL2A_20240120T100239_R122_T34VER_20240120T132318",
+          "sat:relative_orbit": 122,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-02-09",
+          "datetime": "2024-02-09T10:00:59.024000+00:00",
+          "eo:cloud_cover": 0.438003,
+          "grid:code": "34VEQ",
+          "item_id": "S2B_MSIL2A_20240209T100059_R122_T34VEQ_20240209T131810",
+          "sat:relative_orbit": 122,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-02-10",
+          "datetime": "2024-02-10T10:21:51.024000+00:00",
+          "eo:cloud_cover": 2.051056,
+          "grid:code": "34VEQ",
+          "item_id": "S2A_MSIL2A_20240210T102151_R065_T34VEQ_20240210T131745",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-03-28",
+          "datetime": "2024-03-28T10:06:31.024000+00:00",
+          "eo:cloud_cover": 7.525629,
+          "grid:code": "34VEQ",
+          "item_id": "S2A_MSIL2A_20240328T100631_R022_T34VEQ_20240330T050049",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-04-09",
+          "datetime": "2024-04-09T09:55:49.025000+00:00",
+          "eo:cloud_cover": 0.029069,
+          "grid:code": "34VER",
+          "item_id": "S2B_MSIL2A_20240409T095549_R122_T34VER_20240411T002132",
+          "sat:relative_orbit": 122,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-04-12",
+          "datetime": "2024-04-12T10:05:59.026000+00:00",
+          "eo:cloud_cover": 0.007729,
+          "grid:code": "34VER",
+          "item_id": "S2B_MSIL2A_20240412T100559_R022_T34VER_20240412T142323",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-04-14",
+          "datetime": "2024-04-14T10:00:31.024000+00:00",
+          "eo:cloud_cover": 5.846254,
+          "grid:code": "34VER",
+          "item_id": "S2A_MSIL2A_20240414T100031_R122_T34VER_20240414T142931",
+          "sat:relative_orbit": 122,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-04-19",
+          "datetime": "2024-04-19T09:55:49.024000+00:00",
+          "eo:cloud_cover": 3.848808,
+          "grid:code": "34VER",
+          "item_id": "S2B_MSIL2A_20240419T095549_R122_T34VER_20240419T124340",
+          "sat:relative_orbit": 122,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-04-22",
+          "datetime": "2024-04-22T10:05:59.024000+00:00",
+          "eo:cloud_cover": 9.173498,
+          "grid:code": "34VER",
+          "item_id": "S2B_MSIL2A_20240422T100559_R022_T34VER_20240422T141849",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-04-30",
+          "datetime": "2024-04-30T10:20:21.024000+00:00",
+          "eo:cloud_cover": 0.048097,
+          "grid:code": "34VEQ",
+          "item_id": "S2A_MSIL2A_20240430T102021_R065_T34VEQ_20240430T162103",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-04",
+          "datetime": "2024-05-04T10:00:31.024000+00:00",
+          "eo:cloud_cover": 1.055406,
+          "grid:code": "34VER",
+          "item_id": "S2A_MSIL2A_20240504T100031_R122_T34VER_20240504T154522",
+          "sat:relative_orbit": 122,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-10",
+          "datetime": "2024-05-10T10:20:21.025000+00:00",
+          "eo:cloud_cover": 0.014901,
+          "grid:code": "34VER",
+          "item_id": "S2A_MSIL2A_20240510T102021_R065_T34VER_20240510T154622",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-15",
+          "datetime": "2024-05-15T10:15:59.024000+00:00",
+          "eo:cloud_cover": 1.933777,
+          "grid:code": "34VER",
+          "item_id": "S2B_MSIL2A_20240515T101559_R065_T34VER_20240515T161451",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-17",
+          "datetime": "2024-05-17T10:06:01.024000+00:00",
+          "eo:cloud_cover": 8.901808,
+          "grid:code": "34VER",
+          "item_id": "S2A_MSIL2A_20240517T100601_R022_T34VER_20240517T203349",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-22",
+          "datetime": "2024-05-22T10:05:59.024000+00:00",
+          "eo:cloud_cover": 0.288899,
+          "grid:code": "34VEQ",
+          "item_id": "S2B_MSIL2A_20240522T100559_R022_T34VEQ_20240522T141306",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-27",
+          "datetime": "2024-05-27T10:06:01.025000+00:00",
+          "eo:cloud_cover": 3.935903,
+          "grid:code": "34VER",
+          "item_id": "S2A_MSIL2A_20240527T100601_R022_T34VER_20240527T171511",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-29",
+          "datetime": "2024-05-29T09:55:49.024000+00:00",
+          "eo:cloud_cover": 0.026618,
+          "grid:code": "34VER",
+          "item_id": "S2B_MSIL2A_20240529T095549_R122_T34VER_20240529T170853",
+          "sat:relative_orbit": 122,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-30",
+          "datetime": "2024-05-30T10:20:21.024000+00:00",
+          "eo:cloud_cover": 1.574786,
+          "grid:code": "34VEQ",
+          "item_id": "S2A_MSIL2A_20240530T102021_R065_T34VEQ_20240530T191203",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-04",
+          "datetime": "2024-06-04T10:15:59.024000+00:00",
+          "eo:cloud_cover": 3.582614,
+          "grid:code": "34VER",
+          "item_id": "S2B_MSIL2A_20240604T101559_R065_T34VER_20240604T141520",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-21",
+          "datetime": "2024-06-21T10:05:59.025000+00:00",
+          "eo:cloud_cover": 6.927914,
+          "grid:code": "34VER",
+          "item_id": "S2B_MSIL2A_20240621T100559_R022_T34VER_20240621T151134",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-24",
+          "datetime": "2024-06-24T10:15:59.024000+00:00",
+          "eo:cloud_cover": 3.135831,
+          "grid:code": "34VEQ",
+          "item_id": "S2B_MSIL2A_20240624T101559_R065_T34VEQ_20240624T143754",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-26",
+          "datetime": "2024-06-26T10:10:31.024000+00:00",
+          "eo:cloud_cover": 0.004582,
+          "grid:code": "34VER",
+          "item_id": "S2A_MSIL2A_20240626T101031_R022_T34VER_20240626T191128",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-19",
+          "datetime": "2024-07-19T10:20:21.024000+00:00",
+          "eo:cloud_cover": 6.488647,
+          "grid:code": "34VEQ",
+          "item_id": "S2A_MSIL2A_20240719T102021_R065_T34VEQ_20240719T152316",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-07",
+          "datetime": "2024-08-07T09:55:49.024000+00:00",
+          "eo:cloud_cover": 2.433,
+          "grid:code": "34VER",
+          "item_id": "S2B_MSIL2A_20240807T095549_R122_T34VER_20240807T132638",
+          "sat:relative_orbit": 122,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-13",
+          "datetime": "2024-08-13T10:15:59.024000+00:00",
+          "eo:cloud_cover": 4.682164,
+          "grid:code": "34VER",
+          "item_id": "S2B_MSIL2A_20240813T101559_R065_T34VER_20240813T133715",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-01",
+          "datetime": "2024-09-01T10:00:31.024000+00:00",
+          "eo:cloud_cover": 0.0,
+          "grid:code": "34VEQ",
+          "item_id": "S2A_MSIL2A_20240901T100031_R122_T34VEQ_20240901T152250",
+          "sat:relative_orbit": 122,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-04",
+          "datetime": "2024-09-04T10:05:51.025000+00:00",
+          "eo:cloud_cover": 0.168271,
+          "grid:code": "34VER",
+          "item_id": "S2A_MSIL2A_20240904T100551_R022_T34VER_20240904T154147",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-06",
+          "datetime": "2024-09-06T09:55:49.024000+00:00",
+          "eo:cloud_cover": 0.000104,
+          "grid:code": "34VER",
+          "item_id": "S2B_MSIL2A_20240906T095549_R122_T34VER_20240906T141204",
+          "sat:relative_orbit": 122,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-07",
+          "datetime": "2024-09-07T10:20:21.024000+00:00",
+          "eo:cloud_cover": 1.597964,
+          "grid:code": "34VEQ",
+          "item_id": "S2A_MSIL2A_20240907T102021_R065_T34VEQ_20240907T143052",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-09",
+          "datetime": "2024-09-09T10:05:59.024000+00:00",
+          "eo:cloud_cover": 9.677012,
+          "grid:code": "34VEQ",
+          "item_id": "S2B_MSIL2A_20240909T100559_R022_T34VEQ_20240909T134240",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-21",
+          "datetime": "2024-09-21T10:00:31.024000+00:00",
+          "eo:cloud_cover": 8.006943,
+          "grid:code": "34VER",
+          "item_id": "S2A_MSIL2A_20240921T100031_R122_T34VER_20240921T123352",
+          "sat:relative_orbit": 122,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-22",
+          "datetime": "2024-10-22T10:19:59.024000+00:00",
+          "eo:cloud_cover": 8.117098,
+          "grid:code": "34VER",
+          "item_id": "S2B_MSIL2A_20241022T101959_R065_T34VER_20241022T134347",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-26",
+          "datetime": "2024-10-26T10:00:29.024000+00:00",
+          "eo:cloud_cover": 0.421956,
+          "grid:code": "34VEQ",
+          "item_id": "S2B_MSIL2A_20241026T100029_R122_T34VEQ_20241026T121704",
+          "sat:relative_orbit": 122,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-11-06",
+          "datetime": "2024-11-06T10:22:21.024000+00:00",
+          "eo:cloud_cover": 0.293397,
+          "grid:code": "34VEQ",
+          "item_id": "S2A_MSIL2A_20241106T102221_R065_T34VEQ_20241106T143447",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        }
+      ],
+      "place_id": "ostrobothnia-vaasa",
+      "usable": true
+    },
+    {
+      "distinct_days": 19,
+      "first_day": "2024-01-30",
+      "items_returned": 31,
+      "last_day": "2024-10-31",
+      "latitude": 66.5,
+      "longitude": 25.72,
+      "note": "above 65N; tests where optical retrieval stops working at all",
+      "observations": [
+        {
+          "acquisition_day": "2024-01-30",
+          "datetime": "2024-01-30T10:01:49.024000+00:00",
+          "eo:cloud_cover": 4.476698,
+          "grid:code": "34WFU",
+          "item_id": "S2B_MSIL2A_20240130T100149_R122_T34WFU_20240130T131413",
+          "sat:relative_orbit": 122,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-02-12",
+          "datetime": "2024-02-12T10:10:39.024000+00:00",
+          "eo:cloud_cover": 0.605532,
+          "grid:code": "35WMP",
+          "item_id": "S2B_MSIL2A_20240212T101039_R022_T35WMP_20240213T092133",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-03-11",
+          "datetime": "2024-03-11T10:18:31.024000+00:00",
+          "eo:cloud_cover": 6.738792,
+          "grid:code": "34WFU",
+          "item_id": "S2A_MSIL2A_20240311T101831_R065_T34WFU_20240311T152349",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-17",
+          "datetime": "2024-05-17T10:06:01.024000+00:00",
+          "eo:cloud_cover": 2.576403,
+          "grid:code": "34WFU",
+          "item_id": "S2A_MSIL2A_20240517T100601_R022_T34WFU_20240517T203439",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-27",
+          "datetime": "2024-05-27T10:06:01.025000+00:00",
+          "eo:cloud_cover": 2.057678,
+          "grid:code": "34WFU",
+          "item_id": "S2A_MSIL2A_20240527T100601_R022_T34WFU_20240527T171514",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-05-30",
+          "datetime": "2024-05-30T10:20:21.024000+00:00",
+          "eo:cloud_cover": 0.021252,
+          "grid:code": "34WFU",
+          "item_id": "S2A_MSIL2A_20240530T102021_R065_T34WFU_20240530T191203",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-08",
+          "datetime": "2024-06-08T09:55:49.024000+00:00",
+          "eo:cloud_cover": 9.627346,
+          "grid:code": "34WFU",
+          "item_id": "S2B_MSIL2A_20240608T095549_R122_T34WFU_20240608T131708",
+          "sat:relative_orbit": 122,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-23",
+          "datetime": "2024-06-23T10:00:31.024000+00:00",
+          "eo:cloud_cover": 4.736976,
+          "grid:code": "35WMP",
+          "item_id": "S2A_MSIL2A_20240623T100031_R122_T35WMP_20240623T161123",
+          "sat:relative_orbit": 122,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-06-28",
+          "datetime": "2024-06-28T09:55:49.024000+00:00",
+          "eo:cloud_cover": 0.000139,
+          "grid:code": "35WMP",
+          "item_id": "S2B_MSIL2A_20240628T095549_R122_T35WMP_20240628T144002",
+          "sat:relative_orbit": 122,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-07-21",
+          "datetime": "2024-07-21T10:05:59.024000+00:00",
+          "eo:cloud_cover": 9.608624,
+          "grid:code": "34WFU",
+          "item_id": "S2B_MSIL2A_20240721T100559_R022_T34WFU_20240721T133019",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-07",
+          "datetime": "2024-08-07T09:55:49.024000+00:00",
+          "eo:cloud_cover": 3e-06,
+          "grid:code": "35WMP",
+          "item_id": "S2B_MSIL2A_20240807T095549_R122_T35WMP_20240807T132638",
+          "sat:relative_orbit": 122,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-08",
+          "datetime": "2024-08-08T10:20:21.024000+00:00",
+          "eo:cloud_cover": 0.0002,
+          "grid:code": "35WMP",
+          "item_id": "S2A_MSIL2A_20240808T102021_R065_T35WMP_20240808T150754",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-13",
+          "datetime": "2024-08-13T10:15:59.024000+00:00",
+          "eo:cloud_cover": 4.857789,
+          "grid:code": "34WFU",
+          "item_id": "S2B_MSIL2A_20240813T101559_R065_T34WFU_20240813T133715",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-08-17",
+          "datetime": "2024-08-17T09:55:49.024000+00:00",
+          "eo:cloud_cover": 2.579106,
+          "grid:code": "34WFU",
+          "item_id": "S2B_MSIL2A_20240817T095549_R122_T34WFU_20240817T131031",
+          "sat:relative_orbit": 122,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-01",
+          "datetime": "2024-09-01T10:00:31.024000+00:00",
+          "eo:cloud_cover": 0.0,
+          "grid:code": "34WFU",
+          "item_id": "S2A_MSIL2A_20240901T100031_R122_T34WFU_20240901T152250",
+          "sat:relative_orbit": 122,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-09-22",
+          "datetime": "2024-09-22T10:16:29.024000+00:00",
+          "eo:cloud_cover": 0.855847,
+          "grid:code": "34WFU",
+          "item_id": "S2B_MSIL2A_20240922T101629_R065_T34WFU_20240922T132023",
+          "sat:relative_orbit": 65,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-04",
+          "datetime": "2024-10-04T10:08:51.024000+00:00",
+          "eo:cloud_cover": 1.104273,
+          "grid:code": "34WFU",
+          "item_id": "S2A_MSIL2A_20241004T100851_R022_T34WFU_20241004T121647",
+          "sat:relative_orbit": 22,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-26",
+          "datetime": "2024-10-26T10:00:29.024000+00:00",
+          "eo:cloud_cover": 0.024754,
+          "grid:code": "35WMP",
+          "item_id": "S2B_MSIL2A_20241026T100029_R122_T35WMP_20241026T121704",
+          "sat:relative_orbit": 122,
+          "view:sun_elevation": null
+        },
+        {
+          "acquisition_day": "2024-10-31",
+          "datetime": "2024-10-31T10:01:41.024000+00:00",
+          "eo:cloud_cover": 9.228324,
+          "grid:code": "34WFU",
+          "item_id": "S2A_MSIL2A_20241031T100141_R122_T34WFU_20241031T121400",
+          "sat:relative_orbit": 122,
+          "view:sun_elevation": null
+        }
+      ],
+      "place_id": "lapland-rovaniemi",
+      "usable": true
+    }
+  ],
+  "selection": "europe-latitude-spread-v1",
+  "survey": "temporal-place-availability",
+  "usable_places": 12,
+  "window_m": 2560.0
+}

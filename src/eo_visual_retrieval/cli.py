@@ -347,6 +347,48 @@ def _evaluate(args: argparse.Namespace) -> None:
     print(payload, end="")
 
 
+def _temporal_survey(args: argparse.Namespace) -> None:
+    from eo_visual_retrieval.temporal import (
+        EUROPE_LATITUDE_SPREAD_V1,
+        read_places,
+        survey_places,
+    )
+
+    if args.places is None:
+        selection: Any = EUROPE_LATITUDE_SPREAD_V1
+        selection_name = "europe-latitude-spread-v1"
+    else:
+        selection = json.loads(args.places.read_text(encoding="utf-8"))
+        selection_name = args.places.name
+    places = read_places(selection)
+    result = survey_places(
+        places,
+        api_url=args.api_url,
+        collection=args.collection,
+        datetime_range=args.datetime,
+        window_m=args.window_m,
+        max_cloud_cover=args.max_cloud_cover,
+        limit=args.limit,
+    )
+    result["selection"] = selection_name
+    payload = json.dumps(result, indent=2, sort_keys=True) + "\n"
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    temporary = args.output.with_suffix(args.output.suffix + ".tmp")
+    temporary.write_text(payload, encoding="utf-8", newline="\n")
+    temporary.replace(args.output)
+    print(
+        json.dumps(
+            {
+                "output": str(args.output),
+                "places": result["places"],
+                "usable_places": result["usable_places"],
+                "distinct_days": result["distinct_days"],
+            },
+            indent=2,
+        )
+    )
+
+
 def _analyze_retrieval(args: argparse.Namespace) -> None:
     from eo_visual_retrieval.analysis import analyze
     from eo_visual_retrieval.evaluation import evaluate_queries
@@ -712,6 +754,31 @@ def build_parser() -> argparse.ArgumentParser:
         "--tracking-dir", type=Path, help="opt in to local MLflow aggregate tracking (no uploads)"
     )
     evaluate.set_defaults(handler=_evaluate)
+
+    survey = commands.add_parser(
+        "temporal-survey",
+        help="report how many usable acquisition dates each place has, without downloading",
+    )
+    survey.add_argument(
+        "--places",
+        type=Path,
+        help="optional JSON list of places; defaults to the frozen europe-latitude-spread-v1",
+    )
+    survey.add_argument("--output", type=Path, required=True)
+    survey.add_argument(
+        "--api-url", default="https://planetarycomputer.microsoft.com/api/stac/v1"
+    )
+    survey.add_argument("--collection", default="sentinel-2-l2a")
+    survey.add_argument("--datetime", required=True)
+    survey.add_argument(
+        "--window-m",
+        type=float,
+        default=2560.0,
+        help="side length of the square search window centred on each place",
+    )
+    survey.add_argument("--max-cloud-cover", type=float, default=10.0)
+    survey.add_argument("--limit", type=int, default=60, help="items per place")
+    survey.set_defaults(handler=_temporal_survey)
 
     analyze = commands.add_parser(
         "analyze-retrieval",
