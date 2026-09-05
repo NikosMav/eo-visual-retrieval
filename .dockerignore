@@ -7,5 +7,10 @@
 !LICENSE.md
 !src/
 !src/**
+# Published evidence the findings page renders from. Reports only, never
+# imagery or embedding stores, which stay mounted read-only at runtime.
+!docs/
+!docs/results/
+!docs/results/*.json
 **/__pycache__/
 **/*.pyc

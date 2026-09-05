@@ -304,3 +304,31 @@ def test_served_process_imports_no_model_framework() -> None:
     assert result.stdout.strip() == "", (
         f"the served surface imported a model framework: {result.stdout.strip()}"
     )
+
+
+def test_findings_page_is_absent_unless_evidence_is_supplied(tmp_path: Path) -> None:
+    """A deployment without the reports serves no findings, rather than an empty page."""
+
+    client = TestClient(create_app(_catalog(tmp_path), k=2))
+
+    assert client.get("/findings").status_code == 404
+    assert "/findings" not in client.get("/").text
+
+
+def test_findings_page_renders_from_the_supplied_payload(tmp_path: Path) -> None:
+    from eo_visual_retrieval.app.findings import build_payload
+
+    results = Path(__file__).resolve().parents[1] / "docs" / "results"
+    payload = build_payload(results)
+    client = TestClient(create_app(_catalog(tmp_path), k=2, findings=payload))
+
+    page = client.get("/findings")
+    assert page.status_code == 200
+    body = page.text
+    # The charts are drawn from an embedded payload, not from markup.
+    assert 'id="findings-data"' in body
+    assert "/static/findings.js" in body
+    for series in payload["series"]:
+        assert series["key"] in body
+    # The explorer links to it once it exists.
+    assert "/findings" in client.get("/").text

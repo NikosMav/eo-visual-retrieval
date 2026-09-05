@@ -341,3 +341,9 @@ footer {
     margin-bottom:8px
   }
 }
+.findings-link {
+  margin-left: auto;
+  color: var(--blue);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor
+}

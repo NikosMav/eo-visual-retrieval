@@ -6,7 +6,9 @@ in catalog.py so they can be tested without a server.
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
+from typing import Any
 
 from fastapi import FastAPI, File, HTTPException, Request, UploadFile
 from fastapi.exceptions import RequestValidationError
@@ -22,6 +24,25 @@ from eo_visual_retrieval.app.uploads import MAX_UPLOAD_BYTES, decode_upload
 
 TEMPLATES = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
 THUMBNAIL_PIXELS = 192
+
+
+def _headline(findings: dict[str, Any]) -> dict[str, Any]:
+    """Derive the few figures the page states in prose, from the same payload.
+
+    Writing these into the template by hand is exactly how a page drifts from
+    the evidence it claims to summarize.
+    """
+
+    days = [place["days"] for place in findings["places"]]
+    queries = findings["queries"] or 1
+    return {
+        "best_overlap": f"{findings['overlap_max'] * findings['k']:.0f} of {findings['k']}",
+        "all_correct_pct": round(
+            findings["top_one"]["all_stores_correct"] / queries * 100, 1
+        ),
+        "days_max": max(days) if days else 0,
+        "days_min": min(days) if days else 0,
+    }
 
 
 class ContentLengthLimitMiddleware:
@@ -83,7 +104,9 @@ class ContentLengthLimitMiddleware:
         await self._app(scope, receive, send)
 
 
-def create_app(catalog: Catalog, *, k: int = 5) -> FastAPI:
+def create_app(
+    catalog: Catalog, *, k: int = 5, findings: dict[str, Any] | None = None
+) -> FastAPI:
     """Build the application around one already-validated catalog."""
 
     if k < 1:
@@ -124,6 +147,7 @@ def create_app(catalog: Catalog, *, k: int = 5) -> FastAPI:
                 "index_size": catalog.index_size,
                 "k": k,
                 "error": error,
+                "findings_available": findings is not None,
             },
         )
 
@@ -142,6 +166,26 @@ def create_app(catalog: Catalog, *, k: int = 5) -> FastAPI:
     @app.get("/healthz")
     def health() -> dict[str, str]:
         return {"status": "ok"}
+
+    if findings is not None:
+        # Registered only when evidence was supplied. A deployment without the
+        # reports serves no findings rather than an empty or invented page.
+        headline = _headline(findings)
+
+        @app.get("/findings", response_class=HTMLResponse)
+        def findings_page(request: Request) -> HTMLResponse:
+            return TEMPLATES.TemplateResponse(
+                request=request,
+                name="findings.html",
+                context={
+                    "findings": findings,
+                    "headline": headline,
+                    # Embedded in a script block, so the template marks it safe
+                    # and the escaping happens here: only "<" can end the block
+                    # early, and escaping it keeps the JSON valid.
+                    "findings_json": json.dumps(findings).replace("<", "\\u003c"),
+                },
+            )
 
     @app.get("/", response_class=HTMLResponse)
     def home(request: Request) -> HTMLResponse:
