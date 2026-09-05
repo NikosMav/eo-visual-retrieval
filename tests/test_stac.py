@@ -200,3 +200,55 @@ def test_preview_colliding_sanitized_names_keep_distinct_pixels(
     assert _safe_filename("tile/a", ".png", namespace="first") != _safe_filename(
         "tile/a", ".png", namespace="second"
     )
+
+
+def test_object_storage_assets_explain_the_credential_boundary(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Copernicus answers searches anonymously but stores pixels behind credentials.
+
+    A generic "must use HTTPS" rejection would read as a bug in this project
+    rather than as the provider's access model, so the message names it.
+    """
+
+    from pystac_client import Client
+
+    record = StacItemRecord(
+        api_url="https://stac.dataspace.copernicus.eu/v1",
+        collection="sentinel-2-l2a",
+        item_id="S2B_MSIL2A_20250830T092029_N0511_R093_T35SKC_20250830T113855",
+        bbox=None,
+        datetime=None,
+        asset_keys=("B02_10m",),
+    )
+    collection = SimpleNamespace(get_item=lambda identity: SimpleNamespace(assets={
+        "B02_10m": SimpleNamespace(
+            href="s3://eodata/Sentinel-2/MSI/L2A/2025/08/30/scene.SAFE/B02_10m.jp2",
+            media_type="image/jp2",
+        ),
+    }))
+    monkeypatch.setattr(Client, "open", lambda url: SimpleNamespace(
+        get_collection=lambda name: collection,
+    ))
+
+    with pytest.raises(ValueError, match="object storage, not HTTPS"):
+        materialize_previews(
+            [record],
+            output_dir=tmp_path / "images",
+            image_manifest=tmp_path / "images.jsonl",
+            asset_key="B02_10m",
+        )
+
+
+def test_allowlist_covers_both_generations_of_extension_names() -> None:
+    """One provider's tile identity is another's, under a different key."""
+
+    from eo_visual_retrieval.stac import SAFE_PROPERTY_KEYS
+
+    # Planetary Computer names, and the Copernicus equivalents.
+    assert {"s2:mgrs_tile", "s2:processing_baseline"} <= set(SAFE_PROPERTY_KEYS)
+    assert {"grid:code", "processing:version", "product:type"} <= set(SAFE_PROPERTY_KEYS)
+    # Viewing geometry explains why one place looks different between passes.
+    assert {"view:sun_elevation", "sat:relative_orbit"} <= set(SAFE_PROPERTY_KEYS)
+    # Nothing credential- or infrastructure-shaped may enter a persisted manifest.
+    assert not {"auth:schemes", "storage:schemes"} & set(SAFE_PROPERTY_KEYS)

@@ -56,6 +56,36 @@ This establishes that the container builds and serves correctly on one engine an
 is not a deployment: no host is selected, and TLS, public exposure, upload traffic policy, cost,
 and behavior under real load remain unmeasured.
 
+## Copernicus Data Space STAC discovery — 2026-09-04
+
+Executed against ESA's own Sentinel-2 distribution, testing whether this project's
+"provider-neutral" STAC claim survives contact with a second provider.
+
+| Check | Executed evidence |
+|---|---|
+| Catalogue reachable anonymously | `https://stac.dataspace.copernicus.eu/v1` answered with no account. `sentinel-2-l2a` and `sentinel-2-l1c` both resolve, though neither appears in the first page of `/collections` |
+| Existing command, unmodified | `eovr stac-search --api-url https://stac.dataspace.copernicus.eu/v1 --collection sentinel-2-l2a --bbox 23.4 38.4 23.8 38.7 --datetime 2025-06-01/2025-08-31 --max-cloud-cover 10` returned scenes and wrote a sanitized manifest. No code change was needed for discovery |
+| Sanitized output | 43 asset **keys** recorded with zero HREFs. No `s3://` path, `auth:schemes`, or `storage:schemes` value reached the manifest |
+| Metadata recovered | Acquisition datetime, `eo:cloud_cover`, `grid:code` (MGRS tile), `sat:relative_orbit`, `sat:orbit_state`, `view:sun_elevation`, `view:sun_azimuth`, `product:type`, `processing:version` |
+| Access boundary | Asset HREFs are `s3://eodata/...` on Copernicus object storage. Discovery is anonymous; reading pixels needs a free account and S3 keys, which this path does not carry |
+
+An Attica search returned four scenes, all on relative orbit 93 — the repeat track over that area,
+which is how same-place-different-date pairs are identified.
+
+### Changes made
+
+The property allowlist was written for Planetary Computer's Sentinel-2 extension names and silently
+dropped the Copernicus equivalents: `grid:code` for `s2:mgrs_tile`, `processing:version` for
+`s2:processing_baseline`. Both generations are now allowlisted, along with the viewing-geometry keys
+Copernicus publishes. Preview materialization now refuses an `s3://` asset with a message naming the
+provider's access model instead of a generic scheme rejection.
+
+### Boundary
+
+This establishes anonymous **discovery** against one provider on one date, and a sanitized manifest
+carrying acquisition time. No Copernicus imagery was downloaded, no corpus was built, and no
+retrieval result on Copernicus data exists.
+
 ## Lightning advisory reachability — 2026-09-04
 
 Executed on Windows 11. Dependabot alert #4 reports
