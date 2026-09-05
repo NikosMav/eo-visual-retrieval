@@ -347,6 +347,63 @@ def _evaluate(args: argparse.Namespace) -> None:
     print(payload, end="")
 
 
+def _analyze_retrieval(args: argparse.Namespace) -> None:
+    from eo_visual_retrieval.analysis import analyze
+    from eo_visual_retrieval.evaluation import evaluate_queries
+
+    records = read_jsonl(args.manifest)
+    manifest_digest = file_sha256(args.manifest)
+    per_store = {}
+    descriptions = []
+    for path in args.store:
+        store = EmbeddingStore.load(path)
+        recorded = store.metadata.get("manifest_sha256")
+        if recorded is not None and recorded != manifest_digest:
+            raise ValueError(
+                f"store {path.name} was built from a different manifest; slicing its "
+                "queries by this manifest's geography would mislabel every result"
+            )
+        evaluations, _ = evaluate_queries(store, k=args.k)
+        per_store[path.stem] = evaluations
+        descriptions.append(
+            {
+                "name": path.stem,
+                "backend": store.metadata.get("backend", "unknown"),
+                "model": store.metadata.get("model", "unknown"),
+                "dimensions": int(store.vectors.shape[1]),
+                "embedding_store_sha256": file_sha256(path),
+            }
+        )
+
+    result = {
+        "analysis": "retrieval-structure",
+        "evidence_role": "development-analysis-of-published-stores",
+        "manifest_sha256": manifest_digest,
+        "stores": descriptions,
+        **analyze(
+            per_store,
+            records,
+            k=args.k,
+            latitude_band_degrees=args.latitude_band_degrees,
+        ),
+    }
+    payload = json.dumps(result, indent=2, sort_keys=True) + "\n"
+    args.output.parent.mkdir(parents=True, exist_ok=True)
+    temporary = args.output.with_suffix(args.output.suffix + ".tmp")
+    temporary.write_text(payload, encoding="utf-8", newline="\n")
+    temporary.replace(args.output)
+    print(
+        json.dumps(
+            {
+                "output": str(args.output),
+                "stores": [description["name"] for description in descriptions],
+                "k": args.k,
+            },
+            indent=2,
+        )
+    )
+
+
 def _evaluate_multilabel(args: argparse.Namespace) -> None:
     from eo_visual_retrieval.evaluation_multilabel import evaluate_multilabel_development
     from eo_visual_retrieval.relevance import RelevanceManifest
@@ -655,6 +712,28 @@ def build_parser() -> argparse.ArgumentParser:
         "--tracking-dir", type=Path, help="opt in to local MLflow aggregate tracking (no uploads)"
     )
     evaluate.set_defaults(handler=_evaluate)
+
+    analyze = commands.add_parser(
+        "analyze-retrieval",
+        help="slice published per-query results by geography, agreement, and failure",
+    )
+    analyze.add_argument("--manifest", type=Path, required=True)
+    analyze.add_argument(
+        "--store",
+        type=Path,
+        action="append",
+        required=True,
+        help="an evaluated embedding store; repeat to compare representations",
+    )
+    analyze.add_argument("--output", type=Path, required=True)
+    analyze.add_argument("--k", type=int, default=10)
+    analyze.add_argument(
+        "--latitude-band-degrees",
+        type=float,
+        default=5.0,
+        help="width of the fixed latitude bands used for geographic slicing",
+    )
+    analyze.set_defaults(handler=_analyze_retrieval)
 
     multilabel = commands.add_parser(
         "evaluate-multilabel", help="evaluate development queries with Jaccard relevance"

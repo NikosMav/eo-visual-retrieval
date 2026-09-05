@@ -113,8 +113,15 @@ for EuroSAT v1
 
 - Compare PCA and DINOv2 fairly on identical inputs and splits. — completed for EuroSAT v1
 - Add query-result grids and per-class error slices. — completed for EuroSAT v1
-- Add geographic, seasonal, and cloud-condition slices when metadata supports them.
-- Explain what class-label relevance captures and what it misses about user intent.
+- Add geographic slices. — completed for EuroSAT v1; see
+  [the structure analysis](results/eurosat-v1-analysis.md)
+- Seasonal and cloud-condition slices. — **not achievable on EuroSAT**, which publishes neither
+  acquisition timestamps nor cloud metadata. These need a source that carries acquisition dates,
+  such as a STAC-derived corpus.
+- Explain what class-label relevance captures and what it misses about user intent. — completed
+  for EuroSAT v1: representations sharing as little as one result in thirty can post comparable
+  scores, because with 160 index images per class many different result sets are equally
+  "correct". Label relevance measures the right kind, never the right one.
 - Evaluate one EO-specific or multispectral encoder as a separate experiment. — completed with
   SSL4EO-S12 on EuroSAT v1
 

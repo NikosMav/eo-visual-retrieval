@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
 
@@ -135,6 +136,28 @@ def evaluate_queries(store: EmbeddingStore, *, k: int) -> tuple[list[QueryEvalua
         )
 
     return evaluations, skipped
+
+
+def summarize_queries(evaluations: Sequence[QueryEvaluation]) -> MetricSummary:
+    """Aggregate any subset of per-query results with the published rule.
+
+    Slice analyses average the same per-query numbers over different groupings.
+    Routing them through this one aggregation keeps a latitude band, a class, and
+    the headline figure from drifting into three slightly different means.
+    """
+
+    return _metric_summary(
+        [
+            (
+                evaluation.label,
+                evaluation.precision_at_k,
+                evaluation.recall_at_k,
+                evaluation.average_precision_at_k,
+                evaluation.ndcg_at_k,
+            )
+            for evaluation in evaluations
+        ]
+    )
 
 
 def evaluate_store(store: EmbeddingStore, *, k: int) -> EvaluationSummary:

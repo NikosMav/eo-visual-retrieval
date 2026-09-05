@@ -1,0 +1,1570 @@
+{
+  "aggregate": {
+    "eurosat-v1-dinov2-vits14": {
+      "evaluated_queries": 400,
+      "map_at_k": 0.607631746031746,
+      "ndcg_at_k": 0.7054520086956367,
+      "precision_at_k": 0.69475,
+      "recall_at_k": 0.043421875
+    },
+    "eurosat-v1-pca-64": {
+      "evaluated_queries": 400,
+      "map_at_k": 0.19697559523809524,
+      "ndcg_at_k": 0.31012743115003527,
+      "precision_at_k": 0.30150000000000005,
+      "recall_at_k": 0.018843750000000003
+    },
+    "eurosat-v1-ssl4eo-s12-moco-resnet50": {
+      "evaluated_queries": 400,
+      "map_at_k": 0.8135958333333333,
+      "ndcg_at_k": 0.864721790793744,
+      "precision_at_k": 0.8530000000000001,
+      "recall_at_k": 0.053312500000000006
+    },
+    "eurosat-v1-ssl4eo-s12-rgb-moco-resnet50": {
+      "evaluated_queries": 400,
+      "map_at_k": 0.7445231150793652,
+      "ndcg_at_k": 0.8154581092372303,
+      "precision_at_k": 0.8029999999999999,
+      "recall_at_k": 0.050187499999999996
+    },
+    "eurosat-v1-terramind-tiny": {
+      "evaluated_queries": 400,
+      "map_at_k": 0.6868842261904762,
+      "ndcg_at_k": 0.768069040604453,
+      "precision_at_k": 0.75075,
+      "recall_at_k": 0.046921875
+    }
+  },
+  "agreement": {
+    "correct_store_census": {
+      "eurosat-v1-dinov2-vits14": 2,
+      "eurosat-v1-dinov2-vits14, eurosat-v1-pca-64, eurosat-v1-ssl4eo-s12-moco-resnet50, eurosat-v1-ssl4eo-s12-rgb-moco-resnet50": 3,
+      "eurosat-v1-dinov2-vits14, eurosat-v1-pca-64, eurosat-v1-ssl4eo-s12-moco-resnet50, eurosat-v1-ssl4eo-s12-rgb-moco-resnet50, eurosat-v1-terramind-tiny": 99,
+      "eurosat-v1-dinov2-vits14, eurosat-v1-pca-64, eurosat-v1-ssl4eo-s12-moco-resnet50, eurosat-v1-terramind-tiny": 5,
+      "eurosat-v1-dinov2-vits14, eurosat-v1-pca-64, eurosat-v1-ssl4eo-s12-rgb-moco-resnet50": 1,
+      "eurosat-v1-dinov2-vits14, eurosat-v1-pca-64, eurosat-v1-ssl4eo-s12-rgb-moco-resnet50, eurosat-v1-terramind-tiny": 1,
+      "eurosat-v1-dinov2-vits14, eurosat-v1-ssl4eo-s12-moco-resnet50": 6,
+      "eurosat-v1-dinov2-vits14, eurosat-v1-ssl4eo-s12-moco-resnet50, eurosat-v1-ssl4eo-s12-rgb-moco-resnet50": 22,
+      "eurosat-v1-dinov2-vits14, eurosat-v1-ssl4eo-s12-moco-resnet50, eurosat-v1-ssl4eo-s12-rgb-moco-resnet50, eurosat-v1-terramind-tiny": 142,
+      "eurosat-v1-dinov2-vits14, eurosat-v1-ssl4eo-s12-moco-resnet50, eurosat-v1-terramind-tiny": 8,
+      "eurosat-v1-dinov2-vits14, eurosat-v1-ssl4eo-s12-rgb-moco-resnet50": 1,
+      "eurosat-v1-dinov2-vits14, eurosat-v1-ssl4eo-s12-rgb-moco-resnet50, eurosat-v1-terramind-tiny": 6,
+      "eurosat-v1-dinov2-vits14, eurosat-v1-terramind-tiny": 1,
+      "eurosat-v1-pca-64": 2,
+      "eurosat-v1-pca-64, eurosat-v1-ssl4eo-s12-moco-resnet50": 1,
+      "eurosat-v1-pca-64, eurosat-v1-ssl4eo-s12-moco-resnet50, eurosat-v1-ssl4eo-s12-rgb-moco-resnet50": 3,
+      "eurosat-v1-pca-64, eurosat-v1-ssl4eo-s12-moco-resnet50, eurosat-v1-ssl4eo-s12-rgb-moco-resnet50, eurosat-v1-terramind-tiny": 14,
+      "eurosat-v1-pca-64, eurosat-v1-ssl4eo-s12-moco-resnet50, eurosat-v1-terramind-tiny": 3,
+      "eurosat-v1-pca-64, eurosat-v1-terramind-tiny": 1,
+      "eurosat-v1-ssl4eo-s12-moco-resnet50": 8,
+      "eurosat-v1-ssl4eo-s12-moco-resnet50, eurosat-v1-ssl4eo-s12-rgb-moco-resnet50": 7,
+      "eurosat-v1-ssl4eo-s12-moco-resnet50, eurosat-v1-ssl4eo-s12-rgb-moco-resnet50, eurosat-v1-terramind-tiny": 37,
+      "eurosat-v1-ssl4eo-s12-moco-resnet50, eurosat-v1-terramind-tiny": 6,
+      "eurosat-v1-ssl4eo-s12-rgb-moco-resnet50": 5,
+      "eurosat-v1-ssl4eo-s12-rgb-moco-resnet50, eurosat-v1-terramind-tiny": 6,
+      "eurosat-v1-terramind-tiny": 4,
+      "none": 6
+    },
+    "pairwise_overlap": {
+      "eurosat-v1-dinov2-vits14 vs eurosat-v1-pca-64": {
+        "mean_overlap_at_k": 0.0355,
+        "queries": 400
+      },
+      "eurosat-v1-dinov2-vits14 vs eurosat-v1-ssl4eo-s12-moco-resnet50": {
+        "mean_overlap_at_k": 0.135,
+        "queries": 400
+      },
+      "eurosat-v1-dinov2-vits14 vs eurosat-v1-ssl4eo-s12-rgb-moco-resnet50": {
+        "mean_overlap_at_k": 0.14675000000000002,
+        "queries": 400
+      },
+      "eurosat-v1-dinov2-vits14 vs eurosat-v1-terramind-tiny": {
+        "mean_overlap_at_k": 0.10649999999999998,
+        "queries": 400
+      },
+      "eurosat-v1-pca-64 vs eurosat-v1-ssl4eo-s12-moco-resnet50": {
+        "mean_overlap_at_k": 0.045500000000000006,
+        "queries": 400
+      },
+      "eurosat-v1-pca-64 vs eurosat-v1-ssl4eo-s12-rgb-moco-resnet50": {
+        "mean_overlap_at_k": 0.0545,
+        "queries": 400
+      },
+      "eurosat-v1-pca-64 vs eurosat-v1-terramind-tiny": {
+        "mean_overlap_at_k": 0.0575,
+        "queries": 400
+      },
+      "eurosat-v1-ssl4eo-s12-moco-resnet50 vs eurosat-v1-ssl4eo-s12-rgb-moco-resnet50": {
+        "mean_overlap_at_k": 0.30024999999999996,
+        "queries": 400
+      },
+      "eurosat-v1-ssl4eo-s12-moco-resnet50 vs eurosat-v1-terramind-tiny": {
+        "mean_overlap_at_k": 0.28525,
+        "queries": 400
+      },
+      "eurosat-v1-ssl4eo-s12-rgb-moco-resnet50 vs eurosat-v1-terramind-tiny": {
+        "mean_overlap_at_k": 0.18375,
+        "queries": 400
+      }
+    },
+    "queries": 400,
+    "stores": [
+      "eurosat-v1-dinov2-vits14",
+      "eurosat-v1-pca-64",
+      "eurosat-v1-ssl4eo-s12-moco-resnet50",
+      "eurosat-v1-ssl4eo-s12-rgb-moco-resnet50",
+      "eurosat-v1-terramind-tiny"
+    ],
+    "top_one_correctness": {
+      "all_stores_correct": 99,
+      "disputed": 295,
+      "exactly_one_store_correct": 21,
+      "no_store_correct": 6
+    }
+  },
+  "analysis": "retrieval-structure",
+  "distance": {
+    "nearest_index_m": {
+      "eurosat-v1-dinov2-vits14": {
+        "attribute": "nearest_index_m",
+        "quartile_edges_m": [
+          5066.229991251209,
+          13381.595505142537,
+          19057.784447101556,
+          27294.336715415222,
+          142760.78391265255
+        ],
+        "quartiles": {
+          "q1": {
+            "distance_m": {
+              "maximum": 13310.285018373004,
+              "minimum": 5066.229991251209
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.5909178571428569,
+            "ndcg_at_k": 0.694159952425356,
+            "precision_at_k": 0.6890000000000001,
+            "recall_at_k": 0.043062500000000004
+          },
+          "q2": {
+            "distance_m": {
+              "maximum": 18914.972068703955,
+              "minimum": 13405.365667399048
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.6115126984126984,
+            "ndcg_at_k": 0.7015370403127276,
+            "precision_at_k": 0.693,
+            "recall_at_k": 0.0433125
+          },
+          "q3": {
+            "distance_m": {
+              "maximum": 27286.406069904,
+              "minimum": 19200.596825499153
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.599245634920635,
+            "ndcg_at_k": 0.7058821300707777,
+            "precision_at_k": 0.6930000000000001,
+            "recall_at_k": 0.043312500000000004
+          },
+          "q4": {
+            "distance_m": {
+              "maximum": 142760.78391265255,
+              "minimum": 27318.12865194889
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.6288507936507937,
+            "ndcg_at_k": 0.7202289119736858,
+            "precision_at_k": 0.7040000000000001,
+            "recall_at_k": 0.044000000000000004
+          }
+        }
+      },
+      "eurosat-v1-pca-64": {
+        "attribute": "nearest_index_m",
+        "quartile_edges_m": [
+          5066.229991251209,
+          13381.595505142537,
+          19057.784447101556,
+          27294.336715415222,
+          142760.78391265255
+        ],
+        "quartiles": {
+          "q1": {
+            "distance_m": {
+              "maximum": 13310.285018373004,
+              "minimum": 5066.229991251209
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.15024206349206348,
+            "ndcg_at_k": 0.2554815665417497,
+            "precision_at_k": 0.25,
+            "recall_at_k": 0.015625
+          },
+          "q2": {
+            "distance_m": {
+              "maximum": 18914.972068703955,
+              "minimum": 13405.365667399048
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.23104007936507936,
+            "ndcg_at_k": 0.33902483739931355,
+            "precision_at_k": 0.33699999999999997,
+            "recall_at_k": 0.021062499999999998
+          },
+          "q3": {
+            "distance_m": {
+              "maximum": 27286.406069904,
+              "minimum": 19200.596825499153
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.22713452380952381,
+            "ndcg_at_k": 0.35120532796511933,
+            "precision_at_k": 0.33399999999999996,
+            "recall_at_k": 0.020874999999999998
+          },
+          "q4": {
+            "distance_m": {
+              "maximum": 142760.78391265255,
+              "minimum": 27318.12865194889
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.1794857142857143,
+            "ndcg_at_k": 0.29479799269395873,
+            "precision_at_k": 0.28500000000000003,
+            "recall_at_k": 0.017812500000000002
+          }
+        }
+      },
+      "eurosat-v1-ssl4eo-s12-moco-resnet50": {
+        "attribute": "nearest_index_m",
+        "quartile_edges_m": [
+          5066.229991251209,
+          13381.595505142537,
+          19057.784447101556,
+          27294.336715415222,
+          142760.78391265255
+        ],
+        "quartiles": {
+          "q1": {
+            "distance_m": {
+              "maximum": 13310.285018373004,
+              "minimum": 5066.229991251209
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.7736559523809524,
+            "ndcg_at_k": 0.8340755895247121,
+            "precision_at_k": 0.823,
+            "recall_at_k": 0.0514375
+          },
+          "q2": {
+            "distance_m": {
+              "maximum": 18914.972068703955,
+              "minimum": 13405.365667399048
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.8435587301587302,
+            "ndcg_at_k": 0.8900335174592442,
+            "precision_at_k": 0.88,
+            "recall_at_k": 0.055
+          },
+          "q3": {
+            "distance_m": {
+              "maximum": 27286.406069904,
+              "minimum": 19200.596825499153
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.8099765873015873,
+            "ndcg_at_k": 0.8591742148302735,
+            "precision_at_k": 0.8500000000000001,
+            "recall_at_k": 0.053125000000000006
+          },
+          "q4": {
+            "distance_m": {
+              "maximum": 142760.78391265255,
+              "minimum": 27318.12865194889
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.8271920634920634,
+            "ndcg_at_k": 0.8756038413607464,
+            "precision_at_k": 0.8590000000000001,
+            "recall_at_k": 0.053687500000000006
+          }
+        }
+      },
+      "eurosat-v1-ssl4eo-s12-rgb-moco-resnet50": {
+        "attribute": "nearest_index_m",
+        "quartile_edges_m": [
+          5066.229991251209,
+          13381.595505142537,
+          19057.784447101556,
+          27294.336715415222,
+          142760.78391265255
+        ],
+        "quartiles": {
+          "q1": {
+            "distance_m": {
+              "maximum": 13310.285018373004,
+              "minimum": 5066.229991251209
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.6819809523809522,
+            "ndcg_at_k": 0.7696498597578423,
+            "precision_at_k": 0.755,
+            "recall_at_k": 0.0471875
+          },
+          "q2": {
+            "distance_m": {
+              "maximum": 18914.972068703955,
+              "minimum": 13405.365667399048
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.7939492063492064,
+            "ndcg_at_k": 0.8524806427754902,
+            "precision_at_k": 0.8400000000000002,
+            "recall_at_k": 0.05250000000000001
+          },
+          "q3": {
+            "distance_m": {
+              "maximum": 27286.406069904,
+              "minimum": 19200.596825499153
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.742542857142857,
+            "ndcg_at_k": 0.8171096166812228,
+            "precision_at_k": 0.802,
+            "recall_at_k": 0.050125
+          },
+          "q4": {
+            "distance_m": {
+              "maximum": 142760.78391265255,
+              "minimum": 27318.12865194889
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.7596194444444444,
+            "ndcg_at_k": 0.8225923177343657,
+            "precision_at_k": 0.815,
+            "recall_at_k": 0.0509375
+          }
+        }
+      },
+      "eurosat-v1-terramind-tiny": {
+        "attribute": "nearest_index_m",
+        "quartile_edges_m": [
+          5066.229991251209,
+          13381.595505142537,
+          19057.784447101556,
+          27294.336715415222,
+          142760.78391265255
+        ],
+        "quartiles": {
+          "q1": {
+            "distance_m": {
+              "maximum": 13310.285018373004,
+              "minimum": 5066.229991251209
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.5914603174603175,
+            "ndcg_at_k": 0.6991958839626972,
+            "precision_at_k": 0.672,
+            "recall_at_k": 0.042
+          },
+          "q2": {
+            "distance_m": {
+              "maximum": 18914.972068703955,
+              "minimum": 13405.365667399048
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.7639444444444444,
+            "ndcg_at_k": 0.8207115008550612,
+            "precision_at_k": 0.811,
+            "recall_at_k": 0.0506875
+          },
+          "q3": {
+            "distance_m": {
+              "maximum": 27286.406069904,
+              "minimum": 19200.596825499153
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.7054829365079364,
+            "ndcg_at_k": 0.7824676209769976,
+            "precision_at_k": 0.767,
+            "recall_at_k": 0.0479375
+          },
+          "q4": {
+            "distance_m": {
+              "maximum": 142760.78391265255,
+              "minimum": 27318.12865194889
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.6866492063492063,
+            "ndcg_at_k": 0.7699011566230562,
+            "precision_at_k": 0.753,
+            "recall_at_k": 0.0470625
+          }
+        }
+      }
+    },
+    "nearest_same_label_index_m": {
+      "eurosat-v1-dinov2-vits14": {
+        "attribute": "nearest_same_label_index_m",
+        "quartile_edges_m": [
+          5066.229991251209,
+          21729.84719785458,
+          36623.590149886484,
+          71455.71474365515,
+          1016806.3406347934
+        ],
+        "quartiles": {
+          "q1": {
+            "distance_m": {
+              "maximum": 21703.08059085175,
+              "minimum": 5066.229991251209
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.598509126984127,
+            "ndcg_at_k": 0.700768162119113,
+            "precision_at_k": 0.6970000000000002,
+            "recall_at_k": 0.04356250000000001
+          },
+          "q2": {
+            "distance_m": {
+              "maximum": 36558.21184705368,
+              "minimum": 21738.769400188852
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.6455396825396825,
+            "ndcg_at_k": 0.7367929209813654,
+            "precision_at_k": 0.7269999999999999,
+            "recall_at_k": 0.04543749999999999
+          },
+          "q3": {
+            "distance_m": {
+              "maximum": 71407.71858476018,
+              "minimum": 36688.968452719295
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.6011301587301587,
+            "ndcg_at_k": 0.6939991868499992,
+            "precision_at_k": 0.6819999999999999,
+            "recall_at_k": 0.042624999999999996
+          },
+          "q4": {
+            "distance_m": {
+              "maximum": 1016806.3406347934,
+              "minimum": 71599.70322034006
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.5853480158730159,
+            "ndcg_at_k": 0.6902477648320696,
+            "precision_at_k": 0.6729999999999999,
+            "recall_at_k": 0.042062499999999996
+          }
+        }
+      },
+      "eurosat-v1-pca-64": {
+        "attribute": "nearest_same_label_index_m",
+        "quartile_edges_m": [
+          5066.229991251209,
+          21729.84719785458,
+          36623.590149886484,
+          71455.71474365515,
+          1016806.3406347934
+        ],
+        "quartiles": {
+          "q1": {
+            "distance_m": {
+              "maximum": 21703.08059085175,
+              "minimum": 5066.229991251209
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.2232666666666666,
+            "ndcg_at_k": 0.3405122439500971,
+            "precision_at_k": 0.3350000000000001,
+            "recall_at_k": 0.020937500000000005
+          },
+          "q2": {
+            "distance_m": {
+              "maximum": 36558.21184705368,
+              "minimum": 21738.769400188852
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.23587301587301585,
+            "ndcg_at_k": 0.3503861937777673,
+            "precision_at_k": 0.338,
+            "recall_at_k": 0.021125
+          },
+          "q3": {
+            "distance_m": {
+              "maximum": 71407.71858476018,
+              "minimum": 36688.968452719295
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.19617658730158735,
+            "ndcg_at_k": 0.30887615019387016,
+            "precision_at_k": 0.29900000000000004,
+            "recall_at_k": 0.018687500000000003
+          },
+          "q4": {
+            "distance_m": {
+              "maximum": 1016806.3406347934,
+              "minimum": 71599.70322034006
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.1325861111111111,
+            "ndcg_at_k": 0.24073513667840662,
+            "precision_at_k": 0.23400000000000007,
+            "recall_at_k": 0.014625000000000004
+          }
+        }
+      },
+      "eurosat-v1-ssl4eo-s12-moco-resnet50": {
+        "attribute": "nearest_same_label_index_m",
+        "quartile_edges_m": [
+          5066.229991251209,
+          21729.84719785458,
+          36623.590149886484,
+          71455.71474365515,
+          1016806.3406347934
+        ],
+        "quartiles": {
+          "q1": {
+            "distance_m": {
+              "maximum": 21703.08059085175,
+              "minimum": 5066.229991251209
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.8007722222222222,
+            "ndcg_at_k": 0.8609886862578625,
+            "precision_at_k": 0.8540000000000001,
+            "recall_at_k": 0.053375000000000006
+          },
+          "q2": {
+            "distance_m": {
+              "maximum": 36558.21184705368,
+              "minimum": 21738.769400188852
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.8424027777777777,
+            "ndcg_at_k": 0.8899770383973079,
+            "precision_at_k": 0.8739999999999999,
+            "recall_at_k": 0.05462499999999999
+          },
+          "q3": {
+            "distance_m": {
+              "maximum": 71407.71858476018,
+              "minimum": 36688.968452719295
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.8462301587301587,
+            "ndcg_at_k": 0.8897422282677305,
+            "precision_at_k": 0.8800000000000001,
+            "recall_at_k": 0.05500000000000001
+          },
+          "q4": {
+            "distance_m": {
+              "maximum": 1016806.3406347934,
+              "minimum": 71599.70322034006
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.7649781746031746,
+            "ndcg_at_k": 0.818179210252075,
+            "precision_at_k": 0.804,
+            "recall_at_k": 0.05025
+          }
+        }
+      },
+      "eurosat-v1-ssl4eo-s12-rgb-moco-resnet50": {
+        "attribute": "nearest_same_label_index_m",
+        "quartile_edges_m": [
+          5066.229991251209,
+          21729.84719785458,
+          36623.590149886484,
+          71455.71474365515,
+          1016806.3406347934
+        ],
+        "quartiles": {
+          "q1": {
+            "distance_m": {
+              "maximum": 21703.08059085175,
+              "minimum": 5066.229991251209
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.7457511904761904,
+            "ndcg_at_k": 0.8229696704349603,
+            "precision_at_k": 0.8059999999999999,
+            "recall_at_k": 0.050374999999999996
+          },
+          "q2": {
+            "distance_m": {
+              "maximum": 36558.21184705368,
+              "minimum": 21738.769400188852
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.7581460317460318,
+            "ndcg_at_k": 0.8253459176112884,
+            "precision_at_k": 0.812,
+            "recall_at_k": 0.05075
+          },
+          "q3": {
+            "distance_m": {
+              "maximum": 71407.71858476018,
+              "minimum": 36688.968452719295
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.7828071428571428,
+            "ndcg_at_k": 0.8446976853283682,
+            "precision_at_k": 0.8370000000000002,
+            "recall_at_k": 0.05231250000000001
+          },
+          "q4": {
+            "distance_m": {
+              "maximum": 1016806.3406347934,
+              "minimum": 71599.70322034006
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.6913880952380951,
+            "ndcg_at_k": 0.7688191635743041,
+            "precision_at_k": 0.757,
+            "recall_at_k": 0.0473125
+          }
+        }
+      },
+      "eurosat-v1-terramind-tiny": {
+        "attribute": "nearest_same_label_index_m",
+        "quartile_edges_m": [
+          5066.229991251209,
+          21729.84719785458,
+          36623.590149886484,
+          71455.71474365515,
+          1016806.3406347934
+        ],
+        "quartiles": {
+          "q1": {
+            "distance_m": {
+              "maximum": 21703.08059085175,
+              "minimum": 5066.229991251209
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.6987547619047619,
+            "ndcg_at_k": 0.7827165290143063,
+            "precision_at_k": 0.755,
+            "recall_at_k": 0.0471875
+          },
+          "q2": {
+            "distance_m": {
+              "maximum": 36558.21184705368,
+              "minimum": 21738.769400188852
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.7310285714285715,
+            "ndcg_at_k": 0.8159839276844417,
+            "precision_at_k": 0.792,
+            "recall_at_k": 0.0495
+          },
+          "q3": {
+            "distance_m": {
+              "maximum": 71407.71858476018,
+              "minimum": 36688.968452719295
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.7301333333333333,
+            "ndcg_at_k": 0.7919011615566103,
+            "precision_at_k": 0.785,
+            "recall_at_k": 0.0490625
+          },
+          "q4": {
+            "distance_m": {
+              "maximum": 1016806.3406347934,
+              "minimum": 71599.70322034006
+            },
+            "evaluated_queries": 100,
+            "map_at_k": 0.587620238095238,
+            "ndcg_at_k": 0.6816745441624538,
+            "precision_at_k": 0.671,
+            "recall_at_k": 0.0419375
+          }
+        }
+      }
+    }
+  },
+  "evidence_role": "development-analysis-of-published-stores",
+  "failures": {
+    "retrieved_label_when_wrong": {
+      "eurosat-v1-dinov2-vits14": {
+        "AnnualCrop": {
+          "Forest": 7,
+          "HerbaceousVegetation": 1,
+          "Highway": 10,
+          "Industrial": 1,
+          "Pasture": 22,
+          "PermanentCrop": 83,
+          "River": 10
+        },
+        "Forest": {
+          "HerbaceousVegetation": 16,
+          "Pasture": 7,
+          "Residential": 11,
+          "SeaLake": 1
+        },
+        "HerbaceousVegetation": {
+          "Forest": 77,
+          "Highway": 1,
+          "Pasture": 27,
+          "PermanentCrop": 10,
+          "Residential": 1,
+          "River": 3,
+          "SeaLake": 3
+        },
+        "Highway": {
+          "AnnualCrop": 6,
+          "Forest": 10,
+          "HerbaceousVegetation": 1,
+          "Industrial": 38,
+          "Pasture": 33,
+          "PermanentCrop": 18,
+          "Residential": 27,
+          "River": 59,
+          "SeaLake": 5
+        },
+        "Industrial": {
+          "Highway": 9,
+          "Pasture": 1,
+          "PermanentCrop": 2,
+          "Residential": 29,
+          "River": 4
+        },
+        "Pasture": {
+          "AnnualCrop": 10,
+          "Forest": 29,
+          "HerbaceousVegetation": 6,
+          "Highway": 25,
+          "Industrial": 1,
+          "PermanentCrop": 29,
+          "Residential": 4,
+          "River": 29
+        },
+        "PermanentCrop": {
+          "AnnualCrop": 49,
+          "HerbaceousVegetation": 21,
+          "Highway": 13,
+          "Industrial": 6,
+          "Pasture": 63,
+          "Residential": 13,
+          "River": 12
+        },
+        "Residential": {
+          "AnnualCrop": 1,
+          "HerbaceousVegetation": 1,
+          "Highway": 15,
+          "Industrial": 29,
+          "Pasture": 5,
+          "PermanentCrop": 4,
+          "River": 11
+        },
+        "River": {
+          "AnnualCrop": 7,
+          "Forest": 13,
+          "Highway": 87,
+          "Industrial": 21,
+          "Pasture": 51,
+          "PermanentCrop": 28,
+          "Residential": 20,
+          "SeaLake": 13
+        },
+        "SeaLake": {
+          "AnnualCrop": 3,
+          "Forest": 41,
+          "HerbaceousVegetation": 1,
+          "Highway": 1,
+          "Industrial": 1,
+          "Pasture": 12,
+          "River": 13
+        }
+      },
+      "eurosat-v1-pca-64": {
+        "AnnualCrop": {
+          "Forest": 8,
+          "HerbaceousVegetation": 73,
+          "Highway": 29,
+          "Industrial": 26,
+          "Pasture": 19,
+          "PermanentCrop": 64,
+          "Residential": 24,
+          "River": 19,
+          "SeaLake": 28
+        },
+        "Forest": {
+          "Pasture": 4,
+          "River": 1,
+          "SeaLake": 145
+        },
+        "HerbaceousVegetation": {
+          "AnnualCrop": 61,
+          "Forest": 15,
+          "Highway": 29,
+          "Industrial": 5,
+          "Pasture": 16,
+          "PermanentCrop": 56,
+          "Residential": 16,
+          "River": 42,
+          "SeaLake": 48
+        },
+        "Highway": {
+          "AnnualCrop": 37,
+          "Forest": 63,
+          "HerbaceousVegetation": 38,
+          "Industrial": 13,
+          "Pasture": 53,
+          "PermanentCrop": 24,
+          "Residential": 18,
+          "River": 44,
+          "SeaLake": 59
+        },
+        "Industrial": {
+          "AnnualCrop": 70,
+          "HerbaceousVegetation": 70,
+          "Highway": 29,
+          "Pasture": 4,
+          "PermanentCrop": 28,
+          "Residential": 28,
+          "River": 19,
+          "SeaLake": 31
+        },
+        "Pasture": {
+          "AnnualCrop": 13,
+          "Forest": 118,
+          "HerbaceousVegetation": 18,
+          "Highway": 10,
+          "PermanentCrop": 6,
+          "Residential": 5,
+          "River": 19,
+          "SeaLake": 63
+        },
+        "PermanentCrop": {
+          "AnnualCrop": 57,
+          "Forest": 28,
+          "HerbaceousVegetation": 87,
+          "Highway": 28,
+          "Industrial": 14,
+          "Pasture": 37,
+          "Residential": 20,
+          "River": 18,
+          "SeaLake": 39
+        },
+        "Residential": {
+          "AnnualCrop": 42,
+          "Forest": 40,
+          "HerbaceousVegetation": 53,
+          "Highway": 38,
+          "Industrial": 14,
+          "Pasture": 29,
+          "PermanentCrop": 27,
+          "River": 53,
+          "SeaLake": 57
+        },
+        "River": {
+          "AnnualCrop": 41,
+          "Forest": 42,
+          "HerbaceousVegetation": 16,
+          "Highway": 46,
+          "Industrial": 13,
+          "Pasture": 45,
+          "PermanentCrop": 17,
+          "Residential": 31,
+          "SeaLake": 61
+        },
+        "SeaLake": {
+          "AnnualCrop": 2,
+          "Forest": 122,
+          "Highway": 4,
+          "Pasture": 56,
+          "PermanentCrop": 1,
+          "Residential": 1,
+          "River": 7
+        }
+      },
+      "eurosat-v1-ssl4eo-s12-moco-resnet50": {
+        "AnnualCrop": {
+          "HerbaceousVegetation": 1,
+          "Highway": 13,
+          "Pasture": 11,
+          "PermanentCrop": 45,
+          "River": 2
+        },
+        "Forest": {
+          "HerbaceousVegetation": 9,
+          "Highway": 3,
+          "PermanentCrop": 3,
+          "Residential": 1
+        },
+        "HerbaceousVegetation": {
+          "AnnualCrop": 2,
+          "Highway": 16,
+          "Pasture": 26,
+          "PermanentCrop": 27,
+          "River": 4
+        },
+        "Highway": {
+          "AnnualCrop": 11,
+          "Forest": 5,
+          "HerbaceousVegetation": 6,
+          "Industrial": 24,
+          "Pasture": 5,
+          "PermanentCrop": 21,
+          "Residential": 35,
+          "River": 32
+        },
+        "Industrial": {
+          "Highway": 8,
+          "Residential": 19
+        },
+        "Pasture": {
+          "AnnualCrop": 14,
+          "HerbaceousVegetation": 7,
+          "Highway": 20,
+          "PermanentCrop": 3,
+          "River": 6
+        },
+        "PermanentCrop": {
+          "AnnualCrop": 30,
+          "HerbaceousVegetation": 12,
+          "Highway": 31,
+          "Industrial": 9,
+          "Pasture": 6
+        },
+        "Residential": {
+          "Highway": 9,
+          "Industrial": 12
+        },
+        "River": {
+          "AnnualCrop": 7,
+          "Forest": 4,
+          "Highway": 41,
+          "Industrial": 8,
+          "Pasture": 4,
+          "PermanentCrop": 2,
+          "Residential": 1,
+          "SeaLake": 21
+        },
+        "SeaLake": {
+          "River": 12
+        }
+      },
+      "eurosat-v1-ssl4eo-s12-rgb-moco-resnet50": {
+        "AnnualCrop": {
+          "HerbaceousVegetation": 5,
+          "Highway": 8,
+          "Pasture": 24,
+          "PermanentCrop": 46,
+          "River": 17,
+          "SeaLake": 3
+        },
+        "Forest": {
+          "HerbaceousVegetation": 36,
+          "PermanentCrop": 1,
+          "Residential": 6,
+          "River": 1
+        },
+        "HerbaceousVegetation": {
+          "AnnualCrop": 2,
+          "Highway": 11,
+          "Industrial": 1,
+          "Pasture": 20,
+          "PermanentCrop": 29,
+          "Residential": 1,
+          "River": 1
+        },
+        "Highway": {
+          "AnnualCrop": 11,
+          "Forest": 4,
+          "HerbaceousVegetation": 8,
+          "Industrial": 33,
+          "Pasture": 12,
+          "PermanentCrop": 10,
+          "Residential": 21,
+          "River": 30,
+          "SeaLake": 1
+        },
+        "Industrial": {
+          "AnnualCrop": 1,
+          "HerbaceousVegetation": 1,
+          "Highway": 9,
+          "PermanentCrop": 1,
+          "Residential": 19,
+          "River": 2
+        },
+        "Pasture": {
+          "AnnualCrop": 14,
+          "Forest": 1,
+          "HerbaceousVegetation": 10,
+          "Highway": 18,
+          "PermanentCrop": 6,
+          "River": 14,
+          "SeaLake": 10
+        },
+        "PermanentCrop": {
+          "AnnualCrop": 25,
+          "HerbaceousVegetation": 43,
+          "Highway": 31,
+          "Industrial": 21,
+          "Pasture": 22,
+          "Residential": 7,
+          "River": 2
+        },
+        "Residential": {
+          "HerbaceousVegetation": 1,
+          "Highway": 5,
+          "Industrial": 28,
+          "PermanentCrop": 1,
+          "River": 2
+        },
+        "River": {
+          "AnnualCrop": 10,
+          "HerbaceousVegetation": 10,
+          "Highway": 71,
+          "Industrial": 19,
+          "Pasture": 14,
+          "PermanentCrop": 4,
+          "Residential": 1,
+          "SeaLake": 16
+        },
+        "SeaLake": {
+          "AnnualCrop": 3,
+          "Pasture": 1,
+          "River": 3
+        }
+      },
+      "eurosat-v1-terramind-tiny": {
+        "AnnualCrop": {
+          "HerbaceousVegetation": 1,
+          "Highway": 43,
+          "Pasture": 51,
+          "PermanentCrop": 72,
+          "River": 2
+        },
+        "Forest": {
+          "HerbaceousVegetation": 5,
+          "Highway": 1,
+          "Pasture": 8,
+          "PermanentCrop": 1
+        },
+        "HerbaceousVegetation": {
+          "AnnualCrop": 12,
+          "Highway": 22,
+          "Industrial": 1,
+          "Pasture": 35,
+          "PermanentCrop": 52,
+          "Residential": 3,
+          "River": 1
+        },
+        "Highway": {
+          "AnnualCrop": 19,
+          "Forest": 26,
+          "HerbaceousVegetation": 12,
+          "Industrial": 43,
+          "Pasture": 35,
+          "PermanentCrop": 19,
+          "Residential": 56,
+          "River": 37
+        },
+        "Industrial": {
+          "Highway": 10,
+          "Residential": 17,
+          "River": 1
+        },
+        "Pasture": {
+          "AnnualCrop": 15,
+          "Forest": 1,
+          "HerbaceousVegetation": 5,
+          "Highway": 8,
+          "PermanentCrop": 9,
+          "River": 3
+        },
+        "PermanentCrop": {
+          "AnnualCrop": 17,
+          "HerbaceousVegetation": 20,
+          "Highway": 57,
+          "Industrial": 1,
+          "Pasture": 40,
+          "Residential": 22,
+          "River": 1
+        },
+        "Residential": {
+          "HerbaceousVegetation": 1,
+          "Highway": 15,
+          "Industrial": 29,
+          "PermanentCrop": 8,
+          "River": 2
+        },
+        "River": {
+          "AnnualCrop": 10,
+          "Forest": 5,
+          "HerbaceousVegetation": 6,
+          "Highway": 76,
+          "Industrial": 23,
+          "Pasture": 6,
+          "PermanentCrop": 4,
+          "Residential": 2,
+          "SeaLake": 25
+        },
+        "SeaLake": {
+          "River": 1
+        }
+      }
+    },
+    "universally_hard_queries": {
+      "count": 6,
+      "examples": [
+        {
+          "label": "Highway",
+          "query_id": "Highway/Highway_1780.tif"
+        },
+        {
+          "label": "Highway",
+          "query_id": "Highway/Highway_373.tif"
+        },
+        {
+          "label": "Highway",
+          "query_id": "Highway/Highway_436.tif"
+        },
+        {
+          "label": "Pasture",
+          "query_id": "Pasture/Pasture_143.tif"
+        },
+        {
+          "label": "River",
+          "query_id": "River/River_180.tif"
+        },
+        {
+          "label": "River",
+          "query_id": "River/River_2319.tif"
+        }
+      ],
+      "share_of_queries": 0.015
+    }
+  },
+  "geographic": {
+    "latitude_bands": {
+      "eurosat-v1-dinov2-vits14": {
+        "+030.00..+035.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 8,
+          "map_at_k": 0.5565376984126984,
+          "ndcg_at_k": 0.6736875222031584,
+          "precision_at_k": 0.6375,
+          "recall_at_k": 0.03984375
+        },
+        "+035.00..+040.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 59,
+          "map_at_k": 0.5374932741458165,
+          "ndcg_at_k": 0.658221567862422,
+          "precision_at_k": 0.6508474576271186,
+          "recall_at_k": 0.04067796610169491
+        },
+        "+040.00..+045.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 31,
+          "map_at_k": 0.6612852022529442,
+          "ndcg_at_k": 0.7403875468783652,
+          "precision_at_k": 0.7451612903225806,
+          "recall_at_k": 0.04657258064516129
+        },
+        "+045.00..+050.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 125,
+          "map_at_k": 0.6093088888888889,
+          "ndcg_at_k": 0.7139314309761683,
+          "precision_at_k": 0.708,
+          "recall_at_k": 0.04425
+        },
+        "+050.00..+055.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 125,
+          "map_at_k": 0.6379514285714286,
+          "ndcg_at_k": 0.7202991195800441,
+          "precision_at_k": 0.7032,
+          "recall_at_k": 0.04395
+        },
+        "+055.00..+060.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 44,
+          "map_at_k": 0.5620174963924964,
+          "ndcg_at_k": 0.6712192740071239,
+          "precision_at_k": 0.6568181818181817,
+          "recall_at_k": 0.04105113636363636
+        },
+        "+060.00..+065.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 8,
+          "map_at_k": 0.7190178571428572,
+          "ndcg_at_k": 0.7739687459596545,
+          "precision_at_k": 0.75,
+          "recall_at_k": 0.046875
+        }
+      },
+      "eurosat-v1-pca-64": {
+        "+030.00..+035.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 8,
+          "map_at_k": 0.17404265873015873,
+          "ndcg_at_k": 0.30517504591632916,
+          "precision_at_k": 0.30000000000000004,
+          "recall_at_k": 0.018750000000000003
+        },
+        "+035.00..+040.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 59,
+          "map_at_k": 0.1289352972827549,
+          "ndcg_at_k": 0.21887823757927982,
+          "precision_at_k": 0.22033898305084748,
+          "recall_at_k": 0.013771186440677968
+        },
+        "+040.00..+045.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 31,
+          "map_at_k": 0.13806707629288273,
+          "ndcg_at_k": 0.2509983824967403,
+          "precision_at_k": 0.2709677419354839,
+          "recall_at_k": 0.016935483870967744
+        },
+        "+045.00..+050.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 125,
+          "map_at_k": 0.24169777777777773,
+          "ndcg_at_k": 0.3627585992158021,
+          "precision_at_k": 0.34719999999999995,
+          "recall_at_k": 0.021699999999999997
+        },
+        "+050.00..+055.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 125,
+          "map_at_k": 0.197064126984127,
+          "ndcg_at_k": 0.3115022545719596,
+          "precision_at_k": 0.2992,
+          "recall_at_k": 0.0187
+        },
+        "+055.00..+060.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 44,
+          "map_at_k": 0.1541838023088023,
+          "ndcg_at_k": 0.27392917440633213,
+          "precision_at_k": 0.2636363636363636,
+          "recall_at_k": 0.016477272727272726
+        },
+        "+060.00..+065.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 8,
+          "map_at_k": 0.48516369047619046,
+          "ndcg_at_k": 0.5724144775947744,
+          "precision_at_k": 0.55,
+          "recall_at_k": 0.034375
+        }
+      },
+      "eurosat-v1-ssl4eo-s12-moco-resnet50": {
+        "+030.00..+035.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 8,
+          "map_at_k": 0.8287946428571429,
+          "ndcg_at_k": 0.8993162132562647,
+          "precision_at_k": 0.8875000000000001,
+          "recall_at_k": 0.055468750000000004
+        },
+        "+035.00..+040.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 59,
+          "map_at_k": 0.7644209039548022,
+          "ndcg_at_k": 0.8286169375912263,
+          "precision_at_k": 0.8067796610169492,
+          "recall_at_k": 0.050423728813559325
+        },
+        "+040.00..+045.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 31,
+          "map_at_k": 0.8963978494623658,
+          "ndcg_at_k": 0.9284748510387834,
+          "precision_at_k": 0.9258064516129032,
+          "recall_at_k": 0.05786290322580645
+        },
+        "+045.00..+050.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 125,
+          "map_at_k": 0.8196111111111111,
+          "ndcg_at_k": 0.8665466588731352,
+          "precision_at_k": 0.8544,
+          "recall_at_k": 0.0534
+        },
+        "+050.00..+055.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 125,
+          "map_at_k": 0.8017914285714285,
+          "ndcg_at_k": 0.8546212361720004,
+          "precision_at_k": 0.8440000000000001,
+          "recall_at_k": 0.052750000000000005
+        },
+        "+055.00..+060.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 44,
+          "map_at_k": 0.8264330808080808,
+          "ndcg_at_k": 0.8800419971962449,
+          "precision_at_k": 0.868181818181818,
+          "recall_at_k": 0.05426136363636363
+        },
+        "+060.00..+065.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 8,
+          "map_at_k": 0.8600545634920636,
+          "ndcg_at_k": 0.8944040192607643,
+          "precision_at_k": 0.9125,
+          "recall_at_k": 0.05703125
+        }
+      },
+      "eurosat-v1-ssl4eo-s12-rgb-moco-resnet50": {
+        "+030.00..+035.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 8,
+          "map_at_k": 0.6155505952380953,
+          "ndcg_at_k": 0.7495230114944229,
+          "precision_at_k": 0.7124999999999999,
+          "recall_at_k": 0.044531249999999994
+        },
+        "+035.00..+040.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 59,
+          "map_at_k": 0.6303510895883777,
+          "ndcg_at_k": 0.7091874806378087,
+          "precision_at_k": 0.6864406779661016,
+          "recall_at_k": 0.04290254237288135
+        },
+        "+040.00..+045.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 31,
+          "map_at_k": 0.7691602662570404,
+          "ndcg_at_k": 0.8256907621559542,
+          "precision_at_k": 0.8225806451612904,
+          "recall_at_k": 0.05141129032258065
+        },
+        "+045.00..+050.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 125,
+          "map_at_k": 0.7576961904761905,
+          "ndcg_at_k": 0.8288798063712031,
+          "precision_at_k": 0.8152,
+          "recall_at_k": 0.05095
+        },
+        "+050.00..+055.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 125,
+          "map_at_k": 0.7637015873015873,
+          "ndcg_at_k": 0.8318704493932225,
+          "precision_at_k": 0.8248000000000001,
+          "recall_at_k": 0.051550000000000006
+        },
+        "+055.00..+060.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 44,
+          "map_at_k": 0.7875018037518037,
+          "ndcg_at_k": 0.8575398719926547,
+          "precision_at_k": 0.843181818181818,
+          "recall_at_k": 0.05269886363636363
+        },
+        "+060.00..+065.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 8,
+          "map_at_k": 0.8781696428571428,
+          "ndcg_at_k": 0.9278810350301785,
+          "precision_at_k": 0.925,
+          "recall_at_k": 0.0578125
+        }
+      },
+      "eurosat-v1-terramind-tiny": {
+        "+030.00..+035.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 8,
+          "map_at_k": 0.7350892857142857,
+          "ndcg_at_k": 0.812601139986338,
+          "precision_at_k": 0.7875000000000001,
+          "recall_at_k": 0.049218750000000006
+        },
+        "+035.00..+040.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 59,
+          "map_at_k": 0.540519908528383,
+          "ndcg_at_k": 0.6477331587431383,
+          "precision_at_k": 0.6305084745762712,
+          "recall_at_k": 0.03940677966101695
+        },
+        "+040.00..+045.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 31,
+          "map_at_k": 0.7353469022017409,
+          "ndcg_at_k": 0.8110300306170798,
+          "precision_at_k": 0.7870967741935483,
+          "recall_at_k": 0.04919354838709677
+        },
+        "+045.00..+050.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 125,
+          "map_at_k": 0.6933666666666668,
+          "ndcg_at_k": 0.7817114829643101,
+          "precision_at_k": 0.76,
+          "recall_at_k": 0.0475
+        },
+        "+050.00..+055.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 125,
+          "map_at_k": 0.6931907936507937,
+          "ndcg_at_k": 0.7635810456065083,
+          "precision_at_k": 0.7536000000000002,
+          "recall_at_k": 0.04710000000000001
+        },
+        "+055.00..+060.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 44,
+          "map_at_k": 0.751737012987013,
+          "ndcg_at_k": 0.825388627698014,
+          "precision_at_k": 0.8022727272727272,
+          "recall_at_k": 0.05014204545454545
+        },
+        "+060.00..+065.00": {
+          "below_minimum_queries": false,
+          "evaluated_queries": 8,
+          "map_at_k": 0.9738045634920635,
+          "ndcg_at_k": 0.98624426460637,
+          "precision_at_k": 0.9875,
+          "recall_at_k": 0.06171875
+        }
+      }
+    },
+    "spatial_group_spread": {
+      "eurosat-v1-dinov2-vits14": {
+        "group_mean_map_at_k": {
+          "maximum": 1.0,
+          "median": 0.6334788359788359,
+          "minimum": 0.025,
+          "p10": 0.3190339285714286,
+          "p90": 0.8332948412698412,
+          "standard_deviation": 0.1935646059851027
+        },
+        "groups": 52,
+        "interpretation": "spread across cells, not per-cell quality; most cells hold too few queries to support an individual score",
+        "queries_per_group": {
+          "maximum": 22,
+          "median": 7.0,
+          "minimum": 1
+        }
+      },
+      "eurosat-v1-pca-64": {
+        "group_mean_map_at_k": {
+          "maximum": 1.0,
+          "median": 0.17681978515311847,
+          "minimum": 0.024444444444444446,
+          "p10": 0.04592857142857143,
+          "p90": 0.4628123897707229,
+          "standard_deviation": 0.18082213803096683
+        },
+        "groups": 52,
+        "interpretation": "spread across cells, not per-cell quality; most cells hold too few queries to support an individual score",
+        "queries_per_group": {
+          "maximum": 22,
+          "median": 7.0,
+          "minimum": 1
+        }
+      },
+      "eurosat-v1-ssl4eo-s12-moco-resnet50": {
+        "group_mean_map_at_k": {
+          "maximum": 1.0,
+          "median": 0.8313997113997114,
+          "minimum": 0.3618055555555556,
+          "p10": 0.6902472222222222,
+          "p90": 0.9733617724867724,
+          "standard_deviation": 0.13080265108034542
+        },
+        "groups": 52,
+        "interpretation": "spread across cells, not per-cell quality; most cells hold too few queries to support an individual score",
+        "queries_per_group": {
+          "maximum": 22,
+          "median": 7.0,
+          "minimum": 1
+        }
+      },
+      "eurosat-v1-ssl4eo-s12-rgb-moco-resnet50": {
+        "group_mean_map_at_k": {
+          "maximum": 1.0,
+          "median": 0.7768419312169312,
+          "minimum": 0.16587301587301587,
+          "p10": 0.5905956790123457,
+          "p90": 0.9951555555555555,
+          "standard_deviation": 0.18608070086601847
+        },
+        "groups": 52,
+        "interpretation": "spread across cells, not per-cell quality; most cells hold too few queries to support an individual score",
+        "queries_per_group": {
+          "maximum": 22,
+          "median": 7.0,
+          "minimum": 1
+        }
+      },
+      "eurosat-v1-terramind-tiny": {
+        "group_mean_map_at_k": {
+          "maximum": 1.0,
+          "median": 0.7234869759869761,
+          "minimum": 0.16791666666666666,
+          "p10": 0.4379700963718821,
+          "p90": 0.9965072751322751,
+          "standard_deviation": 0.2020497870602826
+        },
+        "groups": 52,
+        "interpretation": "spread across cells, not per-cell quality; most cells hold too few queries to support an individual score",
+        "queries_per_group": {
+          "maximum": 22,
+          "median": 7.0,
+          "minimum": 1
+        }
+      }
+    }
+  },
+  "k": 10,
+  "latitude_band_degrees": 5.0,
+  "manifest_sha256": "bc0b10bf3e3cf29d7f7732529ce5f419b514e2ded3a5e2a5e6e88ebcdea45338",
+  "stores": [
+    {
+      "backend": "pca",
+      "dimensions": 64,
+      "embedding_store_sha256": "580742b9b21665450bb3d504d45dd74d9f6e65e8833d2ead460f4ee38508ecf2",
+      "model": "unknown",
+      "name": "eurosat-v1-pca-64"
+    },
+    {
+      "backend": "dinov2",
+      "dimensions": 384,
+      "embedding_store_sha256": "b63731fc8933279573d2eff259f5dd97d5d53e33d316e86f70faa8018ac88bb2",
+      "model": "dinov2_vits14",
+      "name": "eurosat-v1-dinov2-vits14"
+    },
+    {
+      "backend": "ssl4eo-s12",
+      "dimensions": 2048,
+      "embedding_store_sha256": "773dcaf1290e84b36511306a497e2d1b7dd58264d9ec249a86dd2398d349078e",
+      "model": "ssl4eo-s12-rgb-moco-resnet50",
+      "name": "eurosat-v1-ssl4eo-s12-rgb-moco-resnet50"
+    },
+    {
+      "backend": "ssl4eo-s12",
+      "dimensions": 2048,
+      "embedding_store_sha256": "4a0b54291346ab9a9ec12570759c5c36365f0011b6aade09400101dcacf63b07",
+      "model": "ssl4eo-s12-moco-resnet50",
+      "name": "eurosat-v1-ssl4eo-s12-moco-resnet50"
+    },
+    {
+      "backend": "terramind",
+      "dimensions": 192,
+      "embedding_store_sha256": "4fbf446657a20ade619593a4bc618045029a3d53a0b1f92b5a68e9fdd935b187",
+      "model": "terramind_v1_tiny",
+      "name": "eurosat-v1-terramind-tiny"
+    }
+  ]
+}
