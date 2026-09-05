@@ -1,0 +1,199 @@
+{
+  "api_url": "https://planetarycomputer.microsoft.com/api/stac/v1",
+  "collection": "sentinel-2-l2a",
+  "corpus": "temporal-place-v1",
+  "datetime": "2024-01-01/2024-12-31",
+  "failures": [],
+  "images": 193,
+  "index_items": 145,
+  "manifest_sha256": "9872a52061db32c9c9d16a4aa9ce05c49a415a701599a510f14e09fa31f8bd82",
+  "max_cloud_cover": 10.0,
+  "max_dates_per_place": 20,
+  "places": 12,
+  "query_dates_per_place": 4,
+  "query_items": 48,
+  "relevance": "same place, different acquisition date",
+  "results": [
+    {
+      "available_days": 71,
+      "first_day": "2024-01-05",
+      "last_day": "2024-12-17",
+      "latitude": 35.05,
+      "place_id": "crete-messara",
+      "queries": [
+        "2024-02-09",
+        "2024-05-16",
+        "2024-08-12",
+        "2024-11-10"
+      ],
+      "selected_days": 20,
+      "written": 20
+    },
+    {
+      "available_days": 43,
+      "first_day": "2024-05-22",
+      "last_day": "2024-12-18",
+      "latitude": 38.53,
+      "place_id": "attica-thriasio",
+      "queries": [
+        "2024-06-18",
+        "2024-08-07",
+        "2024-10-01",
+        "2024-11-25"
+      ],
+      "selected_days": 20,
+      "written": 20
+    },
+    {
+      "available_days": 28,
+      "first_day": "2024-01-21",
+      "last_day": "2024-12-31",
+      "latitude": 37.55,
+      "place_id": "andalusia-guadalquivir",
+      "queries": [
+        "2024-03-01",
+        "2024-05-25",
+        "2024-08-28",
+        "2024-12-21"
+      ],
+      "selected_days": 20,
+      "written": 20
+    },
+    {
+      "available_days": 33,
+      "first_day": "2024-01-11",
+      "last_day": "2024-12-31",
+      "latitude": 45.14,
+      "place_id": "po-valley-cremona",
+      "queries": [
+        "2024-02-20",
+        "2024-06-19",
+        "2024-08-23",
+        "2024-11-23"
+      ],
+      "selected_days": 20,
+      "written": 20
+    },
+    {
+      "available_days": 6,
+      "first_day": "2024-02-17",
+      "last_day": "2024-10-24",
+      "latitude": 48.05,
+      "place_id": "beauce-orleans",
+      "queries": [
+        "2024-02-17",
+        "2024-08-12",
+        "2024-08-22",
+        "2024-10-24"
+      ],
+      "selected_days": 6,
+      "written": 6
+    },
+    {
+      "available_days": 7,
+      "first_day": "2024-01-10",
+      "last_day": "2024-09-21",
+      "latitude": 52.52,
+      "place_id": "flevoland-polder",
+      "queries": [
+        "2024-01-10",
+        "2024-05-14",
+        "2024-07-20",
+        "2024-09-21"
+      ],
+      "selected_days": 7,
+      "written": 7
+    },
+    {
+      "available_days": 13,
+      "first_day": "2024-01-28",
+      "last_day": "2024-12-01",
+      "latitude": 51.88,
+      "place_id": "brandenburg-spreewald",
+      "queries": [
+        "2024-03-08",
+        "2024-07-21",
+        "2024-09-04",
+        "2024-10-24"
+      ],
+      "selected_days": 13,
+      "written": 13
+    },
+    {
+      "available_days": 13,
+      "first_day": "2024-05-13",
+      "last_day": "2024-12-22",
+      "latitude": 56.45,
+      "place_id": "jutland-viborg",
+      "queries": [
+        "2024-05-16",
+        "2024-06-02",
+        "2024-09-05",
+        "2024-12-04"
+      ],
+      "selected_days": 13,
+      "written": 13
+    },
+    {
+      "available_days": 17,
+      "first_day": "2024-01-06",
+      "last_day": "2024-11-23",
+      "latitude": 56.88,
+      "place_id": "smaland-vaxjo",
+      "queries": [
+        "2024-01-11",
+        "2024-03-18",
+        "2024-05-22",
+        "2024-09-04"
+      ],
+      "selected_days": 17,
+      "written": 17
+    },
+    {
+      "available_days": 18,
+      "first_day": "2024-01-16",
+      "last_day": "2024-11-23",
+      "latitude": 59.86,
+      "place_id": "uppland-uppsala",
+      "queries": [
+        "2024-05-07",
+        "2024-05-25",
+        "2024-08-13",
+        "2024-10-17"
+      ],
+      "selected_days": 18,
+      "written": 18
+    },
+    {
+      "available_days": 35,
+      "first_day": "2024-01-16",
+      "last_day": "2024-11-06",
+      "latitude": 63.1,
+      "place_id": "ostrobothnia-vaasa",
+      "queries": [
+        "2024-02-10",
+        "2024-05-04",
+        "2024-07-19",
+        "2024-10-22"
+      ],
+      "selected_days": 20,
+      "written": 20
+    },
+    {
+      "available_days": 19,
+      "first_day": "2024-01-30",
+      "last_day": "2024-10-31",
+      "latitude": 66.5,
+      "place_id": "lapland-rovaniemi",
+      "queries": [
+        "2024-03-11",
+        "2024-06-23",
+        "2024-08-08",
+        "2024-10-04"
+      ],
+      "selected_days": 19,
+      "written": 19
+    }
+  ],
+  "window_m": 2560.0
+}

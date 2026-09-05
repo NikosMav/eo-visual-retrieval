@@ -1,0 +1,95 @@
+{
+  "evaluated_queries": 48,
+  "k": 5,
+  "map_at_k": 0.752361111111111,
+  "ndcg_at_k": 0.7971948995963788,
+  "per_class": {
+    "andalusia-guadalquivir": {
+      "evaluated_queries": 4,
+      "map_at_k": 1.0,
+      "ndcg_at_k": 1.0,
+      "precision_at_k": 1.0,
+      "recall_at_k": 0.3125
+    },
+    "attica-thriasio": {
+      "evaluated_queries": 4,
+      "map_at_k": 1.0,
+      "ndcg_at_k": 1.0,
+      "precision_at_k": 1.0,
+      "recall_at_k": 0.3125
+    },
+    "beauce-orleans": {
+      "evaluated_queries": 4,
+      "map_at_k": 0.25,
+      "ndcg_at_k": 0.3065735963827292,
+      "precision_at_k": 0.1,
+      "recall_at_k": 0.25
+    },
+    "brandenburg-spreewald": {
+      "evaluated_queries": 4,
+      "map_at_k": 0.8999999999999999,
+      "ndcg_at_k": 0.934397461243829,
+      "precision_at_k": 0.8999999999999999,
+      "recall_at_k": 0.5
+    },
+    "crete-messara": {
+      "evaluated_queries": 4,
+      "map_at_k": 0.95,
+      "ndcg_at_k": 0.9671987306219145,
+      "precision_at_k": 0.95,
+      "recall_at_k": 0.296875
+    },
+    "flevoland-polder": {
+      "evaluated_queries": 4,
+      "map_at_k": 0.5833333333333333,
+      "ndcg_at_k": 0.6759795222585336,
+      "precision_at_k": 0.35,
+      "recall_at_k": 0.5833333333333333
+    },
+    "jutland-viborg": {
+      "evaluated_queries": 4,
+      "map_at_k": 0.75,
+      "ndcg_at_k": 0.75,
+      "precision_at_k": 0.75,
+      "recall_at_k": 0.4166666666666667
+    },
+    "lapland-rovaniemi": {
+      "evaluated_queries": 4,
+      "map_at_k": 0.475,
+      "ndcg_at_k": 0.6209570426035925,
+      "precision_at_k": 0.5,
+      "recall_at_k": 0.16666666666666669
+    },
+    "ostrobothnia-vaasa": {
+      "evaluated_queries": 4,
+      "map_at_k": 0.6,
+      "ndcg_at_k": 0.6478803737831524,
+      "precision_at_k": 0.6,
+      "recall_at_k": 0.1875
+    },
+    "po-valley-cremona": {
+      "evaluated_queries": 4,
+      "map_at_k": 0.8200000000000001,
+      "ndcg_at_k": 0.8675913206964895,
+      "precision_at_k": 0.85,
+      "recall_at_k": 0.265625
+    },
+    "smaland-vaxjo": {
+      "evaluated_queries": 4,
+      "map_at_k": 0.95,
+      "ndcg_at_k": 0.9671987306219145,
+      "precision_at_k": 0.95,
+      "recall_at_k": 0.36538461538461536
+    },
+    "uppland-uppsala": {
+      "evaluated_queries": 4,
+      "map_at_k": 0.7500000000000001,
+      "ndcg_at_k": 0.8285620169443906,
+      "precision_at_k": 0.7500000000000001,
+      "recall_at_k": 0.26785714285714285
+    }
+  },
+  "precision_at_k": 0.725,
+  "recall_at_k": 0.3270757020757021,
+  "skipped_queries": 0
+}

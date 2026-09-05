@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import platform
+from dataclasses import replace
 from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 from typing import Any
@@ -14,6 +15,7 @@ from eo_visual_retrieval.evaluation import evaluate_store
 from eo_visual_retrieval.evaluation_multilabel import DEFAULT_THRESHOLD, DEVELOPMENT_THRESHOLDS
 from eo_visual_retrieval.hashing import file_sha256
 from eo_visual_retrieval.manifests import build_image_manifest, read_jsonl, write_jsonl
+from eo_visual_retrieval.models import Split
 from eo_visual_retrieval.retrieval import ExactCosineIndex
 from eo_visual_retrieval.stac import (
     StacSearchConfig,
@@ -383,6 +385,146 @@ def _temporal_survey(args: argparse.Namespace) -> None:
                 "places": result["places"],
                 "usable_places": result["usable_places"],
                 "distinct_days": result["distinct_days"],
+            },
+            indent=2,
+        )
+    )
+
+
+def _temporal_corpus(args: argparse.Namespace) -> None:
+    from eo_visual_retrieval.chips import materialize_sentinel2_chip
+    from eo_visual_retrieval.stac import StacSearchConfig, search_stac
+    from eo_visual_retrieval.temporal import (
+        EUROPE_LATITUDE_SPREAD_V1,
+        choose_queries,
+        day_gap_to_index,
+        read_places,
+        select_dates,
+        summarize_place,
+    )
+
+    selection = (
+        EUROPE_LATITUDE_SPREAD_V1
+        if args.places is None
+        else json.loads(args.places.read_text(encoding="utf-8"))
+    )
+    places = read_places(list(selection))
+    scratch = args.output_dir / "_chip-manifest.jsonl"
+    records: list[Any] = []
+    report: list[dict[str, Any]] = []
+    failures: list[dict[str, str]] = []
+
+    for place in places:
+        bounds = place.bbox(size_m=args.window_m)
+        found = search_stac(
+            StacSearchConfig(
+                api_url=args.api_url,
+                collection=args.collection,
+                bbox=bounds,
+                datetime=args.datetime,
+                limit=args.limit,
+                max_cloud_cover=args.max_cloud_cover,
+            )
+        )
+        observations = summarize_place(place, found)["observations"]
+        by_day = {row["acquisition_day"]: row for row in observations}
+        days = select_dates(list(by_day), max_dates=args.max_dates)
+        if len(days) < 2:
+            failures.append({"place_id": place.place_id, "reason": "fewer than two dates"})
+            continue
+        queries = set(choose_queries(days, count=args.query_dates))
+        index_days = [day for day in days if day not in queries]
+
+        written = []
+        for day in days:
+            source = next(row for row in found if row.item_id == by_day[day]["item_id"])
+            try:
+                artifacts = materialize_sentinel2_chip(
+                    source,
+                    output_dir=args.output_dir / place.place_id,
+                    image_manifest=scratch,
+                    bounds=bounds,
+                    signer=args.signer,
+                )
+            except (OSError, ValueError, RuntimeError) as error:
+                failures.append(
+                    {"place_id": place.place_id, "acquisition_day": day, "reason": str(error)}
+                )
+                continue
+            split: Split = "query" if day in queries else "index"
+            chip = artifacts.image_record
+            metadata = dict(chip.metadata)
+            metadata.update(
+                place_id=place.place_id,
+                acquisition_day=day,
+                # The analysis module slices by these, so a temporal corpus can
+                # be read with the same tooling as the EuroSAT benchmark.
+                centroid_lonlat=[place.longitude, place.latitude],
+                spatial_group=place.place_id,
+                eo_cloud_cover=by_day[day]["eo:cloud_cover"],
+                sun_elevation=by_day[day]["view:sun_elevation"],
+                relative_orbit=by_day[day]["sat:relative_orbit"],
+                source_item_id=chip.item_id,
+            )
+            if split == "query":
+                metadata["day_gap_to_nearest_index"] = day_gap_to_index(day, index_days)
+            records.append(
+                replace(
+                    chip,
+                    item_id=f"{place.place_id}/{day}",
+                    path=f"{place.place_id}/{Path(chip.path).name}",
+                    split=split,
+                    label=place.place_id,
+                    metadata=metadata,
+                )
+            )
+            written.append(day)
+        report.append(
+            {
+                "place_id": place.place_id,
+                "latitude": place.latitude,
+                "available_days": len(by_day),
+                "selected_days": len(days),
+                "written": len(written),
+                "queries": sorted(queries & set(written)),
+                "first_day": days[0],
+                "last_day": days[-1],
+            }
+        )
+
+    if not records:
+        raise ValueError("no chips were materialized; nothing to write")
+    scratch.unlink(missing_ok=True)
+    write_jsonl(records, args.manifest)
+    summary = {
+        "corpus": "temporal-place-v1",
+        "api_url": args.api_url,
+        "collection": args.collection,
+        "datetime": args.datetime,
+        "window_m": args.window_m,
+        "max_cloud_cover": args.max_cloud_cover,
+        "max_dates_per_place": args.max_dates,
+        "query_dates_per_place": args.query_dates,
+        "relevance": "same place, different acquisition date",
+        "places": len(report),
+        "images": len(records),
+        "index_items": sum(1 for row in records if row.split == "index"),
+        "query_items": sum(1 for row in records if row.split == "query"),
+        "manifest_sha256": file_sha256(args.manifest),
+        "failures": failures,
+        "results": report,
+    }
+    payload = json.dumps(summary, indent=2, sort_keys=True) + "\n"
+    args.report.parent.mkdir(parents=True, exist_ok=True)
+    args.report.write_text(payload, encoding="utf-8", newline="\n")
+    print(
+        json.dumps(
+            {
+                "manifest": str(args.manifest),
+                "report": str(args.report),
+                "places": len(report),
+                "images": len(records),
+                "failures": len(failures),
             },
             indent=2,
         )
@@ -784,6 +926,32 @@ def build_parser() -> argparse.ArgumentParser:
     survey.add_argument("--max-cloud-cover", type=float, default=10.0)
     survey.add_argument("--limit", type=int, default=60, help="items per place")
     survey.set_defaults(handler=_temporal_survey)
+
+    corpus = commands.add_parser(
+        "temporal-corpus",
+        help="materialize one chip per selected acquisition, labelled by place",
+    )
+    corpus.add_argument("--places", type=Path)
+    corpus.add_argument("--output-dir", type=Path, required=True)
+    corpus.add_argument("--manifest", type=Path, required=True)
+    corpus.add_argument("--report", type=Path, required=True)
+    corpus.add_argument(
+        "--api-url", default="https://planetarycomputer.microsoft.com/api/stac/v1"
+    )
+    corpus.add_argument("--collection", default="sentinel-2-l2a")
+    corpus.add_argument("--datetime", required=True)
+    corpus.add_argument("--window-m", type=float, default=2560.0)
+    corpus.add_argument("--max-cloud-cover", type=float, default=10.0)
+    corpus.add_argument("--limit", type=int, default=80)
+    corpus.add_argument(
+        "--max-dates", type=int, default=12, help="acquisitions kept per place"
+    )
+    corpus.add_argument(
+        "--query-dates", type=int, default=3, help="acquisitions held out per place"
+    )
+    corpus.add_argument("--signer", choices=("none", "planetary-computer"),
+                        default="planetary-computer")
+    corpus.set_defaults(handler=_temporal_corpus)
 
     analyze = commands.add_parser(
         "analyze-retrieval",
