@@ -166,6 +166,11 @@ The project is portfolio-ready when:
 - no private data, sensitive geography, signed URLs, or generated datasets are committed;
 - the repository name and release metadata match the EO visual-retrieval identity.
 
+Quality and performance requirements, the difference between a regression guard and a target, and
+the requirements this project declines to state are recorded in
+[ADR 0011](decisions/0011-requirements-and-thresholds.md). A quality claim that does not name its
+metric and its evaluation set is not usable here.
+
 ## Next work
 
 The [2026-09-04 checkpoint review](project-review.md) records the code audit, remediations,
