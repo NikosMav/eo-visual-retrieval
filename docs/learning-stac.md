@@ -33,6 +33,58 @@ controlled analysis path: it resolves raw `B04`, `B03`, `B02`, and `SCL` assets 
 bounded window, aligns grids, applies documented reflectance conversion and cloud policy, and
 writes georeferenced local artifacts.
 
+## Providers: Planetary Computer and Copernicus Data Space
+
+`--api-url` takes any conforming STAC API, and two are exercised. Microsoft Planetary Computer
+mirrors Sentinel-2 and signs asset URLs on request. The **Copernicus Data Space Ecosystem** is
+ESA's own distribution of the same archive:
+
+```powershell
+eovr stac-search `
+  --api-url https://stac.dataspace.copernicus.eu/v1 `
+  --collection sentinel-2-l2a `
+  --bbox 23.4 38.4 23.8 38.7 `
+  --datetime 2025-06-01/2025-08-31 `
+  --max-cloud-cover 10 --limit 4 `
+  --output data/manifests/copernicus-items.jsonl
+```
+
+That runs with **no account and no credentials**. Copernicus answers searches anonymously.
+
+Its access model then splits in a way worth understanding: catalogue queries are open, but assets
+are addressed as `s3://eodata/...` on Copernicus object storage, which needs a free account and S3
+keys. So discovery works today and pixel materialization does not — `stac-materialize` refuses an
+`s3://` asset with a message that says why, rather than reporting a generic scheme error.
+
+### The same fact under two names
+
+Providers publish identical information under two generations of STAC extension names, so an
+allowlist written for one silently drops fields on the other:
+
+| Fact | Planetary Computer | Copernicus |
+|---|---|---|
+| Tile identity | `s2:mgrs_tile` | `grid:code` |
+| Processing baseline | `s2:processing_baseline` | `processing:version` |
+
+Both spellings are allowlisted, and a key a provider does not publish is simply not recorded.
+
+Copernicus also supplies viewing geometry the older keys omit — `view:sun_elevation`,
+`view:sun_azimuth`, `sat:relative_orbit`, `sat:orbit_state`, `eo:snow_cover`. These matter for
+retrieval rather than being trivia. Sun elevation explains why one place photographs differently in
+March and September, and relative orbit is how repeat passes over a single location are found: a
+search over Attica returned four scenes all on relative orbit 93, the track that revisits that area.
+
+Nothing credential-shaped enters a manifest. Copernicus publishes `auth:schemes` and
+`storage:schemes` properties describing how to authenticate; both are excluded.
+
+### Why this matters for evaluation
+
+EuroSAT publishes no acquisition timestamps, which is why the
+[structure analysis](results/eurosat-v1-analysis.md) records seasonal slicing as unachievable
+rather than outstanding. A Copernicus-derived corpus carries per-scene dates, so it can support
+questions this project currently cannot ask — including retrieval relevance defined as *the same
+place on a different date*, a ground truth that needs no class labels at all.
+
 ## What an analysis-ready chip adds
 
 A rendered preview answers “what does this scene roughly look like?” A controlled chip also makes
@@ -80,3 +132,7 @@ must be added before STAC-derived imagery becomes part of the benchmark.
 - [STAC specification](https://stacspec.org/en/about/stac-spec/)
 - [PySTAC Client usage](https://github.com/stac-utils/pystac-client/blob/main/docs/usage.rst)
 - [Planetary Computer STAC quickstart](https://planetarycomputer.microsoft.com/docs/quickstarts/reading-stac/)
+- [Copernicus Data Space Ecosystem](https://dataspace.copernicus.eu/) and its
+  [STAC API](https://stac.dataspace.copernicus.eu/v1)
+- [Copernicus Browser](https://browser.dataspace.copernicus.eu/) for inspecting a scene visually
+  before searching for it programmatically

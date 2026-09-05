@@ -13,15 +13,35 @@ from eo_visual_retrieval.hashing import bytes_sha256, file_sha256
 from eo_visual_retrieval.manifests import write_jsonl
 from eo_visual_retrieval.models import ImageRecord, StacItemRecord, validate_stac_api_url
 
+# Providers publish the same facts under two generations of extension names.
+# Planetary Computer uses the older Sentinel-2 keys; the Copernicus Data Space
+# Ecosystem uses the newer cross-mission ones, so an allowlist written for one
+# silently drops tile identity and processing baseline on the other. Both are
+# listed, and a key absent from a provider is simply not recorded.
+#
+# The viewing-geometry keys earn their place: sun elevation and azimuth explain
+# why the same place looks different between acquisitions, and relative orbit is
+# how repeat passes over one location are found. Nothing here is a URL, a
+# credential, or an infrastructure detail.
 SAFE_PROPERTY_KEYS = (
     "constellation",
     "eo:cloud_cover",
+    "eo:snow_cover",
+    "grid:code",
     "gsd",
     "instruments",
     "platform",
+    "processing:level",
+    "processing:version",
+    "product:type",
     "proj:epsg",
     "s2:mgrs_tile",
     "s2:processing_baseline",
+    "sat:orbit_state",
+    "sat:relative_orbit",
+    "view:incidence_angle",
+    "view:sun_azimuth",
+    "view:sun_elevation",
 )
 
 
@@ -201,6 +221,16 @@ def materialize_previews(
         asset = item.assets[asset_key]
         href = asset.href
         parsed = urlparse(href)
+        if parsed.scheme == "s3":
+            # Copernicus Data Space serves pixels from its own object store. Its
+            # catalogue answers searches anonymously, so discovery works with no
+            # account, but reading an asset needs credentials this path does not
+            # carry. Say so instead of reporting a generic scheme rejection.
+            raise ValueError(
+                f"asset is stored on object storage, not HTTPS: {record.item_id}. "
+                "This provider separates anonymous discovery from credentialed "
+                "asset access; preview materialization supports only HTTPS assets"
+            )
         if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password:
             raise ValueError(f"asset must use HTTPS without URL userinfo: {record.item_id}")
 
